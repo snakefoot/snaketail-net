@@ -128,6 +128,11 @@ namespace SnakeTail
 
             LoadFile(tailConfig.FilePath);
             _filterActive = tailConfig.ColumnFilterActive;
+
+            if (Visible)
+            {
+                ConfigureColumnFilter(_filterActive);
+            }
         }
 
         private void EventLogForm_Load(object sender, EventArgs e)
@@ -139,7 +144,8 @@ namespace SnakeTail
             _eventListView.Columns.Add("EventId");
             _eventListView.Columns.Add("Category", 100);
 
-            ConfigureColumnFilter(_filterActive);
+            if (_eventLog != null)
+                ConfigureColumnFilter(_filterActive);
         }
 
         protected override void OnResize(EventArgs e)
