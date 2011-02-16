@@ -499,7 +499,10 @@ namespace SnakeTail
             if (MdiParent == null)
             {
                 Icon = MainForm.Instance.Icon;
+                // Fix issue where ListView scrollbar was hidden behind statusbar
+                this.Controls.Remove(_statusStrip);
                 _statusStrip.Visible = true;
+                this.Controls.Add(_statusStrip);
             }
             else
             {
