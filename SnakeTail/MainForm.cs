@@ -357,13 +357,16 @@ namespace SnakeTail
                         }
                         mdiForm.Show();
 
-                        if (tailFile.WindowState != FormWindowState.Maximized)
+                        if (tailConfig.SelectedTab == -1 || tailFile.Modeless)
                         {
-                            mdiForm.DesktopLocation = tailFile.WindowPosition;
-                            mdiForm.Size = tailFile.WindowSize;
+                            if (tailFile.WindowState != FormWindowState.Maximized)
+                            {
+                                mdiForm.DesktopLocation = tailFile.WindowPosition;
+                                mdiForm.Size = tailFile.WindowSize;
+                            }
+                            if (mdiForm.WindowState != tailFile.WindowState)
+                                mdiForm.WindowState = tailFile.WindowState;
                         }
-                        if (mdiForm.WindowState != tailFile.WindowState)
-                            mdiForm.WindowState = tailFile.WindowState;
 
                         if (tailFile.Modeless)
                             mdiForm.LoadConfig(tailFile);
@@ -381,13 +384,16 @@ namespace SnakeTail
                         }
                         mdiForm.Show();
 
-                        if (tailFile.WindowState != FormWindowState.Maximized)
+                        if (tailConfig.SelectedTab == -1 || tailFile.Modeless)
                         {
-                            mdiForm.DesktopLocation = tailFile.WindowPosition;
-                            mdiForm.Size = tailFile.WindowSize;
+                            if (tailFile.WindowState != FormWindowState.Maximized)
+                            {
+                                mdiForm.DesktopLocation = tailFile.WindowPosition;
+                                mdiForm.Size = tailFile.WindowSize;
+                            }
+                            if (mdiForm.WindowState != tailFile.WindowState)
+                                mdiForm.WindowState = tailFile.WindowState;
                         }
-                        if (mdiForm.WindowState != tailFile.WindowState)
-                            mdiForm.WindowState = tailFile.WindowState;
 
                         if (tailFile.Modeless)
                             mdiForm.LoadConfig(tailFile, Path.GetDirectoryName(filepath));
@@ -397,8 +403,12 @@ namespace SnakeTail
 
                 if (tailConfig.SelectedTab != -1)
                 {
+                    foreach (Form childForm in MdiChildren)
+                        childForm.WindowState = FormWindowState.Minimized;
+
                     _MDITabControl.SelectedIndex = tailConfig.SelectedTab;
                     _MDITabControl.Visible = true;
+                    (_MDITabControl.SelectedTab.Tag as Form).WindowState = FormWindowState.Maximized;
                 }
             }
         }
