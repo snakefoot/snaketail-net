@@ -415,7 +415,19 @@ namespace SnakeTail
         {
             if (ActiveMdiChild != null)
             {
-                (ActiveMdiChild as TailForm).CopySelectionToClipboard();
+                TailForm tailForm = ActiveMdiChild as TailForm;
+                if (tailForm != null)
+                {
+                    tailForm.CopySelectionToClipboard();
+                    return;
+                }
+
+                EventLogForm eventForm = ActiveMdiChild as EventLogForm;
+                if (eventForm != null)
+                {
+                    eventForm.CopySelectionToClipboard();
+                    return;
+                }
             }
         }
 

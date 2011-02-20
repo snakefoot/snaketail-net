@@ -135,6 +135,7 @@ namespace SnakeTail
             this._eventMessageText.Size = new System.Drawing.Size(602, 75);
             this._eventMessageText.TabIndex = 0;
             this._eventMessageText.Text = "";
+            this._eventMessageText.KeyDown += new System.Windows.Forms.KeyEventHandler(this._eventListView_KeyDown);
             // 
             // _filterEventLogTimer
             // 
@@ -156,6 +157,7 @@ namespace SnakeTail
             this._eventListView.VirtualMode = true;
             this._eventListView.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this._eventListView_RetrieveVirtualItem);
             this._eventListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this._eventListView_ItemSelectionChanged);
+            this._eventListView.KeyDown += new System.Windows.Forms.KeyEventHandler(this._eventListView_KeyDown);
             // 
             // EventLogForm
             // 

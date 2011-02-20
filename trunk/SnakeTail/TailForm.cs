@@ -568,6 +568,16 @@ namespace SnakeTail
                 return;
             }
 
+            if (e.Control && e.KeyCode == Keys.C)
+            {
+                if (MdiParent == null)
+                {
+                    CopySelectionToClipboard();
+                    e.Handled = true;
+                    return;
+                }
+            }
+
             // For some weird reason the cache request for page-down / page-up comes after the item-requests
             if (e.KeyCode == Keys.PageDown)
             {
