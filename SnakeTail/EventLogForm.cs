@@ -196,6 +196,104 @@ namespace SnakeTail
             return lastVisibleIndexInDetailsMode >= index;
         }
 
+        public void CopySelectionToClipboard()
+        {
+            // Copy selected rows to clipboard
+            StringBuilder selection = new StringBuilder();
+            if (_eventMessageText.Focused)
+            {
+                if (_eventMessageText.SelectedText.Length != 0)
+                    selection.AppendLine(_eventMessageText.SelectedText);
+                else
+                {
+                    foreach (string line in _eventMessageText.Lines)
+                        selection.AppendLine(line);
+                }
+            }
+            else
+            {
+                if (_eventListView.SelectedIndices.Count > 1)
+                {
+                    string columnText = "";
+                    foreach(ColumnHeader columnHeader in _eventListView.Columns)
+                    {
+                        if (columnText.Length > 0)
+                            columnText += '\t';
+                        columnText += columnHeader.Text;
+                    }
+                    columnText += '\t';
+                    columnText += "Message";
+                    selection.AppendLine(columnText);
+                }
+
+                foreach (int itemIndex in _eventListView.SelectedIndices)
+                {
+                    string itemText = "";
+                    ListViewItem item = _eventListView.Items[itemIndex];
+                    foreach(ListViewItem.ListViewSubItem subItem in item.SubItems)
+                    {
+                        if (itemText.Length > 0)
+                            itemText += '\t';
+                        itemText += subItem.Text;
+                    }
+                    itemText += '\t';
+                    itemText += LookupEventLogMessage(item).Replace(Environment.NewLine, "");
+                    selection.AppendLine(itemText);
+                }
+            }
+            Clipboard.SetText(selection.ToString());
+        }
+
+        string LookupEventLogMessage(ListViewItem listItem)
+        {
+            lock (_eventMessages)
+            {
+                string message;
+                if (_eventMessages.TryGetValue((int)listItem.Tag, out message))
+                {
+                    return message;
+                }
+            }
+
+            EventLogEntry entry = _eventLog.Entries[listItem.Index];
+            if (entry == null)
+                return "";
+
+            if (System.Environment.OSVersion.Version.Major >= 6)
+            {
+                string eventMessage = null;
+                if (entry.Index == (int)listItem.Tag && entry.Message.IndexOf(" Event ID '" + entry.InstanceId.ToString() + "' ") == -1)
+                {
+                    eventMessage = entry.Message;
+                }
+                else
+                {
+                    using (new HourGlass(this))
+                    {
+                        eventMessage = GetEventLogItemMessage(_eventLog.MachineName, _eventLog.LogDisplayName, (uint)(int)listItem.Tag);
+                    }
+                }
+
+                if (eventMessage != null)
+                {
+                    lock (_eventMessages)
+                    {
+                        if (!_eventMessages.ContainsKey((int)listItem.Tag))
+                            _eventMessages.Add((int)listItem.Tag, eventMessage);
+                    }
+                    return eventMessage;
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            else
+            {
+                return entry.Message;
+            }
+        }
+
         void _eventLog_EntryWritten(object sender, EntryWrittenEventArgs e)
         {
             if (InvokeRequired)
@@ -257,51 +355,7 @@ namespace SnakeTail
         {
             if (e.IsSelected)
             {
-                lock (_eventMessages)
-                {
-                    string message;
-                    if (_eventMessages.TryGetValue((int)e.Item.Tag, out message))
-                    {
-                        _eventMessageText.Text = message;
-                        return;
-                    }
-                }
-
-                EventLogEntry entry = _eventLog.Entries[e.Item.Index];
-                if (entry == null)
-                    return;
-
-                if (System.Environment.OSVersion.Version.Major >= 6)
-                {
-                    if (entry.Index == (int)e.Item.Tag && entry.Message.IndexOf(" Event ID '" + entry.InstanceId.ToString() + "' ") == -1)
-                    {
-                        _eventMessageText.Text = entry.Message;
-                    }
-                    else
-                    {
-                        using (new HourGlass(this))
-                        {
-                            _eventMessageText.Text = GetEventLogItemMessage(_eventLog.MachineName, _eventLog.LogDisplayName, (uint)(int)e.Item.Tag);
-                        }
-                    }
-
-                    if (_eventMessageText.Text != null)
-                    {
-                        lock (_eventMessages)
-                        {
-                            if (!_eventMessages.ContainsKey((int)e.Item.Tag))
-                                _eventMessages.Add((int)e.Item.Tag, _eventMessageText.Text);
-                        }
-                    }
-                    else
-                    {
-                        _eventMessageText.Text = "";
-                    }
-                }
-                else
-                {
-                    _eventMessageText.Text = entry.Message;
-                }
+                _eventMessageText.Text = LookupEventLogMessage(e.Item);
             }
         }
 
@@ -666,6 +720,19 @@ namespace SnakeTail
             _lastEventLogFilterIndex = lastEventLogFilterIndex;
             if (_lastEventLogFilterIndex == 0)
                 _filterEventLogTimer.Enabled = false;
+        }
+
+        private void _eventListView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.C)
+            {
+                if (MdiParent == null)
+                {
+                    CopySelectionToClipboard();
+                    e.Handled = true;
+                    return;
+                }
+            }
         }
     }
 
