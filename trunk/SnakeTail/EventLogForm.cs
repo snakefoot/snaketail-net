@@ -215,7 +215,7 @@ namespace SnakeTail
                 if (_eventListView.SelectedIndices.Count > 1)
                 {
                     string columnText = "";
-                    foreach(ColumnHeader columnHeader in _eventListView.Columns)
+                    foreach (ColumnHeader columnHeader in _eventListView.Columns)
                     {
                         if (columnText.Length > 0)
                             columnText += '\t';
@@ -224,21 +224,34 @@ namespace SnakeTail
                     columnText += '\t';
                     columnText += "Message";
                     selection.AppendLine(columnText);
-                }
 
-                foreach (int itemIndex in _eventListView.SelectedIndices)
-                {
-                    string itemText = "";
-                    ListViewItem item = _eventListView.Items[itemIndex];
-                    foreach(ListViewItem.ListViewSubItem subItem in item.SubItems)
+                    foreach (int itemIndex in _eventListView.SelectedIndices)
                     {
-                        if (itemText.Length > 0)
-                            itemText += '\t';
-                        itemText += subItem.Text;
+                        string itemText = "";
+                        ListViewItem item = _eventListView.Items[itemIndex];
+                        foreach (ListViewItem.ListViewSubItem subItem in item.SubItems)
+                        {
+                            if (itemText.Length > 0)
+                                itemText += '\t';
+                            itemText += subItem.Text;
+                        }
+                        itemText += '\t';
+                        itemText += LookupEventLogMessage(item).Replace(Environment.NewLine, "");
+                        selection.AppendLine(itemText);
                     }
-                    itemText += '\t';
-                    itemText += LookupEventLogMessage(item).Replace(Environment.NewLine, "");
-                    selection.AppendLine(itemText);
+                }
+                else
+                if (_eventListView.SelectedIndices.Count == 1)
+                {
+                    foreach (int itemIndex in _eventListView.SelectedIndices)
+                    {
+                        ListViewItem item = _eventListView.Items[itemIndex];
+                        foreach (ColumnHeader columnHeader in _eventListView.Columns)
+                            selection.AppendLine(columnHeader.Text + ": " + item.SubItems[columnHeader.Index].Text);
+                        selection.AppendLine("Message:");
+                        // Fix unix-newlines to environment newlines
+                        selection.Append(LookupEventLogMessage(item).Replace(Environment.NewLine, "\n").Replace("\n", Environment.NewLine));
+                    }
                 }
             }
             Clipboard.SetText(selection.ToString());
