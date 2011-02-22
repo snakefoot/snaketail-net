@@ -236,7 +236,7 @@ namespace SnakeTail
                             itemText += subItem.Text;
                         }
                         itemText += '\t';
-                        itemText += LookupEventLogMessage(item).Replace(Environment.NewLine, "");
+                        itemText += LookupEventLogMessage(item).Replace(Environment.NewLine, "").Replace("\n","").Replace("\t", " ");
                         selection.AppendLine(itemText);
                     }
                 }
