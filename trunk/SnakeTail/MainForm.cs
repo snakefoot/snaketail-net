@@ -413,34 +413,6 @@ namespace SnakeTail
             }
         }
 
-        private void findToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (ActiveMdiChild != null)
-            {
-                SearchForm.Instance.ActiveTailForm = ActiveMdiChild as TailForm;
-            }
-        }
-
-        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (ActiveMdiChild != null)
-            {
-                TailForm tailForm = ActiveMdiChild as TailForm;
-                if (tailForm != null)
-                {
-                    tailForm.CopySelectionToClipboard();
-                    return;
-                }
-
-                EventLogForm eventForm = ActiveMdiChild as EventLogForm;
-                if (eventForm != null)
-                {
-                    eventForm.CopySelectionToClipboard();
-                    return;
-                }
-            }
-        }
-
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close();

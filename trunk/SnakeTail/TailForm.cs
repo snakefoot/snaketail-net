@@ -568,16 +568,6 @@ namespace SnakeTail
                 return;
             }
 
-            if (e.Control && e.KeyCode == Keys.C)
-            {
-                if (MdiParent == null)
-                {
-                    CopySelectionToClipboard();
-                    e.Handled = true;
-                    return;
-                }
-            }
-
             // For some weird reason the cache request for page-down / page-up comes after the item-requests
             if (e.KeyCode == Keys.PageDown)
             {
@@ -721,19 +711,6 @@ namespace SnakeTail
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            if (keyData == (Keys.Control | Keys.F))
-            {
-                SearchForm.Instance.StartSearch(this);
-                return true;
-            }
-            if (keyData == Keys.F3)
-            {
-                if (SearchForm.Instance.Visible)
-                {
-                    SearchForm.Instance.SearchAgain(this, true);
-                }
-                return true;
-            }
             if (keyData == (Keys.Shift | Keys.F3))
             {
                 if (SearchForm.Instance.Visible)
@@ -830,7 +807,7 @@ namespace SnakeTail
             }
         }
 
-        private void cToolStripMenuItem_Click(object sender, EventArgs e)
+        private void resumeServiceToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
@@ -848,19 +825,33 @@ namespace SnakeTail
 
         private void _contextMenuStrip_Opening(object sender, CancelEventArgs e)
         {
+            _contextMenuStrip_Opening(sender, (EventArgs)e);
+
+            // We steal the items from the main menu (we restore them when closing again)
+            ToolStripItem[] items = new ToolStripItem[_activeWindowMenuItem.DropDownItems.Count];
+            _activeWindowMenuItem.DropDownItems.CopyTo(items, 0);
+            _contextMenuStrip.Items.Clear();            // Clear the dummy item
+            _contextMenuStrip.Items.AddRange(items);
+        }
+
+        private void _contextMenuStrip_Closed(object sender, ToolStripDropDownClosedEventArgs e)
+        {
+            // Restore the items back to the main menu when closing
+            ToolStripItem[] items = new ToolStripItem[_contextMenuStrip.Items.Count];
+            _contextMenuStrip.Items.CopyTo(items, 0);
+            _activeWindowMenuItem.DropDownItems.AddRange(items);
+            _contextMenuStrip.Items.Clear();
+            _contextMenuStrip.Items.Add(new ToolStripSeparator());  // Dummy item so menu is shown the next time
+        }
+
+        private void _contextMenuStrip_Opening(object sender, EventArgs e)
+        {
             bool windowsService = _taskMonitor != null && _taskMonitor.ServiceController != null;
             bool pauseAndContinue = _taskMonitor != null && _taskMonitor.CanPauseAndContinue;
-            foreach (ToolStripItem item in _contextMenuStrip.Items)
-            {
-                if (item.Text == "Start Service...")
-                    item.Enabled = windowsService;
-                if (item.Text == "Stop Service...")
-                    item.Enabled = windowsService;
-                if (item.Text == "Pause Service...")
-                    item.Visible = pauseAndContinue;
-                if (item.Text == "Continue Service...")
-                    item.Visible = pauseAndContinue;
-            }
+            startServiceToolStripMenuItem.Enabled = windowsService;
+            stopServiceToolStripMenuItem.Enabled = windowsService;
+            pauseServiceToolStripMenuItem.Visible = pauseAndContinue;
+            resumeServiceToolStripMenuItem.Visible = pauseAndContinue;
         }
 
         private void TailForm_Activated(object sender, EventArgs e)
@@ -883,6 +874,32 @@ namespace SnakeTail
                     if (_formCustomIcon != null)
                         Icon = _formCustomIcon;
                 }
+            }
+        }
+
+        private void _copyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Copy selected rows to clipboard
+            StringBuilder selection = new StringBuilder();
+            foreach (int itemIndex in _tailListView.SelectedIndices)
+            {
+                if (selection.Length > 0)
+                    selection.Append("\r\n");
+                selection.Append(_tailListView.Items[itemIndex].Text);
+            }
+            Clipboard.SetText(selection.ToString());
+        }
+
+        private void findToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SearchForm.Instance.StartSearch(this);
+        }
+
+        private void findNextToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SearchForm.Instance.Visible)
+            {
+                SearchForm.Instance.SearchAgain(this, true);
             }
         }
     }
