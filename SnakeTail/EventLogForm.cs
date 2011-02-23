@@ -196,67 +196,6 @@ namespace SnakeTail
             return lastVisibleIndexInDetailsMode >= index;
         }
 
-        public void CopySelectionToClipboard()
-        {
-            // Copy selected rows to clipboard
-            StringBuilder selection = new StringBuilder();
-            if (_eventMessageText.Focused)
-            {
-                if (_eventMessageText.SelectedText.Length != 0)
-                    selection.AppendLine(_eventMessageText.SelectedText);
-                else
-                {
-                    foreach (string line in _eventMessageText.Lines)
-                        selection.AppendLine(line);
-                }
-            }
-            else
-            {
-                if (_eventListView.SelectedIndices.Count > 1)
-                {
-                    string columnText = "";
-                    foreach (ColumnHeader columnHeader in _eventListView.Columns)
-                    {
-                        if (columnText.Length > 0)
-                            columnText += '\t';
-                        columnText += columnHeader.Text;
-                    }
-                    columnText += '\t';
-                    columnText += "Message";
-                    selection.AppendLine(columnText);
-
-                    foreach (int itemIndex in _eventListView.SelectedIndices)
-                    {
-                        string itemText = "";
-                        ListViewItem item = _eventListView.Items[itemIndex];
-                        foreach (ListViewItem.ListViewSubItem subItem in item.SubItems)
-                        {
-                            if (itemText.Length > 0)
-                                itemText += '\t';
-                            itemText += subItem.Text;
-                        }
-                        itemText += '\t';
-                        itemText += LookupEventLogMessage(item).Replace(Environment.NewLine, "").Replace("\n","").Replace("\t", " ");
-                        selection.AppendLine(itemText);
-                    }
-                }
-                else
-                if (_eventListView.SelectedIndices.Count == 1)
-                {
-                    foreach (int itemIndex in _eventListView.SelectedIndices)
-                    {
-                        ListViewItem item = _eventListView.Items[itemIndex];
-                        foreach (ColumnHeader columnHeader in _eventListView.Columns)
-                            selection.AppendLine(columnHeader.Text + ": " + item.SubItems[columnHeader.Index].Text);
-                        selection.AppendLine("Message:");
-                        // Fix unix-newlines to environment newlines
-                        selection.Append(LookupEventLogMessage(item).Replace(Environment.NewLine, "\n").Replace("\n", Environment.NewLine));
-                    }
-                }
-            }
-            Clipboard.SetText(selection.ToString());
-        }
-
         string LookupEventLogMessage(ListViewItem listItem)
         {
             lock (_eventMessages)
@@ -564,16 +503,37 @@ namespace SnakeTail
             if (hitTest != null && hitTest.Item != null && hitTest.SubItem != null)
                 subItemIndex = hitTest.Item.SubItems.IndexOf(hitTest.SubItem);
 
-            foreach (ToolStripMenuItem menuItem in _contextMenuStrip.Items)
+            _contextMenuStrip_Opening(sender, (EventArgs)e);
+
+            // We steal the items from the main menu (we restore them when closing again)
+            ToolStripItem[] items = new ToolStripItem[_activeWindowMenuItem.DropDownItems.Count];
+            _activeWindowMenuItem.DropDownItems.CopyTo(items, 0);
+            _contextMenuStrip.Items.Clear();            // Clear the dummy item
+            _contextMenuStrip.Items.AddRange(items);
+
+            foreach (ToolStripItem menuItem in _contextMenuStrip.Items)
                 menuItem.Tag = subItemIndex;
 
             _addFilterToolStripMenuItem.Visible = subItemIndex != -1 && _eventListView.SelectedIndices.Count == 1;
             if (hitTest != null && hitTest.SubItem != null)
                 _addFilterToolStripMenuItem.Text = "Add Filter '" + hitTest.SubItem.Text + "'";
+        }
 
-            _filterActiveToolStripMenuItem.Checked = _filterActive;
-            _filterActiveToolStripMenuItem.Enabled = _columnFilters.Count > 0;
+        private void _contextMenuStrip_Closed(object sender, ToolStripDropDownClosedEventArgs e)
+        {
+            // Restore the items back to the main menu when closing
+            ToolStripItem[] items = new ToolStripItem[_contextMenuStrip.Items.Count];
+            _contextMenuStrip.Items.CopyTo(items, 0);
+            _activeWindowMenuItem.DropDownItems.AddRange(items);
+            _contextMenuStrip.Items.Clear();
+            _contextMenuStrip.Items.Add(new ToolStripSeparator());  // Dummy item so menu is shown the next time
+        }
 
+        private void _contextMenuStrip_Opening(object sender, EventArgs e)
+        {
+            _addFilterToolStripMenuItem.Visible = false;
+            _filterModeToolStripMenuItem.Checked = _filterActive;
+            _filterModeToolStripMenuItem.Enabled = _columnFilters.Count > 0;
             _resetFilterToolStripMenuItem.Enabled = _columnFilters.Count > 0;
         }
 
@@ -735,17 +695,88 @@ namespace SnakeTail
                 _filterEventLogTimer.Enabled = false;
         }
 
-        private void _eventListView_KeyDown(object sender, KeyEventArgs e)
+        private void configureFontToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (e.Control && e.KeyCode == Keys.C)
+            FontDialog fdlgText = new FontDialog();
+            fdlgText.Font = _eventListView.Font;
+            fdlgText.Color = _eventListView.ForeColor;
+            fdlgText.ShowColor = true;
+            if (fdlgText.ShowDialog() == DialogResult.OK)
             {
-                if (MdiParent == null)
+                _eventListView.Font = fdlgText.Font;
+                _eventListView.ForeColor = fdlgText.Color;
+            }
+        }
+
+        private void configureBackgroundColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDlg = new ColorDialog();
+            colorDlg.Color = _eventListView.BackColor;
+            if (colorDlg.ShowDialog() == DialogResult.OK)
+            {
+                _eventListView.BackColor = colorDlg.Color;
+            }
+        }
+
+        private void _copyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Copy selected rows to clipboard
+            StringBuilder selection = new StringBuilder();
+            if (_eventMessageText.Focused)
+            {
+                if (_eventMessageText.SelectedText.Length != 0)
+                    selection.AppendLine(_eventMessageText.SelectedText);
+                else
                 {
-                    CopySelectionToClipboard();
-                    e.Handled = true;
-                    return;
+                    foreach (string line in _eventMessageText.Lines)
+                        selection.AppendLine(line);
                 }
             }
+            else
+            {
+                if (_eventListView.SelectedIndices.Count > 1)
+                {
+                    string columnText = "";
+                    foreach (ColumnHeader columnHeader in _eventListView.Columns)
+                    {
+                        if (columnText.Length > 0)
+                            columnText += '\t';
+                        columnText += columnHeader.Text;
+                    }
+                    columnText += '\t';
+                    columnText += "Message";
+                    selection.AppendLine(columnText);
+
+                    foreach (int itemIndex in _eventListView.SelectedIndices)
+                    {
+                        string itemText = "";
+                        ListViewItem item = _eventListView.Items[itemIndex];
+                        foreach (ListViewItem.ListViewSubItem subItem in item.SubItems)
+                        {
+                            if (itemText.Length > 0)
+                                itemText += '\t';
+                            itemText += subItem.Text;
+                        }
+                        itemText += '\t';
+                        itemText += LookupEventLogMessage(item).Replace(Environment.NewLine, "").Replace("\n", "").Replace("\t", " ");
+                        selection.AppendLine(itemText);
+                    }
+                }
+                else
+                    if (_eventListView.SelectedIndices.Count == 1)
+                    {
+                        foreach (int itemIndex in _eventListView.SelectedIndices)
+                        {
+                            ListViewItem item = _eventListView.Items[itemIndex];
+                            foreach (ColumnHeader columnHeader in _eventListView.Columns)
+                                selection.AppendLine(columnHeader.Text + ": " + item.SubItems[columnHeader.Index].Text);
+                            selection.AppendLine("Message:");
+                            // Fix unix-newlines to environment newlines
+                            selection.Append(LookupEventLogMessage(item).Replace(Environment.NewLine, "\n").Replace("\n", Environment.NewLine));
+                        }
+                    }
+            }
+            Clipboard.SetText(selection.ToString());
         }
     }
 
