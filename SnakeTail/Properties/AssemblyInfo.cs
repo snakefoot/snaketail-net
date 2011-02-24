@@ -21,9 +21,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("SnakeTail")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Windows Trace Log Tail Utility")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("SnakeNest")]
 [assembly: AssemblyProduct("SnakeTail")]
 [assembly: AssemblyCopyright("Copyright ©  2010")]
 [assembly: AssemblyTrademark("")]
