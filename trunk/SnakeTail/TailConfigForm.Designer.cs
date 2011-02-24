@@ -50,7 +50,6 @@ namespace SnakeTail
             System.Windows.Forms.Label label5;
             System.Windows.Forms.Label label6;
             System.Windows.Forms.Label label7;
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TailConfigForm));
             this._tabControl = new System.Windows.Forms.TabControl();
             this._tabPageView = new System.Windows.Forms.TabPage();
             this._windowIconEdt = new System.Windows.Forms.TextBox();
@@ -291,9 +290,8 @@ namespace SnakeTail
             this.Controls.Add(this._acceptBtn);
             this.Controls.Add(this._tabControl);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "TailConfigForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Configure View";
             this.Load += new System.EventHandler(this.TailConfigForm_Load);
             this._tabControl.ResumeLayout(false);

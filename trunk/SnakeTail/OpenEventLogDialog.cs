@@ -28,6 +28,7 @@ namespace SnakeTail
         public OpenEventLogDialog()
         {
             InitializeComponent();
+            Icon = Properties.Resources.SnakeIcon;
 
             List<string> logfiles = EventLogForm.GetEventLogFiles();
             foreach (string logfile in logfiles)
