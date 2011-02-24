@@ -53,6 +53,7 @@ namespace SnakeTail
         DateTime _lastFormTitleUpdate = DateTime.Now;
         Icon _formCustomIcon = null;
         Icon _formMaximizedIcon = null;
+        string _configPath = "";
 
         public TailForm()
         {
@@ -85,38 +86,37 @@ namespace SnakeTail
 
         public void LoadConfig(TailFileConfig tailConfig, string configPath)
         {
-            if (tailConfig.BackColor != null)
-                _tailListView.BackColor = ColorTranslator.FromHtml(tailConfig.BackColor);
-            if (tailConfig.TextColor != null)
-                _tailListView.ForeColor = ColorTranslator.FromHtml(tailConfig.TextColor);
+            _configPath = configPath;
 
-            if (tailConfig.Font != null)
+            if (tailConfig.FormBackColor != null)
+                _tailListView.BackColor = tailConfig.FormBackColor.Value;
+            if (tailConfig.FormTextColor != null)
+                _tailListView.ForeColor = tailConfig.FormTextColor.Value;
+
+            if (tailConfig.FormFont != null)
+                _tailListView.Font = tailConfig.FormFont;
+
+            Encoding fileEncoding = tailConfig.EnumFileEncoding;
+
+            if (_logFileStream==null || _logFileStream.FilePath != tailConfig.FilePath)
+                _logFileStream = new LogFileStream(configPath, tailConfig.FilePath, fileEncoding);
+            if (_logTailStream == null || _logFileStream.FilePath != tailConfig.FilePath)
+                _logTailStream = new LogFileStream(configPath, tailConfig.FilePath, fileEncoding);
+
+            if (_logFileCache == null || _logFileCache.Items.Count != tailConfig.FileCacheSize)
             {
-                TypeConverter fontConverter = TypeDescriptor.GetConverter(typeof(Font));
-                _tailListView.Font = (Font)fontConverter.ConvertFromString(tailConfig.Font);
+                _logFileCache = new LogFileCache(tailConfig.FileCacheSize);
+                _logFileCache.LoadingFileEvent += new EventHandler(_logFileCache_LoadingFileEvent);
+                _logFileCache.FillCacheEvent += new EventHandler(_logFileCache_FillCacheEvent);
+                // Add loading of cache while counting lines in file
+                int lineCount = _logFileCache.FillCacheEndOfFile(_logTailStream, 0);
+                _tailListView.VirtualListSize = lineCount;
             }
-
-            Encoding fileEncoding = Encoding.Default;
-            if (tailConfig.FileEncoding == Encoding.UTF8.ToString())
-                fileEncoding = Encoding.UTF8;
             else
-                if (tailConfig.FileEncoding == Encoding.ASCII.ToString())
-                    fileEncoding = Encoding.ASCII;
-                else
-                    if (tailConfig.FileEncoding == Encoding.Unicode.ToString())
-                        fileEncoding = Encoding.Unicode;
-
-            _logFileCache = new LogFileCache(tailConfig.FileCacheSize);
-            _logFileStream = new LogFileStream(configPath, tailConfig.FilePath, fileEncoding);
-            _logTailStream = new LogFileStream(configPath, tailConfig.FilePath, fileEncoding);
-
-            _logFileCache.LoadingFileEvent += new EventHandler(_logFileCache_LoadingFileEvent);
-            _logFileCache.FillCacheEvent += new EventHandler(_logFileCache_FillCacheEvent);
-
-            // Add loading of cache while counting lines in file
-            int lineCount = _logFileCache.FillCacheEndOfFile(_logTailStream, 0);
-
-            _tailListView.VirtualListSize = lineCount;
+            {
+                _logFileCache.LoadingFileEvent += new EventHandler(_logFileCache_LoadingFileEvent);
+                _logFileCache.FillCacheEvent += new EventHandler(_logFileCache_FillCacheEvent);
+            }
 
             if (string.IsNullOrEmpty(tailConfig.LogHitText))
                 _logTailStream.LogHitText = null;
@@ -130,6 +130,10 @@ namespace SnakeTail
                 _formTitle = tailConfig.Title;
             else
                 _formTitle = Path.GetFileName(tailConfig.FilePath);
+
+            TabPage parentTab = this.Tag as TabPage;
+            if (parentTab != null)
+                parentTab.Text = _formTitle;
 
             if (!string.IsNullOrEmpty(tailConfig.IconFile))
             {
@@ -256,13 +260,12 @@ namespace SnakeTail
 
         public void SaveConfig(TailFileConfig tailConfig)
         {
-            tailConfig.BackColor = ColorTranslator.ToHtml(_tailListView.BackColor);
-            tailConfig.TextColor = ColorTranslator.ToHtml(_tailListView.ForeColor);
+            tailConfig.FormBackColor = _tailListView.BackColor;
+            tailConfig.FormTextColor = _tailListView.ForeColor;
 
-            TypeConverter fontConverter = TypeDescriptor.GetConverter(typeof(Font));
-            tailConfig.Font = fontConverter.ConvertToString(_tailListView.Font);
+            tailConfig.FormFont = _tailListView.Font;
             tailConfig.FileCacheSize = _logFileCache.Items.Count;
-            tailConfig.FileEncoding = _logTailStream.FileEncoding.ToString();
+            tailConfig.EnumFileEncoding = _logTailStream.FileEncoding;
             tailConfig.FilePath = _logTailStream.FilePath;
             tailConfig.Title = _formTitle;
             tailConfig.IconFile = _formIconFile;
@@ -682,31 +685,12 @@ namespace SnakeTail
             Close();
 
             newform.Show();
-            newform.LoadConfig(tailConfig, Path.GetDirectoryName(_logFileStream.FilePathAbsolute));
+            newform._logFileCache = _logFileCache;
+            newform._logFileStream = _logFileStream;
+            newform._logTailStream = _logTailStream;
+            newform._tailListView.VirtualListSize = _tailListView.VirtualListSize;
+            newform.LoadConfig(tailConfig, _configPath);
             newform.BringToFront();
-        }
-
-        private void configureFontToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            FontDialog fdlgText = new FontDialog();
-            fdlgText.Font = _tailListView.Font;
-            fdlgText.Color = _tailListView.ForeColor;
-            fdlgText.ShowColor = true;
-            if (fdlgText.ShowDialog() == DialogResult.OK)
-            {
-                _tailListView.Font = fdlgText.Font;
-                _tailListView.ForeColor = fdlgText.Color;
-            }
-        }
-
-        private void configureBackgroundColorToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ColorDialog colorDlg = new ColorDialog();
-            colorDlg.Color = _tailListView.BackColor;
-            if (colorDlg.ShowDialog() == DialogResult.OK)
-            {
-                _tailListView.BackColor = colorDlg.Color;
-            }
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
@@ -901,6 +885,15 @@ namespace SnakeTail
             {
                 SearchForm.Instance.SearchAgain(this, true);
             }
+        }
+
+        private void configureStatisticsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TailFileConfig configFile = new TailFileConfig();
+            SaveConfig(configFile);
+            TailConfigForm configForm = new TailConfigForm(configFile, true);
+            if (configForm.ShowDialog() == DialogResult.OK)
+                LoadConfig(configForm.TailFileConfig, _configPath);
         }
     }
 

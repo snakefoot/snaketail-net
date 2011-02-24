@@ -100,6 +100,9 @@
     <EmbeddedResource Include="SearchForm.resx">
       <DependentUpon>SearchForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="TailConfigForm.resx">
+      <DependentUpon>TailConfigForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="TailForm.resx">
       <DependentUpon>TailForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -115,6 +118,12 @@
       <DependentUpon>SearchForm.cs</DependentUpon>
     </Compile>
     <Compile Include="TailConfig.cs" />
+    <Compile Include="TailConfigForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TailConfigForm.Designer.cs">
+      <DependentUpon>TailConfigForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="TailForm.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -15,6 +15,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
 using System.Text;
 using System.Xml.Serialization;
 
@@ -51,5 +53,83 @@ namespace SnakeTail
         [XmlArray("ColumnFilters")]
         [XmlArrayItem("Filters")]
         public List<List<string>> ColumnFilters { get; set; }
+
+        internal Font FormFont
+        {
+            get
+            {
+                if (Font != null)
+                {
+                    TypeConverter fontConverter = TypeDescriptor.GetConverter(typeof(Font));
+                    return (Font)fontConverter.ConvertFromString(Font);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                TypeConverter fontConverter = TypeDescriptor.GetConverter(typeof(Font));
+                Font = fontConverter.ConvertToString(value);
+            }
+        }
+
+        internal Encoding EnumFileEncoding
+        {
+            get
+            {
+                if (FileEncoding == Encoding.UTF8.ToString())
+                    return Encoding.UTF8;
+                else
+                if (FileEncoding == Encoding.ASCII.ToString())
+                    return Encoding.ASCII;
+                else
+                if (FileEncoding == Encoding.Unicode.ToString())
+                    return Encoding.Unicode;
+                else
+                    return Encoding.Default;
+            }
+            set
+            {
+                FileEncoding = value.ToString();
+            }
+        }
+
+        internal Color? FormTextColor
+        {
+            get
+            {
+                if (TextColor != null)
+                    return ColorTranslator.FromHtml(TextColor);
+                else
+                    return null;
+            }
+            set
+            {
+                if (value.HasValue)
+                    TextColor = ColorTranslator.ToHtml(value.Value);
+                else
+                    TextColor = null;
+            }
+        }
+
+        internal Color? FormBackColor
+        {
+            get
+            {
+                if (BackColor != null)
+                    return ColorTranslator.FromHtml(BackColor);
+                else
+                    return null;
+            }
+            set
+            {
+                if (value.HasValue)
+                    BackColor = ColorTranslator.ToHtml(value.Value);
+                else
+                    BackColor = null;
+            }
+        }
    }
 }

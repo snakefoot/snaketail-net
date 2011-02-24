@@ -35,6 +35,7 @@ namespace SnakeTail
         bool _filterActive = false;
         int _lastEventLogEntry = -1;
         int _lastEventLogFilterIndex = -1;
+        string _formTitle;
 
         public EventLogForm()
         {
@@ -43,32 +44,9 @@ namespace SnakeTail
 
         public void LoadFile(string eventLogFile)
         {
-            if (MdiParent == null)
-                Icon = MainForm.Instance.Icon;
-
-            _eventLog = new EventLog(eventLogFile);
-            _eventLog.EnableRaisingEvents = true;
-            _eventLog.EntryWritten += new EntryWrittenEventHandler(_eventLog_EntryWritten);
-            _eventLog.EndInit();
-
-            if (System.Environment.OSVersion.Version.Major >= 6)
-            {
-                GetEventLogItemMessages(_eventLog.MachineName, _eventLog.LogDisplayName);
-
-                if (_eventLog.Entries.Count > 0)
-                {
-                    // Wait for the first eventlog message to be read from WMI
-                    while (true)
-                    {
-                        lock (_eventMessages)
-                        {
-                            if (_eventMessages.Count > 0)
-                                break;
-                        }
-                        System.Threading.Thread.Sleep(10);
-                    }
-                }
-            }
+            TailFileConfig tailConfig = new TailFileConfig();
+            tailConfig.FilePath = eventLogFile;
+            LoadConfig(tailConfig);
         }
 
         public void SaveConfig(TailFileConfig tailConfig)
@@ -76,10 +54,9 @@ namespace SnakeTail
             tailConfig.BackColor = ColorTranslator.ToHtml(_eventListView.BackColor);
             tailConfig.TextColor = ColorTranslator.ToHtml(_eventListView.ForeColor);
 
-            TypeConverter fontConverter = TypeDescriptor.GetConverter(typeof(Font));
-            tailConfig.Font = fontConverter.ConvertToString(_eventListView.Font);
+            tailConfig.FormFont = _eventListView.Font;
             tailConfig.FilePath = _eventLog.Log;
-            tailConfig.Title = Text;
+            tailConfig.Title = _formTitle;
             tailConfig.Modeless = MdiParent == null;
             tailConfig.WindowState = WindowState;
             tailConfig.WindowSize = Size;
@@ -102,31 +79,63 @@ namespace SnakeTail
 
         public void LoadConfig(TailFileConfig tailConfig)
         {
-            if (tailConfig.BackColor != null)
-                _eventListView.BackColor = ColorTranslator.FromHtml(tailConfig.BackColor);
-            if (tailConfig.TextColor != null)
-                _eventListView.ForeColor = ColorTranslator.FromHtml(tailConfig.TextColor);
+            _eventLog = new EventLog(tailConfig.FilePath);
+            _eventLog.EnableRaisingEvents = true;
+            _eventLog.EntryWritten += new EntryWrittenEventHandler(_eventLog_EntryWritten);
+            _eventLog.EndInit();
 
-            if (tailConfig.Font != null)
+            if (System.Environment.OSVersion.Version.Major >= 6)
             {
-                TypeConverter fontConverter = TypeDescriptor.GetConverter(typeof(Font));
-                _eventListView.Font = (Font)fontConverter.ConvertFromString(tailConfig.Font);
-            }
+                GetEventLogItemMessages(_eventLog.MachineName, _eventLog.LogDisplayName);
 
-            foreach (List<string> filter in tailConfig.ColumnFilters)
-            {
-                List<Regex> columnFilter = new List<Regex>();
-                foreach (string regexPattern in filter)
+                if (_eventLog.Entries.Count > 0)
                 {
-                    if (!string.IsNullOrEmpty(regexPattern))
-                        columnFilter.Add(new Regex(regexPattern));
-                    else
-                        columnFilter.Add(null);
+                    // Wait for the first eventlog message to be read from WMI
+                    while (true)
+                    {
+                        lock (_eventMessages)
+                        {
+                            if (_eventMessages.Count > 0)
+                                break;
+                        }
+                        System.Threading.Thread.Sleep(10);
+                    }
                 }
-                _columnFilters.Add(columnFilter);
             }
 
-            LoadFile(tailConfig.FilePath);
+            if (tailConfig.FormBackColor != null)
+                _eventListView.BackColor = tailConfig.FormBackColor.Value;
+            if (tailConfig.FormTextColor != null)
+                _eventListView.ForeColor = tailConfig.FormTextColor.Value;
+
+            if (tailConfig.FormFont != null)
+                _eventListView.Font = tailConfig.FormFont;
+
+            if (tailConfig.Title != null)
+                _formTitle = tailConfig.Title;
+            else
+                _formTitle = "EventLog - " + _eventLog.LogDisplayName;
+
+            TabPage parentTab = this.Tag as TabPage;
+            if (parentTab != null)
+                parentTab.Text = _formTitle;
+
+            if (tailConfig.ColumnFilters != null)
+            {
+                foreach (List<string> filter in tailConfig.ColumnFilters)
+                {
+                    List<Regex> columnFilter = new List<Regex>();
+                    foreach (string regexPattern in filter)
+                    {
+                        if (!string.IsNullOrEmpty(regexPattern))
+                            columnFilter.Add(new Regex(regexPattern));
+                        else
+                            columnFilter.Add(null);
+                    }
+                    _columnFilters.Add(columnFilter);
+                }
+            }
+
             _filterActive = tailConfig.ColumnFilterActive;
 
             if (Visible)
@@ -137,6 +146,9 @@ namespace SnakeTail
 
         private void EventLogForm_Load(object sender, EventArgs e)
         {
+            if (MdiParent == null)
+                Icon = MainForm.Instance.Icon;
+
             _eventListView.EnableDoubleBuffer();
             _eventListView.Columns.Add("Level", 100);
             _eventListView.Columns.Add("Date and Time", 125);
@@ -322,29 +334,38 @@ namespace SnakeTail
 
         private void GetEventLogItemMessages(string machinename, string logname)
         {
-            ManagementScope messageScope = new ManagementScope(
-                         GetStandardPath(machinename)
-             );
+            if (_eventMessagesObserver == null)
+            {
+                ManagementScope messageScope = new ManagementScope(
+                             GetStandardPath(machinename)
+                 );
 
-            messageScope.Connect();
+                messageScope.Connect();
 
-            StringBuilder query = new StringBuilder();
-            query.Append("select Message, InsertionStrings, RecordNumber from Win32_NTLogEvent where LogFile ='");
-            query.Append(logname.Replace("'", "''"));
-            query.Append("'");
+                StringBuilder query = new StringBuilder();
+                query.Append("select Message, InsertionStrings, RecordNumber from Win32_NTLogEvent where LogFile ='");
+                query.Append(logname.Replace("'", "''"));
+                query.Append("'");
 
-            System.Management.ObjectQuery objectQuery = new System.Management.ObjectQuery(
-                query.ToString()
-            );
+                System.Management.ObjectQuery objectQuery = new System.Management.ObjectQuery(
+                    query.ToString()
+                );
 
-            EnumerationOptions objectQueryOptions = new EnumerationOptions();
-            objectQueryOptions.BlockSize = 100000;
+                EnumerationOptions objectQueryOptions = new EnumerationOptions();
+                objectQueryOptions.BlockSize = 100000;
 
-            ManagementObjectSearcher objectSearcher = new ManagementObjectSearcher(messageScope, objectQuery);
+                ManagementObjectSearcher objectSearcher = new ManagementObjectSearcher(messageScope, objectQuery);
 
-            _eventMessagesObserver = new ManagementOperationObserver();
-            _eventMessagesObserver.ObjectReady += new ObjectReadyEventHandler(OnEventLogEntryReady);
-            objectSearcher.Get(_eventMessagesObserver);
+                _eventMessagesObserver = new ManagementOperationObserver();
+                _eventMessagesObserver.ObjectReady += new ObjectReadyEventHandler(OnEventLogEntryReady);
+                _eventMessagesObserver.Completed += new CompletedEventHandler(_eventMessagesObserver_Completed);
+                objectSearcher.Get(_eventMessagesObserver);
+            }
+        }
+
+        void _eventMessagesObserver_Completed(object sender, CompletedEventArgs e)
+        {
+            _eventMessagesObserver = null;
         }
 
         void OnEventLogEntryReady(object sender, ObjectReadyEventArgs e)
@@ -604,14 +625,14 @@ namespace SnakeTail
                     _eventListView.EnsureVisible(_eventListView.VirtualListSize - 1);
                     _eventListView.Update();
                 }
-                Text = "EventLog - " + _eventLog.LogDisplayName;
+                Text = _formTitle;
             }
             else
             {
                 _eventListView.VirtualListSize = 0;
                 _eventListView.VirtualMode = false;
                 _eventListView.Items.Clear();
-                Text = "EventLog - " + _eventLog.LogDisplayName + " (Filter Mode)";
+                Text = _formTitle + " (Filter Mode)";
 
                 _lastEventLogFilterIndex = _eventLog.Entries.Count - 1;
                 _lastEventLogEntry = _eventLog.Entries[_lastEventLogFilterIndex].Index;
@@ -695,29 +716,6 @@ namespace SnakeTail
                 _filterEventLogTimer.Enabled = false;
         }
 
-        private void configureFontToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            FontDialog fdlgText = new FontDialog();
-            fdlgText.Font = _eventListView.Font;
-            fdlgText.Color = _eventListView.ForeColor;
-            fdlgText.ShowColor = true;
-            if (fdlgText.ShowDialog() == DialogResult.OK)
-            {
-                _eventListView.Font = fdlgText.Font;
-                _eventListView.ForeColor = fdlgText.Color;
-            }
-        }
-
-        private void configureBackgroundColorToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ColorDialog colorDlg = new ColorDialog();
-            colorDlg.Color = _eventListView.BackColor;
-            if (colorDlg.ShowDialog() == DialogResult.OK)
-            {
-                _eventListView.BackColor = colorDlg.Color;
-            }
-        }
-
         private void _copyToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Copy selected rows to clipboard
@@ -777,6 +775,15 @@ namespace SnakeTail
                     }
             }
             Clipboard.SetText(selection.ToString());
+        }
+
+        private void _configTextToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TailFileConfig configFile = new TailFileConfig();
+            SaveConfig(configFile);
+            TailConfigForm configForm = new TailConfigForm(configFile, false);
+            if (configForm.ShowDialog() == DialogResult.OK)
+                LoadConfig(configForm.TailFileConfig);
         }
     }
 
