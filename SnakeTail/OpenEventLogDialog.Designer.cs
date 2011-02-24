@@ -45,7 +45,6 @@ namespace SnakeTail
         {
             System.Windows.Forms.Button _openBtn;
             System.Windows.Forms.Button _cancelBtn;
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OpenEventLogDialog));
             this._listView = new System.Windows.Forms.ListView();
             _openBtn = new System.Windows.Forms.Button();
             _cancelBtn = new System.Windows.Forms.Button();
@@ -55,7 +54,7 @@ namespace SnakeTail
             // 
             _openBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             _openBtn.DialogResult = System.Windows.Forms.DialogResult.OK;
-            _openBtn.Location = new System.Drawing.Point(173, 18);
+            _openBtn.Location = new System.Drawing.Point(191, 18);
             _openBtn.Name = "_openBtn";
             _openBtn.Size = new System.Drawing.Size(75, 23);
             _openBtn.TabIndex = 1;
@@ -67,7 +66,7 @@ namespace SnakeTail
             // 
             _cancelBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             _cancelBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            _cancelBtn.Location = new System.Drawing.Point(173, 57);
+            _cancelBtn.Location = new System.Drawing.Point(191, 57);
             _cancelBtn.Name = "_cancelBtn";
             _cancelBtn.Size = new System.Drawing.Size(75, 23);
             _cancelBtn.TabIndex = 2;
@@ -81,7 +80,7 @@ namespace SnakeTail
                         | System.Windows.Forms.AnchorStyles.Right)));
             this._listView.Location = new System.Drawing.Point(12, 12);
             this._listView.Name = "_listView";
-            this._listView.Size = new System.Drawing.Size(146, 172);
+            this._listView.Size = new System.Drawing.Size(164, 165);
             this._listView.TabIndex = 0;
             this._listView.UseCompatibleStateImageBehavior = false;
             this._listView.View = System.Windows.Forms.View.List;
@@ -92,11 +91,10 @@ namespace SnakeTail
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = _cancelBtn;
-            this.ClientSize = new System.Drawing.Size(260, 196);
+            this.ClientSize = new System.Drawing.Size(278, 189);
             this.Controls.Add(this._listView);
             this.Controls.Add(_cancelBtn);
             this.Controls.Add(_openBtn);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "OpenEventLogDialog";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Open EventLog";

@@ -45,23 +45,23 @@ namespace SnakeTail
         {
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EventLogForm));
             System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EventLogForm));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this._eventListView = new SnakeTail.EventLogListView();
             this._contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this._eventImageList = new System.Windows.Forms.ImageList(this.components);
             this._menuStrip = new System.Windows.Forms.MenuStrip();
-            this._eventMessageText = new System.Windows.Forms.RichTextBox();
-            this._filterEventLogTimer = new System.Windows.Forms.Timer(this.components);
+            this._activeWindowMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._switchModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._configTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._addFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._resetFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._filterModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this._activeWindowMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this._eventListView = new SnakeTail.EventLogListView();
+            this._eventMessageText = new System.Windows.Forms.RichTextBox();
+            this._filterEventLogTimer = new System.Windows.Forms.Timer(this.components);
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -76,6 +76,16 @@ namespace SnakeTail
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
             toolStripSeparator1.Size = new System.Drawing.Size(57, 6);
+            // 
+            // toolStripSeparator4
+            // 
+            toolStripSeparator4.Name = "toolStripSeparator4";
+            toolStripSeparator4.Size = new System.Drawing.Size(185, 6);
+            // 
+            // toolStripSeparator2
+            // 
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new System.Drawing.Size(185, 6);
             // 
             // splitContainer1
             // 
@@ -95,6 +105,23 @@ namespace SnakeTail
             this.splitContainer1.Size = new System.Drawing.Size(602, 318);
             this.splitContainer1.SplitterDistance = 239;
             this.splitContainer1.TabIndex = 2;
+            // 
+            // _eventListView
+            // 
+            this._eventListView.ContextMenuStrip = this._contextMenuStrip;
+            this._eventListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._eventListView.FullRowSelect = true;
+            this._eventListView.HideSelection = false;
+            this._eventListView.Location = new System.Drawing.Point(0, 0);
+            this._eventListView.Name = "_eventListView";
+            this._eventListView.Size = new System.Drawing.Size(602, 239);
+            this._eventListView.SmallImageList = this._eventImageList;
+            this._eventListView.TabIndex = 1;
+            this._eventListView.UseCompatibleStateImageBehavior = false;
+            this._eventListView.View = System.Windows.Forms.View.Details;
+            this._eventListView.VirtualMode = true;
+            this._eventListView.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this._eventListView_RetrieveVirtualItem);
+            this._eventListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this._eventListView_ItemSelectionChanged);
             // 
             // _contextMenuStrip
             // 
@@ -124,19 +151,23 @@ namespace SnakeTail
             this._menuStrip.Text = "menuStrip1";
             this._menuStrip.Visible = false;
             // 
-            // _eventMessageText
+            // _activeWindowMenuItem
             // 
-            this._eventMessageText.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._eventMessageText.Location = new System.Drawing.Point(0, 0);
-            this._eventMessageText.Name = "_eventMessageText";
-            this._eventMessageText.ReadOnly = true;
-            this._eventMessageText.Size = new System.Drawing.Size(602, 75);
-            this._eventMessageText.TabIndex = 0;
-            this._eventMessageText.Text = "";
-            // 
-            // _filterEventLogTimer
-            // 
-            this._filterEventLogTimer.Tick += new System.EventHandler(this._filterEventLogTimer_Tick);
+            this._activeWindowMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._copyToolStripMenuItem,
+            toolStripSeparator2,
+            this._switchModeToolStripMenuItem,
+            this._configTextToolStripMenuItem,
+            toolStripSeparator4,
+            this._addFilterToolStripMenuItem,
+            this._resetFilterToolStripMenuItem,
+            this._filterModeToolStripMenuItem});
+            this._activeWindowMenuItem.MergeAction = System.Windows.Forms.MergeAction.Replace;
+            this._activeWindowMenuItem.MergeIndex = 1;
+            this._activeWindowMenuItem.Name = "_activeWindowMenuItem";
+            this._activeWindowMenuItem.Size = new System.Drawing.Size(39, 20);
+            this._activeWindowMenuItem.Text = "Edit";
+            this._activeWindowMenuItem.DropDownOpening += new System.EventHandler(this._contextMenuStrip_Opening);
             // 
             // _copyToolStripMenuItem
             // 
@@ -160,11 +191,6 @@ namespace SnakeTail
             this._configTextToolStripMenuItem.Text = "View Options...";
             this._configTextToolStripMenuItem.Click += new System.EventHandler(this._configTextToolStripMenuItem_Click);
             // 
-            // toolStripSeparator4
-            // 
-            toolStripSeparator4.Name = "toolStripSeparator4";
-            toolStripSeparator4.Size = new System.Drawing.Size(185, 6);
-            // 
             // _addFilterToolStripMenuItem
             // 
             this._addFilterToolStripMenuItem.Name = "_addFilterToolStripMenuItem";
@@ -186,45 +212,19 @@ namespace SnakeTail
             this._filterModeToolStripMenuItem.Text = "Filter Mode";
             this._filterModeToolStripMenuItem.Click += new System.EventHandler(this._filterActiveToolStripMenuItem_Click);
             // 
-            // _activeWindowMenuItem
+            // _eventMessageText
             // 
-            this._activeWindowMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this._copyToolStripMenuItem,
-            toolStripSeparator2,
-            this._switchModeToolStripMenuItem,
-            this._configTextToolStripMenuItem,
-            toolStripSeparator4,
-            this._addFilterToolStripMenuItem,
-            this._resetFilterToolStripMenuItem,
-            this._filterModeToolStripMenuItem});
-            this._activeWindowMenuItem.MergeAction = System.Windows.Forms.MergeAction.Replace;
-            this._activeWindowMenuItem.MergeIndex = 1;
-            this._activeWindowMenuItem.Name = "_activeWindowMenuItem";
-            this._activeWindowMenuItem.Size = new System.Drawing.Size(39, 20);
-            this._activeWindowMenuItem.Text = "Edit";
-            this._activeWindowMenuItem.DropDownOpening += new System.EventHandler(this._contextMenuStrip_Opening);
+            this._eventMessageText.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._eventMessageText.Location = new System.Drawing.Point(0, 0);
+            this._eventMessageText.Name = "_eventMessageText";
+            this._eventMessageText.ReadOnly = true;
+            this._eventMessageText.Size = new System.Drawing.Size(602, 75);
+            this._eventMessageText.TabIndex = 0;
+            this._eventMessageText.Text = "";
             // 
-            // toolStripSeparator2
+            // _filterEventLogTimer
             // 
-            toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new System.Drawing.Size(185, 6);
-            // 
-            // _eventListView
-            // 
-            this._eventListView.ContextMenuStrip = this._contextMenuStrip;
-            this._eventListView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._eventListView.FullRowSelect = true;
-            this._eventListView.HideSelection = false;
-            this._eventListView.Location = new System.Drawing.Point(0, 0);
-            this._eventListView.Name = "_eventListView";
-            this._eventListView.Size = new System.Drawing.Size(602, 239);
-            this._eventListView.SmallImageList = this._eventImageList;
-            this._eventListView.TabIndex = 1;
-            this._eventListView.UseCompatibleStateImageBehavior = false;
-            this._eventListView.View = System.Windows.Forms.View.Details;
-            this._eventListView.VirtualMode = true;
-            this._eventListView.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this._eventListView_RetrieveVirtualItem);
-            this._eventListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this._eventListView_ItemSelectionChanged);
+            this._filterEventLogTimer.Tick += new System.EventHandler(this._filterEventLogTimer_Tick);
             // 
             // EventLogForm
             // 
@@ -232,7 +232,6 @@ namespace SnakeTail
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(602, 318);
             this.Controls.Add(this.splitContainer1);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this._menuStrip;
             this.Name = "EventLogForm";
             this.Text = "EventLog";

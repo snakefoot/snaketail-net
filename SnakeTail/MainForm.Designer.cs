@@ -44,7 +44,6 @@ namespace SnakeTail
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this._statusStrip = new System.Windows.Forms.StatusStrip();
             this._statusTextBar = new System.Windows.Forms.ToolStripStatusLabel();
             this._statusProgressBar = new System.Windows.Forms.ToolStripProgressBar();
@@ -58,6 +57,8 @@ namespace SnakeTail
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.minimizeToTrayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.noActiveWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.enableTabsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cascadeWindowsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -75,8 +76,6 @@ namespace SnakeTail
             this.saveSessionToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.noActiveWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._statusStrip.SuspendLayout();
             this._mainMenu.SuspendLayout();
             this._trayIconContextMenuStrip.SuspendLayout();
@@ -190,6 +189,21 @@ namespace SnakeTail
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
+            // editToolStripMenuItem
+            // 
+            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.noActiveWindowToolStripMenuItem});
+            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
+            this.editToolStripMenuItem.Text = "Edit";
+            // 
+            // noActiveWindowToolStripMenuItem
+            // 
+            this.noActiveWindowToolStripMenuItem.Enabled = false;
+            this.noActiveWindowToolStripMenuItem.Name = "noActiveWindowToolStripMenuItem";
+            this.noActiveWindowToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.noActiveWindowToolStripMenuItem.Text = "No active window";
+            // 
             // windowToolStripMenuItem
             // 
             this.windowToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -272,7 +286,6 @@ namespace SnakeTail
             // _trayIcon
             // 
             this._trayIcon.ContextMenuStrip = this._trayIconContextMenuStrip;
-            this._trayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("_trayIcon.Icon")));
             this._trayIcon.DoubleClick += new System.EventHandler(this._trayIcon_DoubleClick);
             // 
             // _trayIconContextMenuStrip
@@ -319,21 +332,6 @@ namespace SnakeTail
             this.closeToolStripMenuItem.Text = "Exit";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
-            // editToolStripMenuItem
-            // 
-            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.noActiveWindowToolStripMenuItem});
-            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
-            this.editToolStripMenuItem.Text = "Edit";
-            // 
-            // noActiveWindowToolStripMenuItem
-            // 
-            this.noActiveWindowToolStripMenuItem.Enabled = false;
-            this.noActiveWindowToolStripMenuItem.Name = "noActiveWindowToolStripMenuItem";
-            this.noActiveWindowToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
-            this.noActiveWindowToolStripMenuItem.Text = "No active window";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -342,7 +340,6 @@ namespace SnakeTail
             this.Controls.Add(this._MDITabControl);
             this.Controls.Add(this._statusStrip);
             this.Controls.Add(this._mainMenu);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.IsMdiContainer = true;
             this.MainMenuStrip = this._mainMenu;
             this.Name = "MainForm";

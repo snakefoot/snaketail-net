@@ -109,6 +109,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
     <Compile Include="SearchForm.cs">
@@ -134,6 +135,7 @@
     <Compile Include="TaskMonitor.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="log.ico" />
     <Content Include="Snake.ico" />
   </ItemGroup>
   <ItemGroup>

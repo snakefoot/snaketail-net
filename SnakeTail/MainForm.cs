@@ -34,6 +34,8 @@ namespace SnakeTail
         public MainForm()
         {
             InitializeComponent();
+            Icon = Properties.Resources.SnakeIcon;
+            _trayIcon.Icon = Properties.Resources.SnakeIcon; 
             _instance = this;
         }
 

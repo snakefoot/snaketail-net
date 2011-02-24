@@ -47,7 +47,6 @@ namespace SnakeTail
             System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TailForm));
             this._contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this._tailTimer = new System.Windows.Forms.Timer(this.components);
             this._statusStrip = new System.Windows.Forms.StatusStrip();
@@ -59,11 +58,11 @@ namespace SnakeTail
             this.findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findNextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.switchModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.configureStatisticsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.startServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stopServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pauseServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resumeServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.configureStatisticsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._tailListView = new SnakeTail.LogFileListView();
             this.hiddenItem = new System.Windows.Forms.ColumnHeader();
             this.lineItem = new System.Windows.Forms.ColumnHeader();
@@ -84,6 +83,11 @@ namespace SnakeTail
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
             toolStripSeparator1.Size = new System.Drawing.Size(57, 6);
+            // 
+            // toolStripSeparator2
+            // 
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new System.Drawing.Size(185, 6);
             // 
             // _contextMenuStrip
             // 
@@ -187,6 +191,13 @@ namespace SnakeTail
             this.switchModeToolStripMenuItem.Text = "Switch window mode";
             this.switchModeToolStripMenuItem.Click += new System.EventHandler(this.switchToModelessToolStripMenuItem_Click);
             // 
+            // configureStatisticsToolStripMenuItem
+            // 
+            this.configureStatisticsToolStripMenuItem.Name = "configureStatisticsToolStripMenuItem";
+            this.configureStatisticsToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.configureStatisticsToolStripMenuItem.Text = "View Options...";
+            this.configureStatisticsToolStripMenuItem.Click += new System.EventHandler(this.configureStatisticsToolStripMenuItem_Click);
+            // 
             // startServiceToolStripMenuItem
             // 
             this.startServiceToolStripMenuItem.Name = "startServiceToolStripMenuItem";
@@ -214,18 +225,6 @@ namespace SnakeTail
             this.resumeServiceToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.resumeServiceToolStripMenuItem.Text = "Resume Service...";
             this.resumeServiceToolStripMenuItem.Click += new System.EventHandler(this.resumeServiceToolStripMenuItem_Click);
-            // 
-            // configureStatisticsToolStripMenuItem
-            // 
-            this.configureStatisticsToolStripMenuItem.Name = "configureStatisticsToolStripMenuItem";
-            this.configureStatisticsToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
-            this.configureStatisticsToolStripMenuItem.Text = "View Options...";
-            this.configureStatisticsToolStripMenuItem.Click += new System.EventHandler(this.configureStatisticsToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator2
-            // 
-            toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new System.Drawing.Size(185, 6);
             // 
             // _tailListView
             // 
@@ -265,7 +264,6 @@ namespace SnakeTail
             this.Controls.Add(this._statusStrip);
             this.Controls.Add(this._menuStrip);
             this.Controls.Add(this._tailListView);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MainMenuStrip = this._menuStrip;
             this.Name = "TailForm";

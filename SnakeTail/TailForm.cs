@@ -58,6 +58,7 @@ namespace SnakeTail
         public TailForm()
         {
             InitializeComponent();
+            Icon = Properties.Resources.LogIcon;
         }
 
         public bool Paused

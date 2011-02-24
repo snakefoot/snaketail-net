@@ -147,10 +147,6 @@ namespace SnakeTail
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
-        private void SearchForm_Load(object sender, EventArgs e)
-        {
-        }
-
         private void _cancelBtn_Click(object sender, EventArgs e)
         {
             MainForm.Instance.Focus();

@@ -40,6 +40,7 @@ namespace SnakeTail
         public EventLogForm()
         {
             InitializeComponent();
+            Icon = Properties.Resources.LogIcon;
         }
 
         public void LoadFile(string eventLogFile)
