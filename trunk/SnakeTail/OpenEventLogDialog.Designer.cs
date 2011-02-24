@@ -45,6 +45,7 @@ namespace SnakeTail
         {
             System.Windows.Forms.Button _openBtn;
             System.Windows.Forms.Button _cancelBtn;
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OpenEventLogDialog));
             this._listView = new System.Windows.Forms.ListView();
             _openBtn = new System.Windows.Forms.Button();
             _cancelBtn = new System.Windows.Forms.Button();
@@ -95,6 +96,7 @@ namespace SnakeTail
             this.Controls.Add(this._listView);
             this.Controls.Add(_cancelBtn);
             this.Controls.Add(_openBtn);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "OpenEventLogDialog";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Open EventLog";
