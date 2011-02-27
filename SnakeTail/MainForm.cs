@@ -447,5 +447,10 @@ namespace SnakeTail
             WindowState = FormWindowState.Normal;
             _trayIcon.Visible = false;
         }
+
+        private void windowToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            enableTabsToolStripMenuItem.Checked = _MDITabControl.Visible;
+        }
     }
 }

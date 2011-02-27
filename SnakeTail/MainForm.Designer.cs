@@ -219,12 +219,13 @@ namespace SnakeTail
             this.windowToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
             this.windowToolStripMenuItem.Text = "Window";
             this.windowToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.windowToolStripMenuItem_DropDownItemClicked);
+            this.windowToolStripMenuItem.DropDownOpening += new System.EventHandler(this.windowToolStripMenuItem_DropDownOpening);
             // 
             // enableTabsToolStripMenuItem
             // 
             this.enableTabsToolStripMenuItem.Name = "enableTabsToolStripMenuItem";
             this.enableTabsToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
-            this.enableTabsToolStripMenuItem.Text = "Enable Tabs";
+            this.enableTabsToolStripMenuItem.Text = "Tabbed Mode";
             this.enableTabsToolStripMenuItem.Click += new System.EventHandler(this.enableTabsToolStripMenuItem_Click);
             // 
             // cascadeWindowsToolStripMenuItem
