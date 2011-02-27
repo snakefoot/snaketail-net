@@ -225,7 +225,7 @@ namespace SnakeTail
             // 
             this.enableTabsToolStripMenuItem.Name = "enableTabsToolStripMenuItem";
             this.enableTabsToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
-            this.enableTabsToolStripMenuItem.Text = "Tabbed Mode";
+            this.enableTabsToolStripMenuItem.Text = "Show Tabs";
             this.enableTabsToolStripMenuItem.Click += new System.EventHandler(this.enableTabsToolStripMenuItem_Click);
             // 
             // cascadeWindowsToolStripMenuItem
