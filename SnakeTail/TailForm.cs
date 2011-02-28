@@ -745,6 +745,7 @@ namespace SnakeTail
                     if (_taskMonitor.ServiceRunning)
                         break;
                 }
+                SetStatusBar(null);
             }
             catch (Exception ex)
             {
@@ -769,6 +770,7 @@ namespace SnakeTail
                     if (!_taskMonitor.ServiceRunning)
                         break;
                 }
+                SetStatusBar(null);
             }
             catch (Exception ex)
             {
@@ -785,6 +787,7 @@ namespace SnakeTail
 
                 SetStatusBar("Pause service...", 1, 5);
                 _taskMonitor.PauseService();
+                SetStatusBar(null);
             }
             catch (Exception ex)
             {
@@ -801,6 +804,7 @@ namespace SnakeTail
 
                 SetStatusBar("Continue service...", 1, 5);
                 _taskMonitor.ContinueService();
+                SetStatusBar(null);
             }
             catch (Exception ex)
             {

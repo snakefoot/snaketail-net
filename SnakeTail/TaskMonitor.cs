@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Management.Instrumentation;
 using System.ServiceProcess;
+using System.Security.Principal;
 using System.Text;
 
 namespace SnakeTail
@@ -186,6 +187,17 @@ namespace SnakeTail
             }
         }
 
+        private bool IsAdministrator
+        {
+            get
+            {
+                WindowsIdentity wi = WindowsIdentity.GetCurrent();
+                WindowsPrincipal wp = new WindowsPrincipal(wi);
+
+                return wp.IsInRole(WindowsBuiltInRole.Administrator);
+            }
+        }
+
         public void StartService()
         {
             if (_serviceController == null)
@@ -194,7 +206,8 @@ namespace SnakeTail
             try
             {
                 ProcessStartInfo startInfo = new ProcessStartInfo("sc.exe", "start " + ServiceName);
-                startInfo.Verb = "runas";
+                if (!IsAdministrator)
+                    startInfo.Verb = "runas";
                 startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 System.Diagnostics.Process.Start(startInfo);
             }
@@ -212,7 +225,8 @@ namespace SnakeTail
             try
             {
                 ProcessStartInfo startInfo = new ProcessStartInfo("sc.exe", "stop " + ServiceName);
-                startInfo.Verb = "runas";
+                if (!IsAdministrator)
+                    startInfo.Verb = "runas";
                 startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 System.Diagnostics.Process.Start(startInfo);
             }
@@ -230,7 +244,8 @@ namespace SnakeTail
             try
             {
                 ProcessStartInfo startInfo = new ProcessStartInfo("sc.exe", "pause " + ServiceName);
-                startInfo.Verb = "runas";
+                if (!IsAdministrator)
+                    startInfo.Verb = "runas";
                 startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 System.Diagnostics.Process.Start(startInfo);
             }
@@ -248,7 +263,8 @@ namespace SnakeTail
              try
             {
                 ProcessStartInfo startInfo = new ProcessStartInfo("sc.exe", "continue " + ServiceName);
-                startInfo.Verb = "runas";
+                if (!IsAdministrator)
+                    startInfo.Verb = "runas";
                 startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 System.Diagnostics.Process.Start(startInfo);
             }
