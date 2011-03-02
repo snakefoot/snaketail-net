@@ -23,7 +23,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("SnakeTail")]
 [assembly: AssemblyDescription("Windows Trace Log Tail Utility")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("SnakeNest")]
+[assembly: AssemblyCompany("SnakeNest.com")]
 [assembly: AssemblyProduct("SnakeTail")]
 [assembly: AssemblyCopyright("Copyright ©  2010")]
 [assembly: AssemblyTrademark("")]

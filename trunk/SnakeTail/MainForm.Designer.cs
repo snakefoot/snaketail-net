@@ -60,6 +60,7 @@ namespace SnakeTail
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.noActiveWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.enableTabsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cascadeWindowsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tileWindowsHorizontallyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -68,6 +69,9 @@ namespace SnakeTail
             this.minimizeAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.checkForUpdateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this._MDITabControl = new System.Windows.Forms.TabControl();
             this._trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this._trayIconContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -112,7 +116,8 @@ namespace SnakeTail
             this._mainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem,
-            this.windowToolStripMenuItem});
+            this.windowToolStripMenuItem,
+            this.helpToolStripMenuItem});
             this._mainMenu.Location = new System.Drawing.Point(0, 0);
             this._mainMenu.MdiWindowListItem = this.windowToolStripMenuItem;
             this._mainMenu.Name = "_mainMenu";
@@ -207,6 +212,7 @@ namespace SnakeTail
             // windowToolStripMenuItem
             // 
             this.windowToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aboutToolStripMenuItem,
             this.enableTabsToolStripMenuItem,
             this.cascadeWindowsToolStripMenuItem,
             this.tileWindowsHorizontallyToolStripMenuItem,
@@ -220,6 +226,12 @@ namespace SnakeTail
             this.windowToolStripMenuItem.Text = "Window";
             this.windowToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.windowToolStripMenuItem_DropDownItemClicked);
             this.windowToolStripMenuItem.DropDownOpening += new System.EventHandler(this.windowToolStripMenuItem_DropDownOpening);
+            // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.aboutToolStripMenuItem.Text = "About...";
             // 
             // enableTabsToolStripMenuItem
             // 
@@ -272,6 +284,29 @@ namespace SnakeTail
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(209, 6);
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.checkForUpdateToolStripMenuItem,
+            this.aboutToolStripMenuItem1});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // checkForUpdateToolStripMenuItem
+            // 
+            this.checkForUpdateToolStripMenuItem.Name = "checkForUpdateToolStripMenuItem";
+            this.checkForUpdateToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.checkForUpdateToolStripMenuItem.Text = "Check for updates";
+            this.checkForUpdateToolStripMenuItem.Click += new System.EventHandler(this.checkForUpdateToolStripMenuItem_Click);
+            // 
+            // aboutToolStripMenuItem1
+            // 
+            this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
+            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(170, 22);
+            this.aboutToolStripMenuItem1.Text = "About SnakeTail";
+            this.aboutToolStripMenuItem1.Click += new System.EventHandler(this.aboutToolStripMenuItem1_Click);
             // 
             // _MDITabControl
             // 
@@ -391,6 +426,10 @@ namespace SnakeTail
         private System.Windows.Forms.ToolStripMenuItem openEventLogToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem noActiveWindowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem checkForUpdateToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
 
     }
 }
