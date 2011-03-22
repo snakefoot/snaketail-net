@@ -464,6 +464,7 @@ namespace SnakeTail
         {
             try
             {
+                using (HourGlass hourglass = new HourGlass(this))
                 using (WebClient client = new WebClient())
                 {
                     string value = client.DownloadString("http://snakenest.com/snaketail.pad.xml");
