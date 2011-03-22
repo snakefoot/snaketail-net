@@ -29,6 +29,7 @@ namespace SnakeTail
         StreamReader _fileReader = null;
         DateTime _lastFileCheck = DateTime.Now;
         int _lastLineNumber = 0;
+        string _lastFileError;
 
         public LogFileStream(string configPath, string filePath, Encoding fileEncoding)
         {
@@ -108,6 +109,8 @@ namespace SnakeTail
 
         bool LoadFile(string filepath, Encoding fileEncoding)
         {
+            _lastFileError = "";
+
             if (_fileStream != null)
             {
                 _fileStream.Dispose();
@@ -120,19 +123,34 @@ namespace SnakeTail
             }
 
             _lastLineNumber = 0;
-            if (filepath == null)
+            if (String.IsNullOrEmpty(filepath))
+            {
+                _lastFileError = "No file path";
                 return false;
+            }
 
             try
             {
                 _fileStream = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, 65536, FileOptions.SequentialScan);
             }
+            catch (UnauthorizedAccessException)
+            {
+                _lastFileError = "Unauthorized Access";
+                return false;
+            }
             catch (DirectoryNotFoundException)
             {
+                _lastFileError = "Directory not found";
                 return false;
             }
             catch (FileNotFoundException)
             {
+                _lastFileError = "File not found";
+                return false;
+            }
+            catch (IOException ex)
+            {
+                _lastFileError = ex.Message;
                 return false;
             }
             _fileReader = new StreamReader(_fileStream, fileEncoding, true, 65536);
@@ -163,7 +181,7 @@ namespace SnakeTail
                     CheckLogFile();
 
                 if (lineNumber == 1)
-                    return "Cannot open file: " + _filePathAbsolute;
+                    return "Cannot open file: " + _filePathAbsolute + (String.IsNullOrEmpty(_lastFileError) ? "" : " (" + _lastFileError + ")");
                 else
                     return null;
             }
