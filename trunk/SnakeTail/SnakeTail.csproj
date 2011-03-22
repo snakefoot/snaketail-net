@@ -91,15 +91,19 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="EventLogForm.resx">
       <DependentUpon>EventLogForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="OpenEventLogDialog.resx">
       <DependentUpon>OpenEventLogDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -114,6 +118,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="TailForm.resx">
       <DependentUpon>TailForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ThreadExceptionDialogEx.resx">
+      <DependentUpon>ThreadExceptionDialogEx.cs</DependentUpon>
     </EmbeddedResource>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -142,6 +149,12 @@
     </Compile>
     <Compile Include="HourGlass.cs" />
     <Compile Include="TaskMonitor.cs" />
+    <Compile Include="ThreadExceptionDialogEx.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ThreadExceptionDialogEx.Designer.cs">
+      <DependentUpon>ThreadExceptionDialogEx.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="log.ico" />
