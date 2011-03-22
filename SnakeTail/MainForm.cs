@@ -162,15 +162,19 @@ namespace SnakeTail
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog fileDialog = new OpenFileDialog();
+            fileDialog.Multiselect = true;
             fileDialog.Title = "Open Log File";
             fileDialog.Filter = "Text Files|*.txt|Log Files|*.log|All Files|*.*";
             if (fileDialog.ShowDialog() != DialogResult.OK)
                 return;
 
-            TailForm mdiForm = new TailForm();
-            mdiForm.LoadFile(fileDialog.FileName);
-            mdiForm.MdiParent = this;
-            mdiForm.Show();
+            foreach (string fileName in fileDialog.FileNames)
+            {
+                TailForm mdiForm = new TailForm();
+                mdiForm.LoadFile(fileName);
+                mdiForm.MdiParent = this;
+                mdiForm.Show();
+            }
         }
 
         private void openEventLogToolStripMenuItem_Click(object sender, EventArgs e)
