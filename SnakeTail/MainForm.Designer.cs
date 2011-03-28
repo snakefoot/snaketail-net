@@ -60,7 +60,6 @@ namespace SnakeTail
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.noActiveWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.enableTabsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cascadeWindowsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tileWindowsHorizontallyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -212,7 +211,6 @@ namespace SnakeTail
             // windowToolStripMenuItem
             // 
             this.windowToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aboutToolStripMenuItem,
             this.enableTabsToolStripMenuItem,
             this.cascadeWindowsToolStripMenuItem,
             this.tileWindowsHorizontallyToolStripMenuItem,
@@ -226,12 +224,6 @@ namespace SnakeTail
             this.windowToolStripMenuItem.Text = "Window";
             this.windowToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.windowToolStripMenuItem_DropDownItemClicked);
             this.windowToolStripMenuItem.DropDownOpening += new System.EventHandler(this.windowToolStripMenuItem_DropDownOpening);
-            // 
-            // aboutToolStripMenuItem
-            // 
-            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
-            this.aboutToolStripMenuItem.Text = "About...";
             // 
             // enableTabsToolStripMenuItem
             // 
@@ -426,7 +418,6 @@ namespace SnakeTail
         private System.Windows.Forms.ToolStripMenuItem openEventLogToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem noActiveWindowToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem checkForUpdateToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;

@@ -54,6 +54,7 @@ namespace SnakeTail
         Icon _formCustomIcon = null;
         Icon _formMaximizedIcon = null;
         string _configPath = "";
+        List<TailKeywordConfig> _keywordHighlight;
 
         public TailForm()
         {
@@ -96,6 +97,23 @@ namespace SnakeTail
 
             if (tailConfig.FormFont != null)
                 _tailListView.Font = tailConfig.FormFont;
+
+            _keywordHighlight = tailConfig.KeywordHighlight;
+            if (_keywordHighlight != null)
+            {
+                foreach (TailKeywordConfig keyword in _keywordHighlight)
+                {
+                    if (keyword.MatchRegularExpression)
+                    {
+                        if (keyword.MatchCaseSensitive)
+                            keyword.KeywordRegex = new System.Text.RegularExpressions.Regex(keyword.Keyword);
+                        else
+                            keyword.KeywordRegex = new System.Text.RegularExpressions.Regex(keyword.Keyword, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                    }
+                    else
+                        keyword.KeywordRegex = null;
+                }
+            }
 
             Encoding fileEncoding = tailConfig.EnumFileEncoding;
 
@@ -263,6 +281,8 @@ namespace SnakeTail
         {
             tailConfig.FormBackColor = _tailListView.BackColor;
             tailConfig.FormTextColor = _tailListView.ForeColor;
+
+            tailConfig.KeywordHighlight = _keywordHighlight;
 
             tailConfig.FormFont = _tailListView.Font;
             tailConfig.FileCacheSize = _logFileCache.Items.Count;
@@ -545,6 +565,8 @@ namespace SnakeTail
             if (e.ColumnIndex != 1)
                 return;
 
+            Color? textColor = null;;
+            
             if (e.Item.Selected)
             {
                 e.DrawFocusRectangle(e.Item.Bounds);
@@ -552,10 +574,35 @@ namespace SnakeTail
             }
             else
             {
-                e.DrawBackground();
+                if (_keywordHighlight != null && _keywordHighlight.Count > 0)
+                {
+                    foreach(TailKeywordConfig keyword in _keywordHighlight)
+                    {
+                        if ( (keyword.KeywordRegex!=null && keyword.KeywordRegex.IsMatch(e.Item.Text))
+                          || (keyword.KeywordRegex==null && keyword.MatchCaseSensitive && e.Item.Text.IndexOf(keyword.Keyword,StringComparison.CurrentCulture) != -1)
+                          || (keyword.KeywordRegex==null && !keyword.MatchCaseSensitive && e.Item.Text.IndexOf(keyword.Keyword,StringComparison.CurrentCultureIgnoreCase) != -1)
+                           )
+                        {
+                            if (keyword.FormBackColor.HasValue && keyword.FormTextColor.HasValue)
+                            {
+                                using (Brush backBrush = new SolidBrush(keyword.FormBackColor.Value))
+                                {
+                                    e.Graphics.FillRectangle(backBrush, e.Bounds);
+                                    textColor = keyword.FormTextColor.Value;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (!textColor.HasValue)
+                    e.DrawBackground();
             }
 
-            using (Brush textBrush = e.Item.Selected ? null : new SolidBrush(_tailListView.ForeColor))
+            if (!textColor.HasValue)
+                textColor = _tailListView.ForeColor;
+
+            using (Brush textBrush = e.Item.Selected ? null : new SolidBrush(textColor.Value))
             {
                 if (e.Item.Text.Length > 1000)
                     e.Graphics.DrawString(e.Item.Text.Substring(0, 1000), _tailListView.Font, textBrush != null ? textBrush : SystemBrushes.HighlightText, e.Bounds);
@@ -570,6 +617,21 @@ namespace SnakeTail
             {
                 e.Handled = true;   // No auto resize
                 return;
+            }
+
+            if (e.Control && e.KeyCode == Keys.Home)
+            {
+                _tailListView.SelectedIndices.Clear();
+                if (_tailListView.VirtualListSize > 0)
+                    _tailListView.SelectedIndices.Add(0);
+            }
+
+            if (e.Control && e.KeyCode == Keys.End)
+            {
+                _tailListView.SelectedIndices.Clear();
+                if (_tailListView.VirtualListSize > 0)
+                    _tailListView.SelectedIndices.Add(_tailListView.VirtualListSize-1);
+                _logFileCache.PrepareCache(_tailListView.VirtualListSize - _logFileCache.Items.Count, _tailListView.VirtualListSize, false);
             }
 
             // For some weird reason the cache request for page-down / page-up comes after the item-requests
