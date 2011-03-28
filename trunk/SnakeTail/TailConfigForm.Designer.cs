@@ -50,6 +50,7 @@ namespace SnakeTail
             System.Windows.Forms.Label label5;
             System.Windows.Forms.Label label6;
             System.Windows.Forms.Label label7;
+            System.Windows.Forms.ColumnHeader _keywordColumn;
             this._tabControl = new System.Windows.Forms.TabControl();
             this._tabPageView = new System.Windows.Forms.TabPage();
             this._windowIconEdt = new System.Windows.Forms.TextBox();
@@ -62,6 +63,13 @@ namespace SnakeTail
             this._fileCacheSizeEdt = new System.Windows.Forms.TextBox();
             this._fileEncodingCmb = new System.Windows.Forms.ComboBox();
             this._filePathEdt = new System.Windows.Forms.TextBox();
+            this._tabPageKeyWords = new System.Windows.Forms.TabPage();
+            this._delWordBtn = new System.Windows.Forms.Button();
+            this._edtWordBtn = new System.Windows.Forms.Button();
+            this._addWordBtn = new System.Windows.Forms.Button();
+            this._keywordListView = new System.Windows.Forms.ListView();
+            this._caseColumn = new System.Windows.Forms.ColumnHeader();
+            this._regexColumn = new System.Windows.Forms.ColumnHeader();
             this._acceptBtn = new System.Windows.Forms.Button();
             this._cancelBtn = new System.Windows.Forms.Button();
             label2 = new System.Windows.Forms.Label();
@@ -71,9 +79,11 @@ namespace SnakeTail
             label5 = new System.Windows.Forms.Label();
             label6 = new System.Windows.Forms.Label();
             label7 = new System.Windows.Forms.Label();
+            _keywordColumn = new System.Windows.Forms.ColumnHeader();
             this._tabControl.SuspendLayout();
             this._tabPageView.SuspendLayout();
             this._tabPageFile.SuspendLayout();
+            this._tabPageKeyWords.SuspendLayout();
             this.SuspendLayout();
             // 
             // label2
@@ -139,10 +149,16 @@ namespace SnakeTail
             label7.TabIndex = 9;
             label7.Text = "Windows Service";
             // 
+            // _keywordColumn
+            // 
+            _keywordColumn.Text = "Keyword";
+            _keywordColumn.Width = 83;
+            // 
             // _tabControl
             // 
             this._tabControl.Controls.Add(this._tabPageView);
             this._tabControl.Controls.Add(this._tabPageFile);
+            this._tabControl.Controls.Add(this._tabPageKeyWords);
             this._tabControl.Location = new System.Drawing.Point(6, 6);
             this._tabControl.Name = "_tabControl";
             this._tabControl.SelectedIndex = 0;
@@ -256,6 +272,78 @@ namespace SnakeTail
             this._filePathEdt.Size = new System.Drawing.Size(250, 20);
             this._filePathEdt.TabIndex = 0;
             // 
+            // _tabPageKeyWords
+            // 
+            this._tabPageKeyWords.Controls.Add(this._delWordBtn);
+            this._tabPageKeyWords.Controls.Add(this._edtWordBtn);
+            this._tabPageKeyWords.Controls.Add(this._addWordBtn);
+            this._tabPageKeyWords.Controls.Add(this._keywordListView);
+            this._tabPageKeyWords.Location = new System.Drawing.Point(4, 22);
+            this._tabPageKeyWords.Name = "_tabPageKeyWords";
+            this._tabPageKeyWords.Padding = new System.Windows.Forms.Padding(3);
+            this._tabPageKeyWords.Size = new System.Drawing.Size(359, 172);
+            this._tabPageKeyWords.TabIndex = 2;
+            this._tabPageKeyWords.Text = "Keyword Highlight";
+            this._tabPageKeyWords.UseVisualStyleBackColor = true;
+            // 
+            // _delWordBtn
+            // 
+            this._delWordBtn.Location = new System.Drawing.Point(276, 64);
+            this._delWordBtn.Name = "_delWordBtn";
+            this._delWordBtn.Size = new System.Drawing.Size(75, 23);
+            this._delWordBtn.TabIndex = 4;
+            this._delWordBtn.Text = "Remove";
+            this._delWordBtn.UseVisualStyleBackColor = true;
+            this._delWordBtn.Click += new System.EventHandler(this._delWordBtn_Click);
+            // 
+            // _edtWordBtn
+            // 
+            this._edtWordBtn.Location = new System.Drawing.Point(276, 35);
+            this._edtWordBtn.Name = "_edtWordBtn";
+            this._edtWordBtn.Size = new System.Drawing.Size(75, 23);
+            this._edtWordBtn.TabIndex = 3;
+            this._edtWordBtn.Text = "Edit...";
+            this._edtWordBtn.UseVisualStyleBackColor = true;
+            this._edtWordBtn.Click += new System.EventHandler(this._edtWordBtn_Click);
+            // 
+            // _addWordBtn
+            // 
+            this._addWordBtn.Location = new System.Drawing.Point(276, 6);
+            this._addWordBtn.Name = "_addWordBtn";
+            this._addWordBtn.Size = new System.Drawing.Size(75, 23);
+            this._addWordBtn.TabIndex = 2;
+            this._addWordBtn.Text = "Add...";
+            this._addWordBtn.UseVisualStyleBackColor = true;
+            this._addWordBtn.Click += new System.EventHandler(this._addWordBtn_Click);
+            // 
+            // _keywordListView
+            // 
+            this._keywordListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this._keywordListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            _keywordColumn,
+            this._caseColumn,
+            this._regexColumn});
+            this._keywordListView.FullRowSelect = true;
+            this._keywordListView.HideSelection = false;
+            this._keywordListView.Location = new System.Drawing.Point(6, 6);
+            this._keywordListView.MultiSelect = false;
+            this._keywordListView.Name = "_keywordListView";
+            this._keywordListView.Size = new System.Drawing.Size(264, 160);
+            this._keywordListView.TabIndex = 0;
+            this._keywordListView.UseCompatibleStateImageBehavior = false;
+            this._keywordListView.View = System.Windows.Forms.View.Details;
+            this._keywordListView.DoubleClick += new System.EventHandler(this._edtWordBtn_Click);
+            // 
+            // _caseColumn
+            // 
+            this._caseColumn.Text = "Case Sensitive";
+            // 
+            // _regexColumn
+            // 
+            this._regexColumn.Text = "RegEx Match";
+            // 
             // _acceptBtn
             // 
             this._acceptBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -299,6 +387,7 @@ namespace SnakeTail
             this._tabPageView.PerformLayout();
             this._tabPageFile.ResumeLayout(false);
             this._tabPageFile.PerformLayout();
+            this._tabPageKeyWords.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -319,6 +408,13 @@ namespace SnakeTail
         private System.Windows.Forms.TextBox _fileLogHitEdt;
         private System.Windows.Forms.Button _acceptBtn;
         private System.Windows.Forms.Button _cancelBtn;
+        private System.Windows.Forms.TabPage _tabPageKeyWords;
+        private System.Windows.Forms.ListView _keywordListView;
+        private System.Windows.Forms.Button _edtWordBtn;
+        private System.Windows.Forms.Button _addWordBtn;
+        private System.Windows.Forms.Button _delWordBtn;
+        private System.Windows.Forms.ColumnHeader _caseColumn;
+        private System.Windows.Forms.ColumnHeader _regexColumn;
 
 
 

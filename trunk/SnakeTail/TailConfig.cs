@@ -33,6 +33,53 @@ namespace SnakeTail
         public bool MinimizedToTray { get; set; }
     }
 
+    public class TailKeywordConfig
+    {
+        public string Keyword { get; set; }
+        public bool MatchCaseSensitive { get; set; }
+        public bool MatchRegularExpression { get; set; }
+        public string TextColor { get; set; }   // ColorTranslator
+        public string BackColor { get; set; }   // ColorTranslator
+
+        internal Color? FormTextColor
+        {
+            get
+            {
+                if (TextColor != null)
+                    return ColorTranslator.FromHtml(TextColor);
+                else
+                    return null;
+            }
+            set
+            {
+                if (value.HasValue)
+                    TextColor = ColorTranslator.ToHtml(value.Value);
+                else
+                    TextColor = null;
+            }
+        }
+
+        internal Color? FormBackColor
+        {
+            get
+            {
+                if (BackColor != null)
+                    return ColorTranslator.FromHtml(BackColor);
+                else
+                    return null;
+            }
+            set
+            {
+                if (value.HasValue)
+                    BackColor = ColorTranslator.ToHtml(value.Value);
+                else
+                    BackColor = null;
+            }
+        }
+
+        internal System.Text.RegularExpressions.Regex KeywordRegex { get; set; }
+    }
+
     public class TailFileConfig
     {
         public string FilePath { get; set; }
@@ -53,6 +100,9 @@ namespace SnakeTail
         [XmlArray("ColumnFilters")]
         [XmlArrayItem("Filters")]
         public List<List<string>> ColumnFilters { get; set; }
+        [XmlArray("KeywordHighlight")]
+        [XmlArrayItem("Keyword")]
+        public List<TailKeywordConfig> KeywordHighlight { get; set; }
 
         internal Font FormFont
         {
