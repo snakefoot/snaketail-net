@@ -45,6 +45,7 @@ namespace SnakeTail
                 lvi.BackColor = keyword.FormBackColor.Value;
             lvi.SubItems.Add(keyword.MatchCaseSensitive ? "Yes" : "No");
             lvi.SubItems.Add(keyword.MatchRegularExpression ? "Yes" : "No");
+            lvi.SubItems.Add(keyword.LogHitCounter ? "Yes" : "No");
             lvi.Tag = keyword;
         }
 
@@ -64,8 +65,6 @@ namespace SnakeTail
                 _fileEncodingCmb.SelectedItem = TailFileConfig.EnumFileEncoding;
 
                 _fileCacheSizeEdt.Text = TailFileConfig.FileCacheSize.ToString();
-
-                _fileLogHitEdt.Text = TailFileConfig.LogHitText;
 
                 _windowServiceEdt.Text = TailFileConfig.ServiceName;
 
@@ -97,8 +96,6 @@ namespace SnakeTail
                 TailFileConfig.EnumFileEncoding = (Encoding)_fileEncodingCmb.SelectedItem;
 
                 TailFileConfig.FileCacheSize = Int32.Parse(_fileCacheSizeEdt.Text);
-
-                TailFileConfig.LogHitText = _fileLogHitEdt.Text;
 
                 TailFileConfig.ServiceName = _windowServiceEdt.Text;
 

@@ -38,7 +38,10 @@ namespace SnakeTail
                 TailKeywordConfig.FormBackColor = Color.Red;
                 TailKeywordConfig.FormTextColor = Color.White;
             }
-            
+        }
+
+        private void KeywordConfigForm_Load(object sender, EventArgs e)
+        {
             if (TailKeywordConfig.FormBackColor.HasValue)
                 _keywordEdt.BackColor = TailKeywordConfig.FormBackColor.Value;
             if (TailKeywordConfig.FormTextColor.HasValue)
@@ -46,6 +49,7 @@ namespace SnakeTail
             _keywordEdt.Text = TailKeywordConfig.Keyword;
             _matchCaseChk.Checked = TailKeywordConfig.MatchCaseSensitive;
             _matchRegExChk.Checked = TailKeywordConfig.MatchRegularExpression;
+            _logHitChk.Checked = TailKeywordConfig.LogHitCounter;
         }
 
         private void _textColorBtn_Click(object sender, EventArgs e)
@@ -73,10 +77,19 @@ namespace SnakeTail
         private void _okBtn_Click(object sender, EventArgs e)
         {
             TailKeywordConfig.Keyword = _keywordEdt.Text;
-            TailKeywordConfig.FormBackColor = _keywordEdt.BackColor;
-            TailKeywordConfig.FormTextColor = _keywordEdt.ForeColor;
             TailKeywordConfig.MatchCaseSensitive = _matchCaseChk.Checked;
             TailKeywordConfig.MatchRegularExpression = _matchRegExChk.Checked;
+            TailKeywordConfig.LogHitCounter = _logHitChk.Checked;
+			if (TailKeywordConfig.LogHitCounter)
+			{
+				TailKeywordConfig.FormBackColor = null;
+				TailKeywordConfig.FormTextColor = null;
+			}
+			else
+			{
+	            TailKeywordConfig.FormBackColor = _keywordEdt.BackColor;
+    	        TailKeywordConfig.FormTextColor = _keywordEdt.ForeColor;
+			}
         }
     }
 }

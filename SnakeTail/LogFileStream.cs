@@ -63,9 +63,6 @@ namespace SnakeTail
             }
         }
 
-        public string LogHitText { get; set; }
-        public int LogHitTextCount { get; set; }
-
         public bool FileAtStart
         {
             get { return Length > 0 && _lastLineNumber == 0; }
@@ -211,9 +208,6 @@ namespace SnakeTail
                 line = _fileReader.ReadLine();
                 if (line == null)
                     return null;
-
-                if (LogHitText != null && line.IndexOf(LogHitText) != -1)
-                    LogHitTextCount++;
 
                 _lastLineNumber++;
             }

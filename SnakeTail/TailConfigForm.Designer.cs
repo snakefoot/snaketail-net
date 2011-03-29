@@ -48,7 +48,6 @@ namespace SnakeTail
             System.Windows.Forms.Label label3;
             System.Windows.Forms.Label label4;
             System.Windows.Forms.Label label5;
-            System.Windows.Forms.Label label6;
             System.Windows.Forms.Label label7;
             System.Windows.Forms.ColumnHeader _keywordColumn;
             this._tabControl = new System.Windows.Forms.TabControl();
@@ -59,7 +58,6 @@ namespace SnakeTail
             this._textColorBtn = new System.Windows.Forms.Button();
             this._tabPageFile = new System.Windows.Forms.TabPage();
             this._windowServiceEdt = new System.Windows.Forms.TextBox();
-            this._fileLogHitEdt = new System.Windows.Forms.TextBox();
             this._fileCacheSizeEdt = new System.Windows.Forms.TextBox();
             this._fileEncodingCmb = new System.Windows.Forms.ComboBox();
             this._filePathEdt = new System.Windows.Forms.TextBox();
@@ -72,12 +70,12 @@ namespace SnakeTail
             this._regexColumn = new System.Windows.Forms.ColumnHeader();
             this._acceptBtn = new System.Windows.Forms.Button();
             this._cancelBtn = new System.Windows.Forms.Button();
+            this._loghitColumn = new System.Windows.Forms.ColumnHeader();
             label2 = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
             label4 = new System.Windows.Forms.Label();
             label5 = new System.Windows.Forms.Label();
-            label6 = new System.Windows.Forms.Label();
             label7 = new System.Windows.Forms.Label();
             _keywordColumn = new System.Windows.Forms.ColumnHeader();
             this._tabControl.SuspendLayout();
@@ -131,19 +129,10 @@ namespace SnakeTail
             label5.TabIndex = 4;
             label5.Text = "File Cache Size";
             // 
-            // label6
-            // 
-            label6.AutoSize = true;
-            label6.Location = new System.Drawing.Point(3, 89);
-            label6.Name = "label6";
-            label6.Size = new System.Drawing.Size(65, 13);
-            label6.TabIndex = 7;
-            label6.Text = "Log Hit Text";
-            // 
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new System.Drawing.Point(3, 115);
+            label7.Location = new System.Drawing.Point(7, 89);
             label7.Name = "label7";
             label7.Size = new System.Drawing.Size(90, 13);
             label7.TabIndex = 9;
@@ -219,8 +208,6 @@ namespace SnakeTail
             // 
             this._tabPageFile.Controls.Add(label7);
             this._tabPageFile.Controls.Add(this._windowServiceEdt);
-            this._tabPageFile.Controls.Add(label6);
-            this._tabPageFile.Controls.Add(this._fileLogHitEdt);
             this._tabPageFile.Controls.Add(this._fileCacheSizeEdt);
             this._tabPageFile.Controls.Add(label5);
             this._tabPageFile.Controls.Add(label4);
@@ -237,17 +224,10 @@ namespace SnakeTail
             // 
             // _windowServiceEdt
             // 
-            this._windowServiceEdt.Location = new System.Drawing.Point(103, 112);
+            this._windowServiceEdt.Location = new System.Drawing.Point(103, 86);
             this._windowServiceEdt.Name = "_windowServiceEdt";
             this._windowServiceEdt.Size = new System.Drawing.Size(100, 20);
             this._windowServiceEdt.TabIndex = 8;
-            // 
-            // _fileLogHitEdt
-            // 
-            this._fileLogHitEdt.Location = new System.Drawing.Point(103, 86);
-            this._fileLogHitEdt.Name = "_fileLogHitEdt";
-            this._fileLogHitEdt.Size = new System.Drawing.Size(100, 20);
-            this._fileLogHitEdt.TabIndex = 6;
             // 
             // _fileCacheSizeEdt
             // 
@@ -324,7 +304,8 @@ namespace SnakeTail
             this._keywordListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             _keywordColumn,
             this._caseColumn,
-            this._regexColumn});
+            this._regexColumn,
+            this._loghitColumn});
             this._keywordListView.FullRowSelect = true;
             this._keywordListView.HideSelection = false;
             this._keywordListView.Location = new System.Drawing.Point(6, 6);
@@ -367,6 +348,10 @@ namespace SnakeTail
             this._cancelBtn.Text = "Cancel";
             this._cancelBtn.UseVisualStyleBackColor = true;
             // 
+            // _loghitColumn
+            // 
+            this._loghitColumn.Text = "Log Hit";
+            // 
             // TailConfigForm
             // 
             this.AcceptButton = this._acceptBtn;
@@ -405,7 +390,6 @@ namespace SnakeTail
         private System.Windows.Forms.TextBox _filePathEdt;
         private System.Windows.Forms.TextBox _fileCacheSizeEdt;
         private System.Windows.Forms.TextBox _windowServiceEdt;
-        private System.Windows.Forms.TextBox _fileLogHitEdt;
         private System.Windows.Forms.Button _acceptBtn;
         private System.Windows.Forms.Button _cancelBtn;
         private System.Windows.Forms.TabPage _tabPageKeyWords;
@@ -415,6 +399,7 @@ namespace SnakeTail
         private System.Windows.Forms.Button _delWordBtn;
         private System.Windows.Forms.ColumnHeader _caseColumn;
         private System.Windows.Forms.ColumnHeader _regexColumn;
+        private System.Windows.Forms.ColumnHeader _loghitColumn;
 
 
 
