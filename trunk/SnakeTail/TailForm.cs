@@ -55,6 +55,7 @@ namespace SnakeTail
         Icon _formMaximizedIcon = null;
         string _configPath = "";
         List<TailKeywordConfig> _keywordHighlight;
+        int _loghitCounter = -1;
 
         public TailForm()
         {
@@ -98,6 +99,7 @@ namespace SnakeTail
             if (tailConfig.FormFont != null)
                 _tailListView.Font = tailConfig.FormFont;
 
+            _loghitCounter = -1;
             _keywordHighlight = tailConfig.KeywordHighlight;
             if (_keywordHighlight != null)
             {
@@ -112,6 +114,9 @@ namespace SnakeTail
                     }
                     else
                         keyword.KeywordRegex = null;
+
+                    if (keyword.LogHitCounter)
+                        _loghitCounter = 0;
                 }
             }
 
@@ -128,7 +133,7 @@ namespace SnakeTail
                 _logFileCache.LoadingFileEvent += new EventHandler(_logFileCache_LoadingFileEvent);
                 _logFileCache.FillCacheEvent += new EventHandler(_logFileCache_FillCacheEvent);
                 // Add loading of cache while counting lines in file
-                int lineCount = _logFileCache.FillCacheEndOfFile(_logTailStream, 0);
+                int lineCount = _logFileCache.FillTailCache(_logTailStream);
                 _tailListView.VirtualListSize = lineCount;
             }
             else
@@ -136,11 +141,6 @@ namespace SnakeTail
                 _logFileCache.LoadingFileEvent += new EventHandler(_logFileCache_LoadingFileEvent);
                 _logFileCache.FillCacheEvent += new EventHandler(_logFileCache_FillCacheEvent);
             }
-
-            if (string.IsNullOrEmpty(tailConfig.LogHitText))
-                _logTailStream.LogHitText = null;
-            else
-                _logTailStream.LogHitText = tailConfig.LogHitText;
 
             if (!string.IsNullOrEmpty(tailConfig.ServiceName))
                 _taskMonitor = new TaskMonitor(tailConfig.ServiceName);
@@ -183,10 +183,10 @@ namespace SnakeTail
 
             string title = _formTitle;
 
-            if (_logTailStream.LogHitText != null)
+            if (_loghitCounter != -1)
             {
-                title += " Hits: " + _logTailStream.LogHitTextCount.ToString();
-                _logTailStream.LogHitTextCount = 0;
+                title += " Hits: " + _loghitCounter.ToString();
+                _loghitCounter = 0;
             }
 
             if (_taskMonitor != null)
@@ -294,10 +294,6 @@ namespace SnakeTail
             tailConfig.WindowState = WindowState;
             tailConfig.WindowSize = Size;
             tailConfig.WindowPosition = DesktopLocation;
-            if (_logTailStream.LogHitText != null)
-                tailConfig.LogHitText = _logTailStream.LogHitText;
-            else
-                tailConfig.LogHitText = "";
             if (_taskMonitor != null)
                 tailConfig.ServiceName = _taskMonitor.ServiceName;
             else
@@ -574,27 +570,19 @@ namespace SnakeTail
             }
             else
             {
-                if (_keywordHighlight != null && _keywordHighlight.Count > 0)
+                TailKeywordConfig keyword = MatchesKeyword(e.Item.Text, false);
+                if (keyword != null)
                 {
-                    foreach(TailKeywordConfig keyword in _keywordHighlight)
+                    if (keyword.FormBackColor.HasValue && keyword.FormTextColor.HasValue)
                     {
-                        if ( (keyword.KeywordRegex!=null && keyword.KeywordRegex.IsMatch(e.Item.Text))
-                          || (keyword.KeywordRegex==null && keyword.MatchCaseSensitive && e.Item.Text.IndexOf(keyword.Keyword,StringComparison.CurrentCulture) != -1)
-                          || (keyword.KeywordRegex==null && !keyword.MatchCaseSensitive && e.Item.Text.IndexOf(keyword.Keyword,StringComparison.CurrentCultureIgnoreCase) != -1)
-                           )
+                        using (Brush backBrush = new SolidBrush(keyword.FormBackColor.Value))
                         {
-                            if (keyword.FormBackColor.HasValue && keyword.FormTextColor.HasValue)
-                            {
-                                using (Brush backBrush = new SolidBrush(keyword.FormBackColor.Value))
-                                {
-                                    e.Graphics.FillRectangle(backBrush, e.Bounds);
-                                    textColor = keyword.FormTextColor.Value;
-                                }
-                                break;
-                            }
+                            e.Graphics.FillRectangle(backBrush, e.Bounds);
+                            textColor = keyword.FormTextColor.Value;
                         }
                     }
                 }
+
                 if (!textColor.HasValue)
                     e.DrawBackground();
             }
@@ -609,6 +597,27 @@ namespace SnakeTail
                 else
                     e.Graphics.DrawString(e.Item.Text, _tailListView.Font, textBrush != null ? textBrush : SystemBrushes.HighlightText, e.Bounds);
             }
+        }
+
+        private TailKeywordConfig MatchesKeyword(string line, bool logHitCounter)
+        {
+            if (_keywordHighlight != null && _keywordHighlight.Count > 0)
+            {
+                foreach (TailKeywordConfig keyword in _keywordHighlight)
+                {
+                    if (logHitCounter != keyword.LogHitCounter)
+                        continue;
+
+                    if ((keyword.KeywordRegex != null && keyword.KeywordRegex.IsMatch(line))
+                      || (keyword.KeywordRegex == null && keyword.MatchCaseSensitive && line.IndexOf(keyword.Keyword, StringComparison.CurrentCulture) != -1)
+                      || (keyword.KeywordRegex == null && !keyword.MatchCaseSensitive && line.IndexOf(keyword.Keyword, StringComparison.CurrentCultureIgnoreCase) != -1)
+                       )
+                    {
+                        return keyword;
+                    }
+                }
+            }
+            return null;
         }
 
         private void _tailListView_KeyDown(object sender, KeyEventArgs e)
@@ -694,16 +703,16 @@ namespace SnakeTail
             UpdateFormTitle(false);
 
             int lineCount = _tailListView.VirtualListSize;
+            bool listAtBottom = ListAtBottom();
 
-            // Hvis file cache foelger bunden af filen
-            if (_logFileCache.Items.Count + _logFileCache.FirstIndex >= _tailListView.VirtualListSize)
+            string line = _logTailStream.ReadLine(lineCount + 1);
+            while(line != null)
             {
-                lineCount = _logFileCache.FillCacheEndOfFile(_logTailStream, lineCount);
-            }
-            else
-            {
-                while (_logTailStream.ReadLine(lineCount + 1) != null)
-                    lineCount++;
+                ++lineCount;
+                _logFileCache.AppendTailCache(line, lineCount);
+                if (MatchesKeyword(line, true) != null)
+                    _loghitCounter++;
+                line = _logTailStream.ReadLine(lineCount + 1);
             }
 
             if (lineCount == _tailListView.VirtualListSize)
@@ -724,7 +733,6 @@ namespace SnakeTail
             }
             else
             {
-                bool listAtBottom = ListAtBottom();
                 //_tailListView.VirtualListSize = linecount;
                 ListViewUtil.SetVirtualListSizeWithoutRefresh(_tailListView, lineCount);
                 if (listAtBottom && _tailListView.VirtualListSize > 0)

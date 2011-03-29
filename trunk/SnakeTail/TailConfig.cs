@@ -38,6 +38,7 @@ namespace SnakeTail
         public string Keyword { get; set; }
         public bool MatchCaseSensitive { get; set; }
         public bool MatchRegularExpression { get; set; }
+        public bool LogHitCounter { get; set; }
         public string TextColor { get; set; }   // ColorTranslator
         public string BackColor { get; set; }   // ColorTranslator
 
@@ -95,7 +96,6 @@ namespace SnakeTail
         public System.Drawing.Point WindowPosition { get; set; }
         public string ServiceName { get; set; }
         public string IconFile { get; set; }
-        public string LogHitText { get; set; }
         public bool ColumnFilterActive { get; set; }
         [XmlArray("ColumnFilters")]
         [XmlArrayItem("Filters")]

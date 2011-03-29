@@ -72,9 +72,12 @@ namespace SnakeTail
             }
         }
 
-        public int FillCacheEndOfFile(LogFileStream logFileStream, int lineCount)
+        public int FillTailCache(LogFileStream logFileStream)
         {
-            if (lineCount == 0 && !logFileStream.CloseToEnd(Items.Count))
+            int lineCount = 0;
+
+            // Quickly fast forward to near the file bottom
+            if (!logFileStream.CloseToEnd(Items.Count))
             {
                 do
                 {
@@ -95,31 +98,31 @@ namespace SnakeTail
                     LoadingFileEvent(null, null);
             }
 
-            int lastCacheIndex = 0;
+            // Read the last lines of the file into the cache
+            bool continueReading = false;
+            PrepareCache(lineCount, lineCount, true);
             do
             {
-                string line = logFileStream.ReadLine(lineCount + 1);
-                if (line == null)
-                {
-                    if (logFileStream.FileAtStart)
-                        return 0;
-                    return lineCount;
-                }
-
-                lineCount++;
-                if (lastCacheIndex == Items.Count - 1)
-                    PrepareCache(lineCount + Items.Count / 2, lineCount + Items.Count / 2, true);
-                else
-                    PrepareCache(lineCount - 1, lineCount - 1, true);
-                Items[lineCount - FirstIndex - 1] = new ListViewItem(line);
-                Items[lineCount - FirstIndex - 1].SubItems.Add("");
-                lastCacheIndex = FillCache(logFileStream, FirstIndex + Items.Count);
+                int lastCacheIndex = FillCache(logFileStream, FirstIndex + Items.Count);
                 System.Diagnostics.Debug.Assert(lastCacheIndex != -1);
+                continueReading = (lastCacheIndex == Items.Count - 1);
                 lineCount = FirstIndex + lastCacheIndex + 1;
-            }
-            while (lastCacheIndex == Items.Count - 1);
+                if (continueReading)
+                    PrepareCache(lineCount + Items.Count / 2, lineCount + Items.Count / 2, true);
+            } while (continueReading);
 
             return lineCount;
+        }
+
+        public void AppendTailCache(string line, int lineCount)
+        {
+            // Only update cache if we are near bottom
+            if (Items.Count + FirstIndex + 1 >= lineCount)
+            {
+                PrepareCache(FirstIndex + 1, lineCount - 1, true);
+                Items[lineCount - FirstIndex - 1] = new ListViewItem(line);
+                Items[lineCount - FirstIndex - 1].SubItems.Add("");
+            }
         }
 
         public int FillCache(LogFileStream logFileStream, int endindex)

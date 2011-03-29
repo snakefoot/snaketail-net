@@ -53,6 +53,7 @@ namespace SnakeTail
             this._backColorBtn = new System.Windows.Forms.Button();
             this._cancelBtn = new System.Windows.Forms.Button();
             this._okBtn = new System.Windows.Forms.Button();
+            this._logHitChk = new System.Windows.Forms.CheckBox();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -70,7 +71,7 @@ namespace SnakeTail
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new System.Drawing.Point(9, 91);
+            label2.Location = new System.Drawing.Point(9, 113);
             label2.Name = "label2";
             label2.Size = new System.Drawing.Size(112, 13);
             label2.TabIndex = 7;
@@ -79,7 +80,7 @@ namespace SnakeTail
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new System.Drawing.Point(9, 120);
+            label3.Location = new System.Drawing.Point(9, 142);
             label3.Name = "label3";
             label3.Size = new System.Drawing.Size(92, 13);
             label3.TabIndex = 8;
@@ -105,7 +106,7 @@ namespace SnakeTail
             // _matchRegExChk
             // 
             this._matchRegExChk.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this._matchRegExChk.Location = new System.Drawing.Point(9, 56);
+            this._matchRegExChk.Location = new System.Drawing.Point(9, 53);
             this._matchRegExChk.Name = "_matchRegExChk";
             this._matchRegExChk.Size = new System.Drawing.Size(153, 24);
             this._matchRegExChk.TabIndex = 4;
@@ -114,7 +115,7 @@ namespace SnakeTail
             // 
             // _textColorBtn
             // 
-            this._textColorBtn.Location = new System.Drawing.Point(147, 86);
+            this._textColorBtn.Location = new System.Drawing.Point(147, 108);
             this._textColorBtn.Name = "_textColorBtn";
             this._textColorBtn.Size = new System.Drawing.Size(75, 23);
             this._textColorBtn.TabIndex = 5;
@@ -124,7 +125,7 @@ namespace SnakeTail
             // 
             // _backColorBtn
             // 
-            this._backColorBtn.Location = new System.Drawing.Point(147, 115);
+            this._backColorBtn.Location = new System.Drawing.Point(147, 137);
             this._backColorBtn.Name = "_backColorBtn";
             this._backColorBtn.Size = new System.Drawing.Size(75, 23);
             this._backColorBtn.TabIndex = 6;
@@ -135,7 +136,7 @@ namespace SnakeTail
             // _cancelBtn
             // 
             this._cancelBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this._cancelBtn.Location = new System.Drawing.Point(245, 154);
+            this._cancelBtn.Location = new System.Drawing.Point(248, 174);
             this._cancelBtn.Name = "_cancelBtn";
             this._cancelBtn.Size = new System.Drawing.Size(75, 23);
             this._cancelBtn.TabIndex = 9;
@@ -145,7 +146,7 @@ namespace SnakeTail
             // _okBtn
             // 
             this._okBtn.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this._okBtn.Location = new System.Drawing.Point(164, 154);
+            this._okBtn.Location = new System.Drawing.Point(167, 174);
             this._okBtn.Name = "_okBtn";
             this._okBtn.Size = new System.Drawing.Size(75, 23);
             this._okBtn.TabIndex = 10;
@@ -153,13 +154,24 @@ namespace SnakeTail
             this._okBtn.UseVisualStyleBackColor = true;
             this._okBtn.Click += new System.EventHandler(this._okBtn_Click);
             // 
+            // _logHitChk
+            // 
+            this._logHitChk.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this._logHitChk.Location = new System.Drawing.Point(9, 78);
+            this._logHitChk.Name = "_logHitChk";
+            this._logHitChk.Size = new System.Drawing.Size(153, 24);
+            this._logHitChk.TabIndex = 11;
+            this._logHitChk.Text = "Log Hit Counter";
+            this._logHitChk.UseVisualStyleBackColor = true;
+            // 
             // KeywordConfigForm
             // 
             this.AcceptButton = this._okBtn;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this._cancelBtn;
-            this.ClientSize = new System.Drawing.Size(331, 187);
+            this.ClientSize = new System.Drawing.Size(331, 209);
+            this.Controls.Add(this._logHitChk);
             this.Controls.Add(this._okBtn);
             this.Controls.Add(this._cancelBtn);
             this.Controls.Add(label3);
@@ -173,6 +185,7 @@ namespace SnakeTail
             this.Name = "KeywordConfigForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Configure Keyword Highlight";
+            this.Load += new System.EventHandler(this.KeywordConfigForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -187,5 +200,6 @@ namespace SnakeTail
         private System.Windows.Forms.Button _backColorBtn;
         private System.Windows.Forms.Button _cancelBtn;
         private System.Windows.Forms.Button _okBtn;
+        private System.Windows.Forms.CheckBox _logHitChk;
     }
 }
