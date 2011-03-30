@@ -68,9 +68,9 @@ namespace SnakeTail
             this._keywordListView = new System.Windows.Forms.ListView();
             this._caseColumn = new System.Windows.Forms.ColumnHeader();
             this._regexColumn = new System.Windows.Forms.ColumnHeader();
+            this._loghitColumn = new System.Windows.Forms.ColumnHeader();
             this._acceptBtn = new System.Windows.Forms.Button();
             this._cancelBtn = new System.Windows.Forms.Button();
-            this._loghitColumn = new System.Windows.Forms.ColumnHeader();
             label2 = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -325,6 +325,10 @@ namespace SnakeTail
             // 
             this._regexColumn.Text = "RegEx Match";
             // 
+            // _loghitColumn
+            // 
+            this._loghitColumn.Text = "Log Hit";
+            // 
             // _acceptBtn
             // 
             this._acceptBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -348,10 +352,6 @@ namespace SnakeTail
             this._cancelBtn.Text = "Cancel";
             this._cancelBtn.UseVisualStyleBackColor = true;
             // 
-            // _loghitColumn
-            // 
-            this._loghitColumn.Text = "Log Hit";
-            // 
             // TailConfigForm
             // 
             this.AcceptButton = this._acceptBtn;
@@ -364,6 +364,7 @@ namespace SnakeTail
             this.Controls.Add(this._tabControl);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "TailConfigForm";
+            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Configure View";
             this.Load += new System.EventHandler(this.TailConfigForm_Load);

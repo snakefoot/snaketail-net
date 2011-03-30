@@ -183,6 +183,7 @@ namespace SnakeTail
             this.Controls.Add(this._keywordEdt);
             this.Controls.Add(label1);
             this.Name = "KeywordConfigForm";
+            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Configure Keyword Highlight";
             this.Load += new System.EventHandler(this.KeywordConfigForm_Load);
