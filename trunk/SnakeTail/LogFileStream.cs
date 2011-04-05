@@ -30,14 +30,18 @@ namespace SnakeTail
         DateTime _lastFileCheck = DateTime.Now;
         int _lastLineNumber = 0;
         string _lastFileError;
+        TimeSpan _fileCheckFrequency = TimeSpan.FromSeconds(10);
+        bool _fileCheckPattern = false;
 
-        public LogFileStream(string configPath, string filePath, Encoding fileEncoding)
+        public LogFileStream(string configPath, string filePath, Encoding fileEncoding, int fileCheckFrequency, bool fileCheckPattern)
         {
+            _fileEncoding = fileEncoding;
             _filePath = filePath;
             _filePathAbsolute = Path.Combine(configPath, _filePath);
-            _fileEncoding = fileEncoding;
-
-            LoadFile(_filePathAbsolute, _fileEncoding);
+            if (fileCheckFrequency > 0)
+                _fileCheckFrequency = TimeSpan.FromSeconds(fileCheckFrequency);
+            _fileCheckPattern = fileCheckPattern;
+            LoadFile(_filePathAbsolute, _fileEncoding, _fileCheckPattern);
         }
 
         public void CheckLogFile()
@@ -46,19 +50,19 @@ namespace SnakeTail
 
             if (_fileStream == null)
             {
-                LoadFile(_filePathAbsolute, _fileEncoding);
+                LoadFile(_filePathAbsolute, _fileEncoding, _fileCheckPattern);
             }
             else
             {
                 string configPath = Path.GetDirectoryName(_filePathAbsolute);
-                LogFileStream testLogFile = new LogFileStream(configPath, _filePathAbsolute, _fileEncoding);
+                LogFileStream testLogFile = new LogFileStream(configPath, _filePathAbsolute, _fileEncoding, _fileCheckFrequency.Seconds, _fileCheckPattern);
                 long checkLength = testLogFile.Length;
-                testLogFile.LoadFile(null, _fileEncoding);  // Release the file handle
+                testLogFile.LoadFile(null, _fileEncoding, _fileCheckPattern);  // Release the file handle
 
-                if (checkLength < Length)
+                if (checkLength < Length || _fileStream.Name != testLogFile._fileStream.Name)
                 {
                     // The file have been renamed / deleted (reload new file)
-                    LoadFile(_filePathAbsolute, _fileEncoding);
+                    LoadFile(_filePathAbsolute, _fileEncoding, _fileCheckPattern);
                 }
             }
         }
@@ -93,20 +97,48 @@ namespace SnakeTail
             get { return _filePathAbsolute; }
         }
 
+        public int FileCheckInterval
+        {
+            get { return _fileCheckFrequency.Seconds; }
+        }
+
+        public bool FileCheckPattern
+        {
+            get { return _fileCheckPattern; }
+        }
+
         public bool ValidLineCount(int lineCount)
         {
             if (_fileStream != null && _lastLineNumber == lineCount)
                 return true;
             else
-                if (_fileStream == null && lineCount == 1)
-                    return true;    // File not found message is ok
-                else
-                    return false;
+                return false;
         }
 
-        bool LoadFile(string filepath, Encoding fileEncoding)
+        bool LoadFile(string filepath, Encoding fileEncoding, bool fileCheckPattern)
         {
             _lastFileError = "";
+
+            if (fileCheckPattern)
+            {
+                string filename = Path.GetFileName(_filePathAbsolute);
+                string directory = Path.GetDirectoryName(_filePathAbsolute);
+                DirectoryInfo dir = new DirectoryInfo(directory);
+                FileInfo[] files = dir.GetFiles(filename);
+                FileInfo lastestFile = null;
+                foreach (FileInfo file in files)
+                {
+                    if (lastestFile == null || lastestFile.LastWriteTime < file.LastWriteTime)
+                        lastestFile = file;
+                }
+                if (lastestFile != null)
+                    filepath = lastestFile.FullName;
+                else
+                {
+                    _lastFileError = "No files matching pattern";
+                    return false;
+                }
+            }
 
             if (_fileStream != null)
             {
@@ -129,6 +161,11 @@ namespace SnakeTail
             try
             {
                 _fileStream = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, 65536, FileOptions.SequentialScan);
+            }
+            catch (ArgumentException ex)
+            {
+                _lastFileError = "Invalid argument for opening file - " + ex.Message;
+                return false;
             }
             catch (UnauthorizedAccessException)
             {
@@ -197,7 +234,7 @@ namespace SnakeTail
             if (_fileReader.EndOfStream)
             {
                 // Check if file has been renamed (once every 10 seconds)
-                if (DateTime.Now.Subtract(_lastFileCheck).Seconds >= 10)
+                if (DateTime.Now.Subtract(_lastFileCheck) >= _fileCheckFrequency)
                     CheckLogFile();
                 return null;
             }
