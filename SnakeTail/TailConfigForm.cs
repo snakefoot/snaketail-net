@@ -66,6 +66,10 @@ namespace SnakeTail
 
                 _fileCacheSizeEdt.Text = TailFileConfig.FileCacheSize.ToString();
 
+                _fileCheckIntervalEdt.Text = TailFileConfig.FileCheckInterval.ToString();
+
+                _fileCheckPatternChk.Checked = TailFileConfig.FileCheckPattern;
+
                 _windowServiceEdt.Text = TailFileConfig.ServiceName;
 
                 if (TailFileConfig.KeywordHighlight != null)
@@ -98,6 +102,10 @@ namespace SnakeTail
                 TailFileConfig.FileCacheSize = Int32.Parse(_fileCacheSizeEdt.Text);
 
                 TailFileConfig.ServiceName = _windowServiceEdt.Text;
+
+                TailFileConfig.FileCheckInterval = Int32.Parse(_fileCheckIntervalEdt.Text);
+
+                TailFileConfig.FileCheckPattern = _fileCheckPatternChk.Checked;
 
                 if (TailFileConfig.KeywordHighlight == null)
                     TailFileConfig.KeywordHighlight = new List<TailKeywordConfig>();

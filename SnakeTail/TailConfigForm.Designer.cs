@@ -50,6 +50,7 @@ namespace SnakeTail
             System.Windows.Forms.Label label5;
             System.Windows.Forms.Label label7;
             System.Windows.Forms.ColumnHeader _keywordColumn;
+            System.Windows.Forms.Label label6;
             this._tabControl = new System.Windows.Forms.TabControl();
             this._tabPageView = new System.Windows.Forms.TabPage();
             this._windowIconEdt = new System.Windows.Forms.TextBox();
@@ -71,6 +72,8 @@ namespace SnakeTail
             this._loghitColumn = new System.Windows.Forms.ColumnHeader();
             this._acceptBtn = new System.Windows.Forms.Button();
             this._cancelBtn = new System.Windows.Forms.Button();
+            this._fileCheckIntervalEdt = new System.Windows.Forms.TextBox();
+            this._fileCheckPatternChk = new System.Windows.Forms.CheckBox();
             label2 = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -78,6 +81,7 @@ namespace SnakeTail
             label5 = new System.Windows.Forms.Label();
             label7 = new System.Windows.Forms.Label();
             _keywordColumn = new System.Windows.Forms.ColumnHeader();
+            label6 = new System.Windows.Forms.Label();
             this._tabControl.SuspendLayout();
             this._tabPageView.SuspendLayout();
             this._tabPageFile.SuspendLayout();
@@ -108,7 +112,7 @@ namespace SnakeTail
             label3.Location = new System.Drawing.Point(3, 9);
             label3.Name = "label3";
             label3.Size = new System.Drawing.Size(48, 13);
-            label3.TabIndex = 1;
+            label3.TabIndex = 0;
             label3.Text = "File Path";
             // 
             // label4
@@ -117,7 +121,7 @@ namespace SnakeTail
             label4.Location = new System.Drawing.Point(3, 35);
             label4.Name = "label4";
             label4.Size = new System.Drawing.Size(71, 13);
-            label4.TabIndex = 3;
+            label4.TabIndex = 2;
             label4.Text = "File Encoding";
             // 
             // label5
@@ -132,7 +136,7 @@ namespace SnakeTail
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new System.Drawing.Point(7, 89);
+            label7.Location = new System.Drawing.Point(3, 118);
             label7.Name = "label7";
             label7.Size = new System.Drawing.Size(90, 13);
             label7.TabIndex = 9;
@@ -206,6 +210,9 @@ namespace SnakeTail
             // 
             // _tabPageFile
             // 
+            this._tabPageFile.Controls.Add(this._fileCheckPatternChk);
+            this._tabPageFile.Controls.Add(this._fileCheckIntervalEdt);
+            this._tabPageFile.Controls.Add(label6);
             this._tabPageFile.Controls.Add(label7);
             this._tabPageFile.Controls.Add(this._windowServiceEdt);
             this._tabPageFile.Controls.Add(this._fileCacheSizeEdt);
@@ -224,10 +231,10 @@ namespace SnakeTail
             // 
             // _windowServiceEdt
             // 
-            this._windowServiceEdt.Location = new System.Drawing.Point(103, 86);
+            this._windowServiceEdt.Location = new System.Drawing.Point(103, 115);
             this._windowServiceEdt.Name = "_windowServiceEdt";
             this._windowServiceEdt.Size = new System.Drawing.Size(100, 20);
-            this._windowServiceEdt.TabIndex = 8;
+            this._windowServiceEdt.TabIndex = 10;
             // 
             // _fileCacheSizeEdt
             // 
@@ -243,14 +250,14 @@ namespace SnakeTail
             this._fileEncodingCmb.Location = new System.Drawing.Point(103, 32);
             this._fileEncodingCmb.Name = "_fileEncodingCmb";
             this._fileEncodingCmb.Size = new System.Drawing.Size(250, 21);
-            this._fileEncodingCmb.TabIndex = 2;
+            this._fileEncodingCmb.TabIndex = 3;
             // 
             // _filePathEdt
             // 
             this._filePathEdt.Location = new System.Drawing.Point(103, 6);
             this._filePathEdt.Name = "_filePathEdt";
             this._filePathEdt.Size = new System.Drawing.Size(250, 20);
-            this._filePathEdt.TabIndex = 0;
+            this._filePathEdt.TabIndex = 1;
             // 
             // _tabPageKeyWords
             // 
@@ -352,6 +359,32 @@ namespace SnakeTail
             this._cancelBtn.Text = "Cancel";
             this._cancelBtn.UseVisualStyleBackColor = true;
             // 
+            // _fileCheckIntervalEdt
+            // 
+            this._fileCheckIntervalEdt.Location = new System.Drawing.Point(103, 89);
+            this._fileCheckIntervalEdt.Name = "_fileCheckIntervalEdt";
+            this._fileCheckIntervalEdt.Size = new System.Drawing.Size(100, 20);
+            this._fileCheckIntervalEdt.TabIndex = 7;
+            // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Location = new System.Drawing.Point(3, 92);
+            label6.Name = "label6";
+            label6.Size = new System.Drawing.Size(95, 13);
+            label6.TabIndex = 6;
+            label6.Text = "File Check Interval";
+            // 
+            // _fileCheckPatternChk
+            // 
+            this._fileCheckPatternChk.AutoSize = true;
+            this._fileCheckPatternChk.Location = new System.Drawing.Point(209, 92);
+            this._fileCheckPatternChk.Name = "_fileCheckPatternChk";
+            this._fileCheckPatternChk.Size = new System.Drawing.Size(128, 17);
+            this._fileCheckPatternChk.TabIndex = 8;
+            this._fileCheckPatternChk.Text = "Latest file using regex";
+            this._fileCheckPatternChk.UseVisualStyleBackColor = true;
+            // 
             // TailConfigForm
             // 
             this.AcceptButton = this._acceptBtn;
@@ -401,6 +434,8 @@ namespace SnakeTail
         private System.Windows.Forms.ColumnHeader _caseColumn;
         private System.Windows.Forms.ColumnHeader _regexColumn;
         private System.Windows.Forms.ColumnHeader _loghitColumn;
+        private System.Windows.Forms.CheckBox _fileCheckPatternChk;
+        private System.Windows.Forms.TextBox _fileCheckIntervalEdt;
 
 
 

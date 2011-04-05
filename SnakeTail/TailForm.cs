@@ -30,18 +30,26 @@ namespace SnakeTail
     public partial class TailForm : Form
     {
         // Todo Implement inline selection when owner-drawn
-        // Todo EventLog Filtering
-        //  - First count the rows in the entire data-set
-        //  - Then parse the entire data-set backwards with the filter applied, 
         // Todo Filter Text File
-        // Todo Highlight Text Filter
-        // Todo Search highlight text (Extend Search dialog with highlight filters)
         // Todo Consider keeping file handle open, even when file is renamed / deleted (show history)
         // Todo Jump Lists
-        // Todo Move CPUMeter and Task Monitor to own their own class files without knowledge of MainForm
         // Todo Use background workerthread when searching (First visual cache, new file-stream, lock scrolling and timers, extra step to check for new lines, allow cancel search)
         // Todo Cache search results when searching up
         // Todo Scroll to the same matching line in all views
+        // Todo Monitor folder with regex prefix
+        // Todo Implement log stream that can read backwards
+        //  - Can start at the bottom and display at once without loading entire file
+        //  - Open file, read BOM (If default specified)
+        //  - Seek to bottom - 64K
+        //  - Start seeking for newlines using the encoding from the BOM
+        //  - Guess the total number of lines based on the lines in the 64K
+        //  - When scrolling how to lookup the line numbers requested
+        //      - Perform file seek based on percentage
+        //  - When using page-up to reach top then it will read backwards in 64K blocks
+        //      - Should always expect the total number of lines as a guess
+        //      - If too many lines are guessed when we reach file-start before top of list (adjust guess)
+        //      - If too few lines are guessed before we reach file-start we are at top of lies (adjust guess)
+        //      - Must support that scrolling have been performed so it is always an adjusted guess
         LogFileCache _logFileCache = null;
         LogFileStream _logFileStream = null;
         LogFileStream _logTailStream = null;
@@ -122,10 +130,10 @@ namespace SnakeTail
 
             Encoding fileEncoding = tailConfig.EnumFileEncoding;
 
-            if (_logFileStream==null || _logFileStream.FilePath != tailConfig.FilePath)
-                _logFileStream = new LogFileStream(configPath, tailConfig.FilePath, fileEncoding);
-            if (_logTailStream == null || _logFileStream.FilePath != tailConfig.FilePath)
-                _logTailStream = new LogFileStream(configPath, tailConfig.FilePath, fileEncoding);
+            if (_logFileStream == null || _logFileStream.FilePath != tailConfig.FilePath || _logFileStream.FileEncoding != fileEncoding || _logFileStream.FileCheckInterval != tailConfig.FileCheckInterval || _logFileStream.FileCheckPattern != tailConfig.FileCheckPattern)
+                _logFileStream = new LogFileStream(configPath, tailConfig.FilePath, fileEncoding, tailConfig.FileCheckInterval, tailConfig.FileCheckPattern);
+            if (_logTailStream == null || _logTailStream.FilePath != tailConfig.FilePath || _logTailStream.FileEncoding != fileEncoding || _logTailStream.FileCheckInterval != tailConfig.FileCheckInterval || _logTailStream.FileCheckPattern != tailConfig.FileCheckPattern)
+                _logTailStream = new LogFileStream(configPath, tailConfig.FilePath, fileEncoding, tailConfig.FileCheckInterval, tailConfig.FileCheckPattern);
 
             if (_logFileCache == null || _logFileCache.Items.Count != tailConfig.FileCacheSize)
             {
@@ -288,6 +296,8 @@ namespace SnakeTail
             tailConfig.FileCacheSize = _logFileCache.Items.Count;
             tailConfig.EnumFileEncoding = _logTailStream.FileEncoding;
             tailConfig.FilePath = _logTailStream.FilePath;
+            tailConfig.FileCheckInterval = _logTailStream.FileCheckInterval;
+            tailConfig.FileCheckPattern = _logTailStream.FileCheckPattern;
             tailConfig.Title = _formTitle;
             tailConfig.IconFile = _formIconFile;
             tailConfig.Modeless = MdiParent == null;
@@ -722,10 +732,17 @@ namespace SnakeTail
 
             if (lineCount == _tailListView.VirtualListSize)
             {
+                if (_logTailStream.Length == 0 && lineCount == 1)
+                {
+                    // Check if the open file error has changed
+                    if (_tailListView.Items[0].Text == _logTailStream.ReadLine(1))
+                        return;
+                }
+                else
                 if (_logTailStream.ValidLineCount(lineCount))
                     return;
-                else
-                    lineCount = 0;
+
+                lineCount = 0;
             }
 
             if (lineCount < _tailListView.VirtualListSize)
