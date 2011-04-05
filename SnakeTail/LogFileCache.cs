@@ -104,7 +104,7 @@ namespace SnakeTail
             do
             {
                 int lastCacheIndex = FillCache(logFileStream, FirstIndex + Items.Count);
-                System.Diagnostics.Debug.Assert(lastCacheIndex != -1);
+                System.Diagnostics.Debug.Assert(lastCacheIndex != -1 || logFileStream.Length == 0);
                 continueReading = (lastCacheIndex == Items.Count - 1);
                 lineCount = FirstIndex + lastCacheIndex + 1;
                 if (continueReading)
