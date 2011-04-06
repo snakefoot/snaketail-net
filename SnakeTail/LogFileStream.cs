@@ -57,9 +57,10 @@ namespace SnakeTail
                 string configPath = Path.GetDirectoryName(_filePathAbsolute);
                 LogFileStream testLogFile = new LogFileStream(configPath, _filePathAbsolute, _fileEncoding, _fileCheckFrequency.Seconds, _fileCheckPattern);
                 long checkLength = testLogFile.Length;
+                string name = testLogFile._fileStream!=null ? testLogFile._fileStream.Name : null;
                 testLogFile.LoadFile(null, _fileEncoding, _fileCheckPattern);  // Release the file handle
 
-                if (checkLength < Length || _fileStream.Name != testLogFile._fileStream.Name)
+                if (checkLength < Length || _fileStream.Name != name)
                 {
                     // The file have been renamed / deleted (reload new file)
                     LoadFile(_filePathAbsolute, _fileEncoding, _fileCheckPattern);
