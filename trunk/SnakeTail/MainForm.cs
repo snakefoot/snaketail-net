@@ -324,11 +324,25 @@ namespace SnakeTail
         private void LoadSession(string filepath)
         {
             TailConfig tailConfig = null;
-            XmlSerializer serializer = new XmlSerializer(typeof(TailConfig));
-            using (XmlTextReader reader = new XmlTextReader(filepath))
+            try
             {
-                filepath = new Uri(reader.BaseURI).LocalPath;
-                tailConfig = serializer.Deserialize(reader) as TailConfig;
+                XmlSerializer serializer = new XmlSerializer(typeof(TailConfig));
+                using (XmlTextReader reader = new XmlTextReader(filepath))
+                {
+                    filepath = new Uri(reader.BaseURI).LocalPath;
+                    tailConfig = serializer.Deserialize(reader) as TailConfig;
+                }
+            }
+            catch (Exception ex)
+            {
+                string errorMsg = ex.Message;
+                while(ex.InnerException != null)
+                {
+                    ex = ex.InnerException;
+                    errorMsg += "\n" + ex.Message;
+                }
+                MessageBox.Show("Failed to open session xml file, please ensure it is valid file:\n\n   " + filepath + "\n\n" + errorMsg, "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
             if (tailConfig != null)
             {
