@@ -55,8 +55,7 @@ namespace SnakeTail
         private void _textColorBtn_Click(object sender, EventArgs e)
         {
             ColorDialog colorDlg = new ColorDialog();
-            if (TailKeywordConfig.FormTextColor != null)
-                colorDlg.Color = TailKeywordConfig.FormTextColor.Value;
+            colorDlg.Color = _keywordEdt.ForeColor;
             if (colorDlg.ShowDialog() == DialogResult.OK)
             {
                 _keywordEdt.ForeColor = colorDlg.Color;
@@ -66,8 +65,7 @@ namespace SnakeTail
         private void _backColorBtn_Click(object sender, EventArgs e)
         {
             ColorDialog colorDlg = new ColorDialog();
-            if (TailKeywordConfig.FormBackColor != null)
-                colorDlg.Color = TailKeywordConfig.FormBackColor.Value;
+            colorDlg.Color = _keywordEdt.BackColor;
             if (colorDlg.ShowDialog() == DialogResult.OK)
             {
                 _keywordEdt.BackColor = colorDlg.Color;
