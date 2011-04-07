@@ -221,37 +221,48 @@ namespace SnakeTail
                     return null;
             }
 
-            if (lineNumber <= _lastLineNumber)
+            try
             {
-                _fileStream.Seek(0, SeekOrigin.Begin);
-                _fileReader.DiscardBufferedData();
-                _lastLineNumber = 0;
-            }
-            else
-            {
-                lineNumber -= _lastLineNumber;
-            }
+                if (lineNumber <= _lastLineNumber)
+                {
+                    _fileStream.Seek(0, SeekOrigin.Begin);
+                    _fileReader.DiscardBufferedData();
+                    _lastLineNumber = 0;
+                }
+                else
+                {
+                    lineNumber -= _lastLineNumber;
+                }
 
-            if (_fileReader.EndOfStream)
+                if (_fileReader.EndOfStream)
+                {
+                    // Check if file has been renamed (once every 10 seconds)
+                    if (DateTime.Now.Subtract(_lastFileCheck) >= _fileCheckFrequency)
+                        CheckLogFile();
+                    return null;
+                }
+
+                string line = null;
+                for (int i = 0; i < lineNumber && !_fileReader.EndOfStream; ++i)
+                {
+                    line = _fileReader.ReadLine();
+                    if (line == null)
+                        return null;
+
+                    _lastLineNumber++;
+                }
+
+                _lastFileCheck = DateTime.Now;
+                return line;
+            }
+            catch (IOException ex)
             {
-                // Check if file has been renamed (once every 10 seconds)
-                if (DateTime.Now.Subtract(_lastFileCheck) >= _fileCheckFrequency)
-                    CheckLogFile();
+                _lastLineNumber = 0;
+                LoadFile(null, _fileEncoding, _fileCheckPattern);  // Release the file handle
+                if (lineNumber == 1)
+                    return "Cannot read file: " + _filePathAbsolute + " (" + ex.Message + ")";
                 return null;
             }
-
-            string line = null;
-            for (int i = 0; i < lineNumber && !_fileReader.EndOfStream; ++i)
-            {
-                line = _fileReader.ReadLine();
-                if (line == null)
-                    return null;
-
-                _lastLineNumber++;
-            }
-
-            _lastFileCheck = DateTime.Now;
-            return line;
         }
     }
 }
