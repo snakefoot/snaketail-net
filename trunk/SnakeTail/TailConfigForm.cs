@@ -164,6 +164,7 @@ namespace SnakeTail
             {
                 ListViewItem lvi = _keywordListView.SelectedItems[0];
                 UpdateKeywordListItem(dlg.TailKeywordConfig, ref lvi);
+                _keywordListView.Update();
             }
         }
 
