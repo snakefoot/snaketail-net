@@ -841,6 +841,7 @@ namespace SnakeTail
             }
             catch (Exception ex)
             {
+                SetStatusBar(null);
                 MessageBox.Show("Start service failed: " + ex.Message);
             }
         }
@@ -866,6 +867,7 @@ namespace SnakeTail
             }
             catch (Exception ex)
             {
+                SetStatusBar(null);
                 MessageBox.Show("Stop service failed: " + ex.Message);
             }
         }
@@ -883,6 +885,7 @@ namespace SnakeTail
             }
             catch (Exception ex)
             {
+                SetStatusBar(null);
                 MessageBox.Show("Pause service failed: " + ex.Message);
             }
         }
@@ -900,6 +903,7 @@ namespace SnakeTail
             }
             catch (Exception ex)
             {
+                SetStatusBar(null);
                 MessageBox.Show("Continue service failed: " + ex.Message);
             }
         }
