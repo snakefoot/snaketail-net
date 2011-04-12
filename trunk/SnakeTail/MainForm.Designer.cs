@@ -74,11 +74,7 @@ namespace SnakeTail
             this._MDITabControl = new System.Windows.Forms.TabControl();
             this._trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this._trayIconContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.openSessionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.closeSessionToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveSessionToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
-            this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this._statusStrip.SuspendLayout();
             this._mainMenu.SuspendLayout();
             this._trayIconContextMenuStrip.SuspendLayout();
@@ -314,51 +310,21 @@ namespace SnakeTail
             // _trayIcon
             // 
             this._trayIcon.ContextMenuStrip = this._trayIconContextMenuStrip;
-            this._trayIcon.DoubleClick += new System.EventHandler(this._trayIcon_DoubleClick);
+            this._trayIcon.DoubleClick += new System.EventHandler(this.minimizeToTrayToolStripMenuItem_Click);
             // 
             // _trayIconContextMenuStrip
             // 
             this._trayIconContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openSessionToolStripMenuItem,
-            this.closeSessionToolStripMenuItem1,
-            this.saveSessionToolStripMenuItem1,
-            this.toolStripSeparator5,
-            this.closeToolStripMenuItem});
+            this.toolStripSeparator3});
             this._trayIconContextMenuStrip.Name = "_trayIconContextMenuStrip";
-            this._trayIconContextMenuStrip.Size = new System.Drawing.Size(155, 98);
+            this._trayIconContextMenuStrip.Size = new System.Drawing.Size(61, 10);
+            this._trayIconContextMenuStrip.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this._trayIconContextMenuStrip_Closed);
+            this._trayIconContextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this._trayIconContextMenuStrip_Opening);
             // 
-            // openSessionToolStripMenuItem
+            // toolStripSeparator3
             // 
-            this.openSessionToolStripMenuItem.Name = "openSessionToolStripMenuItem";
-            this.openSessionToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.openSessionToolStripMenuItem.Text = "Open Session...";
-            this.openSessionToolStripMenuItem.Click += new System.EventHandler(this.loadSessionToolStripMenuItem_Click);
-            // 
-            // closeSessionToolStripMenuItem1
-            // 
-            this.closeSessionToolStripMenuItem1.Name = "closeSessionToolStripMenuItem1";
-            this.closeSessionToolStripMenuItem1.Size = new System.Drawing.Size(154, 22);
-            this.closeSessionToolStripMenuItem1.Text = "Close Session";
-            this.closeSessionToolStripMenuItem1.Click += new System.EventHandler(this.closeAllToolStripMenuItem_Click);
-            // 
-            // saveSessionToolStripMenuItem1
-            // 
-            this.saveSessionToolStripMenuItem1.Name = "saveSessionToolStripMenuItem1";
-            this.saveSessionToolStripMenuItem1.Size = new System.Drawing.Size(154, 22);
-            this.saveSessionToolStripMenuItem1.Text = "Save Session...";
-            this.saveSessionToolStripMenuItem1.Click += new System.EventHandler(this.saveSessionToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator5
-            // 
-            this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(151, 6);
-            // 
-            // closeToolStripMenuItem
-            // 
-            this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.closeToolStripMenuItem.Text = "Exit";
-            this.closeToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(57, 6);
             // 
             // MainForm
             // 
@@ -410,17 +376,13 @@ namespace SnakeTail
         private System.Windows.Forms.NotifyIcon _trayIcon;
         private System.Windows.Forms.ToolStripMenuItem minimizeToTrayToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip _trayIconContextMenuStrip;
-        private System.Windows.Forms.ToolStripMenuItem openSessionToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem closeSessionToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem saveSessionToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
-        private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openEventLogToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem noActiveWindowToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem checkForUpdateToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
 
     }
 }
