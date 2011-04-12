@@ -29,7 +29,8 @@ namespace SnakeTail
         StreamReader _fileReader = null;
         DateTime _lastFileCheck = DateTime.Now;
         int _lastLineNumber = 0;
-        string _lastFileError;
+        string _lastFileCheckError = "";
+        long _lastFileCheckLength = 0;
         TimeSpan _fileCheckFrequency = TimeSpan.FromSeconds(10);
         bool _fileCheckPattern = false;
 
@@ -44,11 +45,11 @@ namespace SnakeTail
             LoadFile(_filePathAbsolute, _fileEncoding, _fileCheckPattern);
         }
 
-        public void CheckLogFile()
+        public void CheckLogFile(bool forceReload)
         {
             _lastFileCheck = DateTime.Now;
 
-            if (_fileStream == null)
+            if (_fileStream == null || forceReload)
             {
                 LoadFile(_filePathAbsolute, _fileEncoding, _fileCheckPattern);
             }
@@ -56,15 +57,16 @@ namespace SnakeTail
             {
                 string configPath = Path.GetDirectoryName(_filePathAbsolute);
                 LogFileStream testLogFile = new LogFileStream(configPath, _filePathAbsolute, _fileEncoding, _fileCheckFrequency.Seconds, _fileCheckPattern);
-                long checkLength = testLogFile.Length;
+                long fileCheckLength = testLogFile.Length;
                 string name = testLogFile._fileStream!=null ? testLogFile._fileStream.Name : null;
                 testLogFile.LoadFile(null, _fileEncoding, _fileCheckPattern);  // Release the file handle
 
-                if (checkLength < Length || _fileStream.Name != name)
+                if (fileCheckLength < Length || _fileStream.Name != name || (_lastFileCheckLength <= fileCheckLength && _lastFileCheckLength > Length))
                 {
                     // The file have been renamed / deleted (reload new file)
                     LoadFile(_filePathAbsolute, _fileEncoding, _fileCheckPattern);
                 }
+                _lastFileCheckLength = fileCheckLength;
             }
         }
 
@@ -118,28 +120,8 @@ namespace SnakeTail
 
         bool LoadFile(string filepath, Encoding fileEncoding, bool fileCheckPattern)
         {
-            _lastFileError = "";
-
-            if (fileCheckPattern)
-            {
-                string filename = Path.GetFileName(_filePathAbsolute);
-                string directory = Path.GetDirectoryName(_filePathAbsolute);
-                DirectoryInfo dir = new DirectoryInfo(directory);
-                FileInfo[] files = dir.GetFiles(filename);
-                FileInfo lastestFile = null;
-                foreach (FileInfo file in files)
-                {
-                    if (lastestFile == null || lastestFile.LastWriteTime < file.LastWriteTime)
-                        lastestFile = file;
-                }
-                if (lastestFile != null)
-                    filepath = lastestFile.FullName;
-                else
-                {
-                    _lastFileError = "No files matching pattern";
-                    return false;
-                }
-            }
+            _lastFileCheckError = "";
+            _lastLineNumber = 0;
 
             if (_fileStream != null)
             {
@@ -152,11 +134,34 @@ namespace SnakeTail
                 _fileReader = null;
             }
 
-            _lastLineNumber = 0;
             if (String.IsNullOrEmpty(filepath))
             {
-                _lastFileError = "No file path";
+                _lastFileCheckError = "No file path";
                 return false;
+            }
+
+            if (fileCheckPattern)
+            {
+                // Consider using FileSystemWatcher
+                string filename = Path.GetFileName(_filePathAbsolute);
+                string directory = Path.GetDirectoryName(_filePathAbsolute);
+                DirectoryInfo dir = new DirectoryInfo(directory);
+                FileInfo[] files = dir.GetFiles(filename);
+                FileInfo lastestFile = null;
+                foreach (FileInfo file in files)
+                {
+                    if (lastestFile == null || lastestFile.LastWriteTime < file.LastWriteTime)
+                        lastestFile = file;
+                }
+                if (lastestFile != null)
+                {
+                    filepath = lastestFile.FullName;
+                }
+                else
+                {
+                    _lastFileCheckError = "No files matching pattern";
+                    return false;
+                }
             }
 
             try
@@ -165,27 +170,27 @@ namespace SnakeTail
             }
             catch (ArgumentException ex)
             {
-                _lastFileError = "Invalid argument for opening file - " + ex.Message;
+                _lastFileCheckError = "Invalid argument for opening file - " + ex.Message;
                 return false;
             }
             catch (UnauthorizedAccessException)
             {
-                _lastFileError = "Unauthorized Access";
+                _lastFileCheckError = "Unauthorized Access";
                 return false;
             }
             catch (DirectoryNotFoundException)
             {
-                _lastFileError = "Directory not found";
+                _lastFileCheckError = "Directory not found";
                 return false;
             }
             catch (FileNotFoundException)
             {
-                _lastFileError = "File not found";
+                _lastFileCheckError = "File not found";
                 return false;
             }
             catch (IOException ex)
             {
-                _lastFileError = ex.Message;
+                _lastFileCheckError = ex.Message;
                 return false;
             }
             _fileReader = new StreamReader(_fileStream, fileEncoding, true, 65536);
@@ -213,10 +218,10 @@ namespace SnakeTail
             {
                 // Check if file is available (once a second)
                 if (_lastFileCheck != DateTime.Now)
-                    CheckLogFile();
+                    CheckLogFile(false);
 
                 if (lineNumber == 1)
-                    return "Cannot open file: " + _filePathAbsolute + (String.IsNullOrEmpty(_lastFileError) ? "" : " (" + _lastFileError + ")");
+                    return "Cannot open file: " + _filePathAbsolute + (String.IsNullOrEmpty(_lastFileCheckError) ? "" : " (" + _lastFileCheckError + ")");
                 else
                     return null;
             }
@@ -238,7 +243,7 @@ namespace SnakeTail
                 {
                     // Check if file has been renamed (once every 10 seconds)
                     if (DateTime.Now.Subtract(_lastFileCheck) >= _fileCheckFrequency)
-                        CheckLogFile();
+                        CheckLogFile(false);
                     return null;
                 }
 
