@@ -455,16 +455,18 @@ namespace SnakeTail
 
         private void minimizeToTrayToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            _trayIcon.Visible = true;
-            WindowState = FormWindowState.Minimized;
-            Hide();
-        }
-
-        private void _trayIcon_DoubleClick(object sender, EventArgs e)
-        {
-            Show();
-            WindowState = FormWindowState.Normal;
-            _trayIcon.Visible = false;
+            if (!_trayIcon.Visible)
+            {
+                _trayIcon.Visible = true;
+                WindowState = FormWindowState.Minimized;
+                Hide();
+            }
+            else
+            {
+                Show();
+                WindowState = FormWindowState.Normal;
+                _trayIcon.Visible = false;
+            }
         }
 
         private void windowToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
@@ -511,6 +513,29 @@ namespace SnakeTail
                 dlg.Text = "Error checking for new updates";
                 dlg.ShowDialog();
             }
+        }
+
+        private void _trayIconContextMenuStrip_Opening(object sender, CancelEventArgs e)
+        {
+            // We steal the items from the main menu (we restore them when closing again)
+            ToolStripItem[] items = new ToolStripItem[fileToolStripMenuItem.DropDownItems.Count];
+            fileToolStripMenuItem.DropDownItems.CopyTo(items, 0);
+            _trayIconContextMenuStrip.Items.Clear();            // Clear the dummy item
+            _trayIconContextMenuStrip.Items.AddRange(items);
+            minimizeToTrayToolStripMenuItem.Checked = true;
+            minimizeToTrayToolStripMenuItem.Font = new Font(minimizeToTrayToolStripMenuItem.Font, FontStyle.Bold);
+        }
+
+        private void _trayIconContextMenuStrip_Closed(object sender, ToolStripDropDownClosedEventArgs e)
+        {
+            // Restore the items back to the main menu when closing
+            ToolStripItem[] items = new ToolStripItem[_trayIconContextMenuStrip.Items.Count];
+            _trayIconContextMenuStrip.Items.CopyTo(items, 0);
+            fileToolStripMenuItem.DropDownItems.AddRange(items);
+            _trayIconContextMenuStrip.Items.Clear();
+            _trayIconContextMenuStrip.Items.Add(new ToolStripSeparator());  // Dummy item so menu is shown the next time
+            minimizeToTrayToolStripMenuItem.Checked = false;
+            minimizeToTrayToolStripMenuItem.Font = new Font(minimizeToTrayToolStripMenuItem.Font, FontStyle.Regular);
         }
     }
 }
