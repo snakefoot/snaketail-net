@@ -30,6 +30,7 @@ namespace SnakeTail
     public partial class TailForm : Form
     {
         // Todo Implement inline selection when owner-drawn
+        // Todo Implement inline keyword highlight when owner-drawn
         // Todo Filter Text File
         // Todo Consider keeping file handle open, even when file is renamed / deleted (show history)
         // Todo Jump Lists
@@ -50,6 +51,24 @@ namespace SnakeTail
         //      - If too many lines are guessed when we reach file-start before top of list (adjust guess)
         //      - If too few lines are guessed before we reach file-start we are at top of lies (adjust guess)
         //      - Must support that scrolling have been performed so it is always an adjusted guess
+        // Todo Implement log stream that skips to the end at beginning
+        //  - Only when requested to search the file backwards beyond the cache, then it reads the file from the beginning
+        //  - Has to make a good guess on the number of lines in the file
+        //      - Based on the number of the lines in the last X bytes of the file
+        //  - When requesting a line outside the cache, then it performs a proper line calculation
+        //      - How do we merge the correct line-count with the one guessed when using arrow-up ?
+        //          - File position is not a good friend when using file cache
+        //              - We can make the file reader use chunks of 64K
+        //          - Who should be responsible for conversion?
+        //              - Extend cache class so it wraps the two file-streams
+        //                  - Scroll to bottoom
+        //                  - Scroll to top
+        //                  - Search
+        //                  - Check tail (and new file)
+        //                  - Readline
+        //                  - Line Count
+        //                  - Prepare Cache
+        //                  - All methods can modify the line count
         LogFileCache _logFileCache = null;
         LogFileStream _logFileStream = null;
         LogFileStream _logTailStream = null;
@@ -747,7 +766,7 @@ namespace SnakeTail
 
             if (lineCount < _tailListView.VirtualListSize)
             {
-                _logFileStream.CheckLogFile();
+                _logFileStream.CheckLogFile(true);
                 _logFileCache = new LogFileCache(_logFileCache.Items.Count);
                 _tailListView.TopItem = null;
                 _tailListView.VirtualListSize = lineCount;
