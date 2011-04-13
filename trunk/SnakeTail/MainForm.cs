@@ -466,14 +466,26 @@ namespace SnakeTail
                 _trayIcon.Visible = true;
                 WindowState = FormWindowState.Minimized;
                 Hide();
+                ShowInTaskbar = false;
+                minimizeToTrayToolStripMenuItem.Checked = true;
+                _trayIcon.ShowBalloonTip(3, "Minimized to tray", "Double click the system tray icon to restore window", ToolTipIcon.Info);
             }
             else
             {
+                ShowInTaskbar = true;
                 Show();
                 WindowState = FormWindowState.Normal;
                 _trayIcon.Visible = false;
+                minimizeToTrayToolStripMenuItem.Checked = false;
             }
         }
+
+        private void _trayIcon_DoubleClick(object sender, EventArgs e)
+        {
+            Show();
+            WindowState = FormWindowState.Normal;
+            Activate();
+         }
 
         private void windowToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
         {
@@ -528,8 +540,6 @@ namespace SnakeTail
             fileToolStripMenuItem.DropDownItems.CopyTo(items, 0);
             _trayIconContextMenuStrip.Items.Clear();            // Clear the dummy item
             _trayIconContextMenuStrip.Items.AddRange(items);
-            minimizeToTrayToolStripMenuItem.Checked = true;
-            minimizeToTrayToolStripMenuItem.Font = new Font(minimizeToTrayToolStripMenuItem.Font, FontStyle.Bold);
         }
 
         private void _trayIconContextMenuStrip_Closed(object sender, ToolStripDropDownClosedEventArgs e)
@@ -540,8 +550,6 @@ namespace SnakeTail
             fileToolStripMenuItem.DropDownItems.AddRange(items);
             _trayIconContextMenuStrip.Items.Clear();
             _trayIconContextMenuStrip.Items.Add(new ToolStripSeparator());  // Dummy item so menu is shown the next time
-            minimizeToTrayToolStripMenuItem.Checked = false;
-            minimizeToTrayToolStripMenuItem.Font = new Font(minimizeToTrayToolStripMenuItem.Font, FontStyle.Regular);
         }
 
         private void MainForm_DragEnter(object sender, DragEventArgs e)
