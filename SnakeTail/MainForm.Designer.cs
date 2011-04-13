@@ -310,7 +310,7 @@ namespace SnakeTail
             // _trayIcon
             // 
             this._trayIcon.ContextMenuStrip = this._trayIconContextMenuStrip;
-            this._trayIcon.DoubleClick += new System.EventHandler(this.minimizeToTrayToolStripMenuItem_Click);
+            this._trayIcon.DoubleClick += new System.EventHandler(this._trayIcon_DoubleClick);
             // 
             // _trayIconContextMenuStrip
             // 
