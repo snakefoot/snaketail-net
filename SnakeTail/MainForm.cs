@@ -556,7 +556,7 @@ namespace SnakeTail
         {
             try
             {
-                Array array = (Array)e.Data.GetData(DataFormats.FileDrop);
+                Array array = e.Data.GetData(DataFormats.FileDrop) as Array;
                 if (array == null)
                     return;
 
