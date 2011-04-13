@@ -328,6 +328,7 @@ namespace SnakeTail
             // 
             // MainForm
             // 
+            this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(593, 402);
@@ -339,7 +340,9 @@ namespace SnakeTail
             this.Name = "MainForm";
             this.Text = "SnakeTail";
             this.Shown += new System.EventHandler(this.MainForm_Shown);
+            this.DragDrop += new System.Windows.Forms.DragEventHandler(this.MainForm_DragDrop);
             this.MdiChildActivate += new System.EventHandler(this.MainForm_MdiChildActivate);
+            this.DragEnter += new System.Windows.Forms.DragEventHandler(this.MainForm_DragEnter);
             this._statusStrip.ResumeLayout(false);
             this._statusStrip.PerformLayout();
             this._mainMenu.ResumeLayout(false);

@@ -168,12 +168,18 @@ namespace SnakeTail
             if (fileDialog.ShowDialog() != DialogResult.OK)
                 return;
 
-            foreach (string fileName in fileDialog.FileNames)
+            OpenFileSelection(fileDialog.FileNames);
+        }
+
+        private void OpenFileSelection(string[] filenames)
+        {
+            foreach (string filename in filenames)
             {
                 TailForm mdiForm = new TailForm();
-                mdiForm.LoadFile(fileName);
+                mdiForm.LoadFile(filename);
                 mdiForm.MdiParent = this;
                 mdiForm.Show();
+                Application.DoEvents();
             }
         }
 
@@ -536,6 +542,42 @@ namespace SnakeTail
             _trayIconContextMenuStrip.Items.Add(new ToolStripSeparator());  // Dummy item so menu is shown the next time
             minimizeToTrayToolStripMenuItem.Checked = false;
             minimizeToTrayToolStripMenuItem.Font = new Font(minimizeToTrayToolStripMenuItem.Font, FontStyle.Regular);
+        }
+
+        private void MainForm_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+                e.Effect = DragDropEffects.Copy;
+            else
+                e.Effect = DragDropEffects.None;
+        }
+
+        private void MainForm_DragDrop(object sender, DragEventArgs e)
+        {
+            try
+            {
+                Array array = (Array)e.Data.GetData(DataFormats.FileDrop);
+                if (array == null)
+                    return;
+
+                // Extract strings from array
+                List<string> filenames = new List<string>();
+                foreach(object filename in array)
+                {
+                    filenames.Add(filename.ToString());
+                }
+
+                // Call OpenFile asynchronously.
+                // Explorer instance from which file is dropped is not responding
+                // all the time when DragDrop handler is active, so we need to return
+                // immidiately (especially if OpenFile shows MessageBox).
+                this.BeginInvoke(new Action<string[]>(OpenFileSelection), new object[] { filenames.ToArray() });
+                this.Activate();        // in the case Explorer overlaps this form
+            }
+            catch (Exception)
+            {
+                // don't show MessageBox here - Explorer is waiting !
+            }
         }
     }
 }
