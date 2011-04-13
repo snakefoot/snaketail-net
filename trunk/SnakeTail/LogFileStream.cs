@@ -61,7 +61,7 @@ namespace SnakeTail
                 string name = testLogFile._fileStream!=null ? testLogFile._fileStream.Name : null;
                 testLogFile.LoadFile(null, _fileEncoding, _fileCheckPattern);  // Release the file handle
 
-                if (fileCheckLength < Length || _fileStream.Name != name || (_lastFileCheckLength <= fileCheckLength && _lastFileCheckLength > Length))
+                if (fileCheckLength < Length || Position > fileCheckLength || _fileStream.Name != name || (_lastFileCheckLength <= fileCheckLength && _lastFileCheckLength > Length))
                 {
                     // The file have been renamed / deleted (reload new file)
                     LoadFile(_filePathAbsolute, _fileEncoding, _fileCheckPattern);
@@ -242,7 +242,8 @@ namespace SnakeTail
                 if (_fileReader.EndOfStream)
                 {
                     // Check if file has been renamed (once every 10 seconds)
-                    if (DateTime.Now.Subtract(_lastFileCheck) >= _fileCheckFrequency)
+                    // Check if file has benn truncated
+                    if (Position > Length || DateTime.Now.Subtract(_lastFileCheck) >= _fileCheckFrequency)
                         CheckLogFile(false);
                     return null;
                 }
