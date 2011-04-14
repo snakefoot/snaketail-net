@@ -352,13 +352,7 @@ namespace SnakeTail
             }
             if (tailConfig != null)
             {
-                if (tailConfig.MinimizedToTray)
-                {
-                    _trayIcon.Visible = true;
-                    WindowState = FormWindowState.Minimized;
-                    Visible = false;
-                }
-                else
+                if (!tailConfig.MinimizedToTray)
                 {
                     Size = tailConfig.WindowSize;
                     DesktopLocation = tailConfig.WindowPosition;
@@ -436,6 +430,13 @@ namespace SnakeTail
                     _MDITabControl.SelectedIndex = tailConfig.SelectedTab;
                     _MDITabControl.Visible = true;
                     (_MDITabControl.SelectedTab.Tag as Form).WindowState = FormWindowState.Maximized;
+                }
+
+                if (tailConfig.MinimizedToTray)
+                {
+                    _trayIcon.Visible = true;
+                    WindowState = FormWindowState.Minimized;
+                    Visible = false;
                 }
             }
         }
