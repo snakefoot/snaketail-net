@@ -32,6 +32,8 @@ namespace SnakeTail
         private static MainForm _instance = null;
         public static MainForm Instance { get { return _instance; } }
 
+        private TailFileConfig _defaultTailConfig = null;
+
         public MainForm()
         {
             InitializeComponent();
@@ -173,10 +175,47 @@ namespace SnakeTail
 
         private void OpenFileSelection(string[] filenames)
         {
+            if (_defaultTailConfig == null)
+            {
+                // Attempt to load default session configuration from these locations
+                // 1. SnakeTail.xml in application directory
+                // 2. SnakeTail.xml in current user roaming app directory
+                // 3. SnakeTail.xml in current user local app directory
+                // 4. SnakeTail.xml in common app directory
+                string appPath = Path.GetDirectoryName(Application.ExecutablePath) + "\\SnakeTail.xml";
+                string roamingPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\SnakeTail\\SnakeTail.xml";
+                string localPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\SnakeTail\\SnakeTail.xml";
+                string commonPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\SnakeTail\\SnakeTail.xml";
+                TailConfig tailConfig = null;
+                if (File.Exists(appPath))
+                    tailConfig = LoadSessionFile(appPath);
+                else
+                if (File.Exists(roamingPath))
+                    tailConfig = LoadSessionFile(roamingPath);
+                else
+                if (File.Exists(localPath))
+                    tailConfig = LoadSessionFile(localPath);
+                else
+                if (File.Exists(commonPath))
+                    tailConfig = LoadSessionFile(commonPath);
+
+                if (tailConfig != null && tailConfig.TailFiles.Count > 0)
+                {
+                    _defaultTailConfig = tailConfig.TailFiles[0];
+                    _defaultTailConfig.Title = null;
+                }
+                else
+                {
+                    _defaultTailConfig = new TailFileConfig();
+                }
+            }
+
             foreach (string filename in filenames)
             {
                 TailForm mdiForm = new TailForm();
-                mdiForm.LoadFile(filename);
+                TailFileConfig tailConfig = _defaultTailConfig;
+                tailConfig.FilePath = filename;
+                mdiForm.LoadConfig(tailConfig, "");
                 mdiForm.MdiParent = this;
                 mdiForm.Show();
                 Application.DoEvents();
@@ -327,7 +366,7 @@ namespace SnakeTail
             }
         }
 
-        private void LoadSession(string filepath)
+        private TailConfig LoadSessionFile(string filepath)
         {
             TailConfig tailConfig = null;
             try
@@ -338,18 +377,24 @@ namespace SnakeTail
                     filepath = new Uri(reader.BaseURI).LocalPath;
                     tailConfig = serializer.Deserialize(reader) as TailConfig;
                 }
+                return tailConfig;
             }
             catch (Exception ex)
             {
                 string errorMsg = ex.Message;
-                while(ex.InnerException != null)
+                while (ex.InnerException != null)
                 {
                     ex = ex.InnerException;
                     errorMsg += "\n" + ex.Message;
                 }
                 MessageBox.Show("Failed to open session xml file, please ensure it is valid file:\n\n   " + filepath + "\n\n" + errorMsg, "", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                return null;
             }
+        }
+
+        private void LoadSession(string filepath)
+        {
+            TailConfig tailConfig = LoadSessionFile(filepath);
             if (tailConfig != null)
             {
                 if (!tailConfig.MinimizedToTray)
