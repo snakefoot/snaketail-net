@@ -110,13 +110,15 @@ namespace SnakeTail
         {
             TailFileConfig tailConfig = new TailFileConfig();
             tailConfig.FilePath = filepath;
-            tailConfig.FileCacheSize = 1000;
             LoadConfig(tailConfig, "");
         }
 
         public void LoadConfig(TailFileConfig tailConfig, string configPath)
         {
             _configPath = configPath;
+
+            if (tailConfig.FileCacheSize <= 0)
+                tailConfig.FileCacheSize = 1000;
 
             if (tailConfig.FormBackColor != null)
                 _tailListView.BackColor = tailConfig.FormBackColor.Value;
