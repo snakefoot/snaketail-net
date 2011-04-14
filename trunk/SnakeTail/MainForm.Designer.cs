@@ -339,6 +339,7 @@ namespace SnakeTail
             this.MainMenuStrip = this._mainMenu;
             this.Name = "MainForm";
             this.Text = "SnakeTail";
+            this.SizeChanged += new System.EventHandler(this.MainForm_SizeChanged);
             this.Shown += new System.EventHandler(this.MainForm_Shown);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.MainForm_DragDrop);
             this.MdiChildActivate += new System.EventHandler(this.MainForm_MdiChildActivate);

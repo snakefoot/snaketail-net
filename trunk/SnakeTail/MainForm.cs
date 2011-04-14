@@ -355,7 +355,7 @@ namespace SnakeTail
                 if (tailConfig.MinimizedToTray)
                 {
                     _trayIcon.Visible = true;
-                    ShowInTaskbar = false;
+                    WindowState = FormWindowState.Minimized;
                     Visible = false;
                 }
                 else
@@ -465,7 +465,6 @@ namespace SnakeTail
             {
                 _trayIcon.Visible = true;
                 WindowState = FormWindowState.Minimized;
-                ShowInTaskbar = false;
                 Visible = false;
                 minimizeToTrayToolStripMenuItem.Checked = true;
                 _trayIcon.ShowBalloonTip(3, "Minimized to tray", "Double click the system tray icon to restore window", ToolTipIcon.Info);
@@ -473,7 +472,6 @@ namespace SnakeTail
             else
             {
                 Visible = true;
-                ShowInTaskbar = true;
                 WindowState = FormWindowState.Normal;
                 _trayIcon.Visible = false;
                 minimizeToTrayToolStripMenuItem.Checked = false;
@@ -540,6 +538,8 @@ namespace SnakeTail
             fileToolStripMenuItem.DropDownItems.CopyTo(items, 0);
             _trayIconContextMenuStrip.Items.Clear();            // Clear the dummy item
             _trayIconContextMenuStrip.Items.AddRange(items);
+            minimizeToTrayToolStripMenuItem.Checked = true;
+            minimizeToTrayToolStripMenuItem.Font = new Font(minimizeToTrayToolStripMenuItem.Font, FontStyle.Bold);
         }
 
         private void _trayIconContextMenuStrip_Closed(object sender, ToolStripDropDownClosedEventArgs e)
@@ -550,6 +550,8 @@ namespace SnakeTail
             fileToolStripMenuItem.DropDownItems.AddRange(items);
             _trayIconContextMenuStrip.Items.Clear();
             _trayIconContextMenuStrip.Items.Add(new ToolStripSeparator());  // Dummy item so menu is shown the next time
+            minimizeToTrayToolStripMenuItem.Checked = false;
+            minimizeToTrayToolStripMenuItem.Font = new Font(minimizeToTrayToolStripMenuItem.Font, FontStyle.Regular);
         }
 
         private void MainForm_DragEnter(object sender, DragEventArgs e)
@@ -586,6 +588,12 @@ namespace SnakeTail
             {
                 // don't show MessageBox here - Explorer is waiting !
             }
+        }
+
+        private void MainForm_SizeChanged(object sender, EventArgs e)
+        {
+            if (_trayIcon.Visible && WindowState == FormWindowState.Minimized)
+                Visible = false;
         }
     }
 }
