@@ -465,15 +465,15 @@ namespace SnakeTail
             {
                 _trayIcon.Visible = true;
                 WindowState = FormWindowState.Minimized;
-                Hide();
                 ShowInTaskbar = false;
+                Visible = false;
                 minimizeToTrayToolStripMenuItem.Checked = true;
                 _trayIcon.ShowBalloonTip(3, "Minimized to tray", "Double click the system tray icon to restore window", ToolTipIcon.Info);
             }
             else
             {
+                Visible = true;
                 ShowInTaskbar = true;
-                Show();
                 WindowState = FormWindowState.Normal;
                 _trayIcon.Visible = false;
                 minimizeToTrayToolStripMenuItem.Checked = false;
