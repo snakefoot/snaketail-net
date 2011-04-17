@@ -245,6 +245,24 @@ namespace SnakeTail
             }
         }
 
+        private void _MDITabControl_MouseClick(object sender, MouseEventArgs e)
+        {
+            var tabControl = sender as TabControl;
+            TabPage tabPageCurrent = null;
+            if (e.Button == MouseButtons.Middle)
+            {
+                for (var i = 0; i < tabControl.TabCount; i++)
+                {
+                    if (!tabControl.GetTabRect(i).Contains(e.Location))
+                        continue;
+                    tabPageCurrent = tabControl.TabPages[i];
+                    break;
+                }
+                if (tabPageCurrent != null)
+                    (tabPageCurrent.Tag as Form).Close();
+            }
+        }
+
         private void cascadeWindowsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LayoutMdi(MdiLayout.Cascade);
