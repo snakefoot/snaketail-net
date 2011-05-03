@@ -47,7 +47,10 @@ namespace SnakeTail
             string[] args = Environment.GetCommandLineArgs();
             if (args.Length > 1)
             {
-                LoadSession(args[1]);
+                if (args[1].EndsWith(".xml", StringComparison.CurrentCultureIgnoreCase))
+                    LoadSession(args[1]);
+                else
+                    OpenFileSelection(new string[] { args[1] });
             }
         }
 
