@@ -80,10 +80,19 @@ namespace SnakeTail
 
         public void LoadConfig(TailFileConfig tailConfig)
         {
-            _eventLog = new EventLog(tailConfig.FilePath);
-            _eventLog.EnableRaisingEvents = true;
-            _eventLog.EntryWritten += new EntryWrittenEventHandler(_eventLog_EntryWritten);
-            _eventLog.EndInit();
+            try
+            {
+                _eventLog = new EventLog(tailConfig.FilePath);
+                _eventLog.EnableRaisingEvents = true;
+                _eventLog.EntryWritten += new EntryWrittenEventHandler(_eventLog_EntryWritten);
+                _eventLog.EndInit();
+            }
+            catch (System.Security.SecurityException ex)
+            {
+                MessageBox.Show("Access denied when opening log: " + tailConfig.FilePath + "\n\n" + ex.Message);
+                Close();
+                return;
+            }
 
             if (System.Environment.OSVersion.Version.Major >= 6)
             {
