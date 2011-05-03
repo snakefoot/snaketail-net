@@ -588,7 +588,7 @@ namespace SnakeTail
                         }
                     }
                 }
-                MessageBox.Show("Using latest version", "Check for updates", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Using the latest version", "Check for updates", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
