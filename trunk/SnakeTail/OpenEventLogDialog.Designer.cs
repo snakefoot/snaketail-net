@@ -84,6 +84,7 @@ namespace SnakeTail
             this._listView.TabIndex = 0;
             this._listView.UseCompatibleStateImageBehavior = false;
             this._listView.View = System.Windows.Forms.View.List;
+            this._listView.DoubleClick += new System.EventHandler(this._listView_DoubleClick);
             // 
             // OpenEventLogDialog
             // 

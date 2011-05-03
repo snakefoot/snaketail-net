@@ -50,5 +50,15 @@ namespace SnakeTail
             if (_listView.SelectedItems.Count > 0)
                 EventLogFile = _listView.SelectedItems[0].Text;
         }
+
+        private void _listView_DoubleClick(object sender, EventArgs e)
+        {
+            if (_listView.SelectedItems.Count == 0)
+                return;
+
+            EventLogFile = _listView.SelectedItems[0].Text;
+            DialogResult = DialogResult.OK;
+            Close();
+        }
     }
 }
