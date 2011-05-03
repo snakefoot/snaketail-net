@@ -231,7 +231,8 @@ namespace SnakeTail
             EventLogForm mdiForm = new EventLogForm();
             mdiForm.MdiParent = this;
             mdiForm.LoadFile(openEventLogDlg.EventLogFile);
-            mdiForm.Show();
+            if (!mdiForm.IsDisposed)
+                mdiForm.Show();
         }
 
         private void _MDITabControl_SelectedIndexChanged(object sender, EventArgs e)
@@ -438,6 +439,8 @@ namespace SnakeTail
                             mdiForm.ShowInTaskbar = false;
                             AddMdiChildTab(mdiForm);
                             mdiForm.LoadConfig(tailFile);
+                            if (mdiForm.IsDisposed)
+                                continue;
                         }
                         mdiForm.Show();
 
@@ -585,7 +588,7 @@ namespace SnakeTail
                         }
                     }
                 }
-                MessageBox.Show("No new version available", "Check for updates", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Using latest version", "Check for updates", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
