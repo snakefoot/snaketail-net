@@ -360,16 +360,17 @@ namespace SnakeTail
             tailConfig.WindowPosition = DesktopLocation;
             tailConfig.MinimizedToTray = _trayIcon.Visible;
 
-            foreach (Form childForm in Application.OpenForms)
+            // We loop through the tabpages to store in proper TabPage order
+            foreach (TabPage tagPage in _MDITabControl.TabPages)
             {
-                TailForm tailForm = childForm as TailForm;
+                TailForm tailForm = tagPage.Tag as TailForm;
                 if (tailForm != null)
                 {
                     TailFileConfig tailFile = new TailFileConfig();
                     tailForm.SaveConfig(tailFile);
                     tailConfig.TailFiles.Add(tailFile);
                 }
-                EventLogForm eventlogForm = childForm as EventLogForm;
+                EventLogForm eventlogForm = tagPage.Tag as EventLogForm;
                 if (eventlogForm != null)
                 {
                     TailFileConfig tailFile = new TailFileConfig();
@@ -664,6 +665,43 @@ namespace SnakeTail
         {
             if (_trayIcon.Visible && WindowState == FormWindowState.Minimized)
                 Visible = false;
+        }
+
+        private void _MDITabControl_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                _MDITabControl.AllowDrop = true;
+                _MDITabControl.DoDragDrop(_MDITabControl.SelectedTab, DragDropEffects.All);
+                _MDITabControl.AllowDrop = false;
+            }
+        }
+
+        private void _MDITabControl_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(typeof(TabPage)))
+                e.Effect = DragDropEffects.Move;
+            else
+                e.Effect = DragDropEffects.None;
+        }
+
+        private void _MDITabControl_DragDrop(object sender, DragEventArgs e)
+        {
+            Point clientPoint = _MDITabControl.PointToClient(new Point(e.X, e.Y));
+            for(int i = 0; i < _MDITabControl.TabPages.Count; ++i)
+            {
+                if (_MDITabControl.GetTabRect(i).Contains(clientPoint))
+                {
+                    if (_MDITabControl.TabPages[i] == _MDITabControl.SelectedTab)
+                        break;  // No change
+
+                    TabPage tabPage = _MDITabControl.SelectedTab;
+                    _MDITabControl.TabPages.Remove(tabPage);
+                    _MDITabControl.TabPages.Insert(i, tabPage);
+                    _MDITabControl.SelectedIndex = i;
+                    break;
+                }
+            }
         }
     }
 }
