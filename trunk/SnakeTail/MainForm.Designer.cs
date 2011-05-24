@@ -305,7 +305,10 @@ namespace SnakeTail
             this._MDITabControl.Size = new System.Drawing.Size(593, 23);
             this._MDITabControl.TabIndex = 5;
             this._MDITabControl.Visible = false;
+            this._MDITabControl.MouseMove += new System.Windows.Forms.MouseEventHandler(this._MDITabControl_MouseMove);
+            this._MDITabControl.DragDrop += new System.Windows.Forms.DragEventHandler(this._MDITabControl_DragDrop);
             this._MDITabControl.MouseClick += new System.Windows.Forms.MouseEventHandler(this._MDITabControl_MouseClick);
+            this._MDITabControl.DragEnter += new System.Windows.Forms.DragEventHandler(this._MDITabControl_DragEnter);
             this._MDITabControl.SelectedIndexChanged += new System.EventHandler(this._MDITabControl_SelectedIndexChanged);
             // 
             // _trayIcon
