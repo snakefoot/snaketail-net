@@ -241,9 +241,8 @@ namespace SnakeTail
 
                 if (_fileReader.EndOfStream)
                 {
-                    // Check if file has been renamed (once every 10 seconds)
-                    // Check if file has benn truncated
-                    if (Position > Length || DateTime.Now.Subtract(_lastFileCheck) >= _fileCheckFrequency)
+                    // Check if file has been renamed/truncated (once every 10 seconds)
+                    if (DateTime.Now.Subtract(_lastFileCheck) >= _fileCheckFrequency)
                         CheckLogFile(false);
                     return null;
                 }

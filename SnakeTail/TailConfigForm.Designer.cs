@@ -51,6 +51,7 @@ namespace SnakeTail
             System.Windows.Forms.Label label7;
             System.Windows.Forms.ColumnHeader _keywordColumn;
             System.Windows.Forms.Label label6;
+            System.Windows.Forms.Label label8;
             this._tabControl = new System.Windows.Forms.TabControl();
             this._tabPageView = new System.Windows.Forms.TabPage();
             this._windowIconEdt = new System.Windows.Forms.TextBox();
@@ -59,7 +60,7 @@ namespace SnakeTail
             this._textColorBtn = new System.Windows.Forms.Button();
             this._tabPageFile = new System.Windows.Forms.TabPage();
             this._fileCheckPatternChk = new System.Windows.Forms.CheckBox();
-            this._fileCheckIntervalEdt = new System.Windows.Forms.TextBox();
+            this._fileReopenCheckIntervalEdt = new System.Windows.Forms.TextBox();
             this._windowServiceEdt = new System.Windows.Forms.TextBox();
             this._fileCacheSizeEdt = new System.Windows.Forms.TextBox();
             this._fileEncodingCmb = new System.Windows.Forms.ComboBox();
@@ -74,6 +75,9 @@ namespace SnakeTail
             this._loghitColumn = new System.Windows.Forms.ColumnHeader();
             this._acceptBtn = new System.Windows.Forms.Button();
             this._cancelBtn = new System.Windows.Forms.Button();
+            this._fileChangeCheckIntervalEdt = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -82,6 +86,7 @@ namespace SnakeTail
             label7 = new System.Windows.Forms.Label();
             _keywordColumn = new System.Windows.Forms.ColumnHeader();
             label6 = new System.Windows.Forms.Label();
+            label8 = new System.Windows.Forms.Label();
             this._tabControl.SuspendLayout();
             this._tabPageView.SuspendLayout();
             this._tabPageFile.SuspendLayout();
@@ -136,7 +141,7 @@ namespace SnakeTail
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new System.Drawing.Point(3, 118);
+            label7.Location = new System.Drawing.Point(3, 144);
             label7.Name = "label7";
             label7.Size = new System.Drawing.Size(90, 13);
             label7.TabIndex = 9;
@@ -152,9 +157,9 @@ namespace SnakeTail
             label6.AutoSize = true;
             label6.Location = new System.Drawing.Point(3, 92);
             label6.Name = "label6";
-            label6.Size = new System.Drawing.Size(95, 13);
+            label6.Size = new System.Drawing.Size(136, 13);
             label6.TabIndex = 6;
-            label6.Text = "File Check Interval";
+            label6.Text = "File Reopen Check Interval";
             // 
             // _tabControl
             // 
@@ -219,8 +224,12 @@ namespace SnakeTail
             // 
             // _tabPageFile
             // 
+            this._tabPageFile.Controls.Add(this.label10);
+            this._tabPageFile.Controls.Add(this.label9);
+            this._tabPageFile.Controls.Add(this._fileChangeCheckIntervalEdt);
+            this._tabPageFile.Controls.Add(label8);
             this._tabPageFile.Controls.Add(this._fileCheckPatternChk);
-            this._tabPageFile.Controls.Add(this._fileCheckIntervalEdt);
+            this._tabPageFile.Controls.Add(this._fileReopenCheckIntervalEdt);
             this._tabPageFile.Controls.Add(label6);
             this._tabPageFile.Controls.Add(label7);
             this._tabPageFile.Controls.Add(this._windowServiceEdt);
@@ -241,23 +250,23 @@ namespace SnakeTail
             // _fileCheckPatternChk
             // 
             this._fileCheckPatternChk.AutoSize = true;
-            this._fileCheckPatternChk.Location = new System.Drawing.Point(209, 92);
+            this._fileCheckPatternChk.Location = new System.Drawing.Point(241, 92);
             this._fileCheckPatternChk.Name = "_fileCheckPatternChk";
-            this._fileCheckPatternChk.Size = new System.Drawing.Size(128, 17);
+            this._fileCheckPatternChk.Size = new System.Drawing.Size(112, 17);
             this._fileCheckPatternChk.TabIndex = 8;
-            this._fileCheckPatternChk.Text = "Latest file using regex";
+            this._fileCheckPatternChk.Text = "Regex in File Path";
             this._fileCheckPatternChk.UseVisualStyleBackColor = true;
             // 
-            // _fileCheckIntervalEdt
+            // _fileReopenCheckIntervalEdt
             // 
-            this._fileCheckIntervalEdt.Location = new System.Drawing.Point(103, 89);
-            this._fileCheckIntervalEdt.Name = "_fileCheckIntervalEdt";
-            this._fileCheckIntervalEdt.Size = new System.Drawing.Size(100, 20);
-            this._fileCheckIntervalEdt.TabIndex = 7;
+            this._fileReopenCheckIntervalEdt.Location = new System.Drawing.Point(144, 89);
+            this._fileReopenCheckIntervalEdt.Name = "_fileReopenCheckIntervalEdt";
+            this._fileReopenCheckIntervalEdt.Size = new System.Drawing.Size(59, 20);
+            this._fileReopenCheckIntervalEdt.TabIndex = 7;
             // 
             // _windowServiceEdt
             // 
-            this._windowServiceEdt.Location = new System.Drawing.Point(103, 115);
+            this._windowServiceEdt.Location = new System.Drawing.Point(103, 141);
             this._windowServiceEdt.Name = "_windowServiceEdt";
             this._windowServiceEdt.Size = new System.Drawing.Size(100, 20);
             this._windowServiceEdt.TabIndex = 10;
@@ -388,6 +397,40 @@ namespace SnakeTail
             this._cancelBtn.Text = "Cancel";
             this._cancelBtn.UseVisualStyleBackColor = true;
             // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.Location = new System.Drawing.Point(3, 118);
+            label8.Name = "label8";
+            label8.Size = new System.Drawing.Size(135, 13);
+            label8.TabIndex = 11;
+            label8.Text = "File Change Check Interval";
+            // 
+            // _fileChangeCheckIntervalEdt
+            // 
+            this._fileChangeCheckIntervalEdt.Location = new System.Drawing.Point(144, 115);
+            this._fileChangeCheckIntervalEdt.Name = "_fileChangeCheckIntervalEdt";
+            this._fileChangeCheckIntervalEdt.Size = new System.Drawing.Size(59, 20);
+            this._fileChangeCheckIntervalEdt.TabIndex = 12;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(209, 118);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(37, 13);
+            this.label9.TabIndex = 13;
+            this.label9.Text = "msecs";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(209, 92);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(29, 13);
+            this.label10.TabIndex = 14;
+            this.label10.Text = "secs";
+            // 
             // TailConfigForm
             // 
             this.AcceptButton = this._acceptBtn;
@@ -438,7 +481,10 @@ namespace SnakeTail
         private System.Windows.Forms.ColumnHeader _regexColumn;
         private System.Windows.Forms.ColumnHeader _loghitColumn;
         private System.Windows.Forms.CheckBox _fileCheckPatternChk;
-        private System.Windows.Forms.TextBox _fileCheckIntervalEdt;
+        private System.Windows.Forms.TextBox _fileReopenCheckIntervalEdt;
+        private System.Windows.Forms.TextBox _fileChangeCheckIntervalEdt;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label9;
 
 
 
