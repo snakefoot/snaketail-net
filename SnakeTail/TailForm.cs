@@ -993,7 +993,8 @@ namespace SnakeTail
                     selection.Append("\r\n");
                 selection.Append(_tailListView.Items[itemIndex].Text);
             }
-            Clipboard.SetText(selection.ToString());
+            if (selection.Length > 0)
+                Clipboard.SetText(selection.ToString());
         }
 
         private void findToolStripMenuItem_Click(object sender, EventArgs e)
