@@ -66,7 +66,9 @@ namespace SnakeTail
 
                 _fileCacheSizeEdt.Text = TailFileConfig.FileCacheSize.ToString();
 
-                _fileCheckIntervalEdt.Text = TailFileConfig.FileCheckInterval.ToString();
+                _fileReopenCheckIntervalEdt.Text = TailFileConfig.FileCheckInterval.ToString();
+
+                _fileChangeCheckIntervalEdt.Text = TailFileConfig.FileChangeCheckInterval.ToString();
 
                 _fileCheckPatternChk.Checked = TailFileConfig.FileCheckPattern;
 
@@ -103,7 +105,9 @@ namespace SnakeTail
 
                 TailFileConfig.ServiceName = _windowServiceEdt.Text;
 
-                TailFileConfig.FileCheckInterval = Int32.Parse(_fileCheckIntervalEdt.Text);
+                TailFileConfig.FileCheckInterval = Int32.Parse(_fileReopenCheckIntervalEdt.Text);
+
+                TailFileConfig.FileChangeCheckInterval = Int32.Parse(_fileChangeCheckIntervalEdt.Text);
 
                 TailFileConfig.FileCheckPattern = _fileCheckPatternChk.Checked;
 

@@ -128,6 +128,9 @@ namespace SnakeTail
             if (tailConfig.FormFont != null)
                 _tailListView.Font = tailConfig.FormFont;
 
+            if (tailConfig.FileChangeCheckInterval > 0)
+                _tailTimer.Interval = tailConfig.FileChangeCheckInterval;
+
             _loghitCounter = -1;
             _keywordHighlight = tailConfig.KeywordHighlight;
             if (_keywordHighlight != null)
@@ -318,6 +321,7 @@ namespace SnakeTail
             tailConfig.EnumFileEncoding = _logTailStream.FileEncoding;
             tailConfig.FilePath = _logTailStream.FilePath;
             tailConfig.FileCheckInterval = _logTailStream.FileCheckInterval;
+            tailConfig.FileChangeCheckInterval = _tailTimer.Interval;
             tailConfig.FileCheckPattern = _logTailStream.FileCheckPattern;
             tailConfig.Title = _formTitle;
             tailConfig.IconFile = _formIconFile;
@@ -753,7 +757,7 @@ namespace SnakeTail
 
             if (lineCount == _tailListView.VirtualListSize)
             {
-                if (_logTailStream.Length == 0 && lineCount == 1)
+                if (lineCount == 1 && _logTailStream.Length == 0)
                 {
                     // Check if the open file error has changed
                     if (_tailListView.Items[0].Text == _logTailStream.ReadLine(1))
