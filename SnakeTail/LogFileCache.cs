@@ -39,6 +39,12 @@ namespace SnakeTail
             FirstIndex = 0;
         }
 
+        public void Reset()
+        {
+            LoadingFileEvent = null;
+            FillCacheEvent = null;
+        }
+
         public void SetLastCacheMiss(int index, ListViewItem item)
         {
             // Hvis vi bliver spurgt til elementer lige efter sidste element, saa flyt cache fremad
