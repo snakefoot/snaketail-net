@@ -172,6 +172,9 @@ namespace SnakeTail
             if (_logTailStream == null || _logTailStream.FilePath != tailConfig.FilePath || _logTailStream.FileEncoding != fileEncoding || _logTailStream.FileCheckInterval != tailConfig.FileCheckInterval || _logTailStream.FileCheckPattern != tailConfig.FileCheckPattern)
                 _logTailStream = new LogFileStream(configPath, tailConfig.FilePath, fileEncoding, tailConfig.FileCheckInterval, tailConfig.FileCheckPattern);
 
+            if (_logFileCache != null)
+                _logFileCache.Reset();
+
             if (_logFileCache == null || _logFileCache.Items.Count != tailConfig.FileCacheSize)
             {
                 _logFileCache = new LogFileCache(tailConfig.FileCacheSize);
@@ -609,6 +612,14 @@ namespace SnakeTail
                 _tailListView.Invalidate();
                 _tailListView.Update();
             }
+        }
+
+        private void TailForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // Prevent event callbacks while we are closing down
+            _tailTimer.Enabled = false;
+            if (_logFileCache != null)
+                _logFileCache.Reset();
         }
 
         private void _tailListView_CacheVirtualItems(object sender, CacheVirtualItemsEventArgs e)
