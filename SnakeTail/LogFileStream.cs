@@ -85,6 +85,11 @@ namespace SnakeTail
             get { return _fileStream != null ? _fileStream.Position : 0; }
         }
 
+        public string Name
+        {
+            get { return _fileStream != null ? _fileStream.Name : null; }
+        }
+
         public Encoding FileEncoding
         {
             get { return _fileEncoding; }
@@ -118,6 +123,25 @@ namespace SnakeTail
                 return false;
         }
 
+        public static string FindFileUsingPattern(string filePathAbsolute)
+        {
+            // Consider using FileSystemWatcher
+            string filename = Path.GetFileName(filePathAbsolute);
+            string directory = Path.GetDirectoryName(filePathAbsolute);
+            DirectoryInfo dir = new DirectoryInfo(directory);
+            FileInfo[] files = dir.GetFiles(filename);
+            FileInfo lastestFile = null;
+            foreach (FileInfo file in files)
+            {
+                if (lastestFile == null || lastestFile.LastWriteTime < file.LastWriteTime)
+                    lastestFile = file;
+            }
+            if (lastestFile != null)
+                return lastestFile.FullName;
+            else
+                return null;
+        }
+
         bool LoadFile(string filepath, Encoding fileEncoding, bool fileCheckPattern)
         {
             _lastFileCheckError = "";
@@ -139,31 +163,17 @@ namespace SnakeTail
                 _lastFileCheckError = "No file path";
                 return false;
             }
-
+            else
             if (fileCheckPattern)
             {
-                // Consider using FileSystemWatcher
-                string filename = Path.GetFileName(_filePathAbsolute);
-                string directory = Path.GetDirectoryName(_filePathAbsolute);
-                DirectoryInfo dir = new DirectoryInfo(directory);
-                FileInfo[] files = dir.GetFiles(filename);
-                FileInfo lastestFile = null;
-                foreach (FileInfo file in files)
-                {
-                    if (lastestFile == null || lastestFile.LastWriteTime < file.LastWriteTime)
-                        lastestFile = file;
-                }
-                if (lastestFile != null)
-                {
-                    filepath = lastestFile.FullName;
-                }
-                else
+                filepath = FindFileUsingPattern(filepath);
+                if (filepath==null)
                 {
                     _lastFileCheckError = "No files matching pattern";
                     return false;
                 }
             }
-
+            
             try
             {
                 _fileStream = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, 65536, FileOptions.SequentialScan);
@@ -218,7 +228,7 @@ namespace SnakeTail
             {
                 // Check if file is available (once a second)
                 if (_lastFileCheck != DateTime.Now)
-                    CheckLogFile(false);
+                    CheckLogFile(true);
 
                 if (lineNumber == 1)
                     return "Cannot open file: " + _filePathAbsolute + (String.IsNullOrEmpty(_lastFileCheckError) ? "" : " (" + _lastFileCheckError + ")");
