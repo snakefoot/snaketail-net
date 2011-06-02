@@ -270,6 +270,7 @@ namespace SnakeTail
             this.Text = "TailForm";
             this.Load += new System.EventHandler(this.TailForm_Load);
             this.Activated += new System.EventHandler(this.TailForm_Activated);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.TailForm_FormClosing);
             this.Resize += new System.EventHandler(this.TailForm_Resize);
             this._contextMenuStrip.ResumeLayout(false);
             this._statusStrip.ResumeLayout(false);
