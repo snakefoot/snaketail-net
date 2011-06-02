@@ -60,8 +60,16 @@ namespace SnakeTail
             tailConfig.Title = _formTitle;
             tailConfig.Modeless = MdiParent == null;
             tailConfig.WindowState = WindowState;
-            tailConfig.WindowSize = Size;
-            tailConfig.WindowPosition = DesktopLocation;
+            if (WindowState == FormWindowState.Minimized)
+            {
+                tailConfig.WindowSize = RestoreBounds.Size;
+                tailConfig.WindowPosition = RestoreBounds.Location;
+            }
+            else
+            {
+                tailConfig.WindowSize = Size;
+                tailConfig.WindowPosition = DesktopLocation;
+            }
             tailConfig.ColumnFilters = new List<List<string>>();
             foreach (List<Regex> filter in _columnFilters)
             {
