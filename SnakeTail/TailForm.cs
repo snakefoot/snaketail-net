@@ -37,7 +37,20 @@ namespace SnakeTail
         // Todo Use background workerthread when searching (First visual cache, new file-stream, lock scrolling and timers, extra step to check for new lines, allow cancel search)
         // Todo Cache search results when searching up
         // Todo Scroll to the same matching line in all views
-        // Todo Monitor folder with regex prefix
+        // Todo Use background workerthread when checking for new file (avoid network timeout)
+        //  - It needs to be a seperate thread that both does the reading and file checking
+        //  - The ListViewItem cache should reside in the GUI context
+        //  - Make active thread object, which the GUI context can contact
+        //      - Read next line (Polls the next line if one exist)
+        //      - Total number of lines (Attempt to make guess ?)
+        //  - Active thread keeps internal cache of 100 lines
+        //      - Only when lines has been read, then it continues
+        //  - There is also a LogStreamObject object in the GUI context for searching and reading backwards
+        //      - We close / reopen the second file handle for each operation
+        //          - This will slow down the operation when scrolling down
+        //              - Another work around is to keep a version on the LogStreamObject, and increase every time it reopens
+        //              - We could fix this if enabling dynamic file positioning
+        //              - Maybe just implement a solution where it is slow first ?
         // Todo Implement log stream that can read backwards
         //  - Can start at the bottom and display at once without loading entire file
         //  - Open file, read BOM (If default specified)
@@ -190,9 +203,16 @@ namespace SnakeTail
             {
                 _formIconFile = tailConfig.IconFile;
                 string formIconFilePathAbsolute = System.IO.Path.Combine(configPath, _formIconFile);
-                _formCustomIcon = System.Drawing.Icon.ExtractAssociatedIcon(formIconFilePathAbsolute);
-                _formMaximizedIcon = Icon;
-                Icon = _formCustomIcon;
+                try
+                {
+                    _formCustomIcon = System.Drawing.Icon.ExtractAssociatedIcon(formIconFilePathAbsolute);
+                    _formMaximizedIcon = Icon;
+                    Icon = _formCustomIcon;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Failed to load icon\n\n   " + formIconFilePathAbsolute + "\n\n" + ex.Message, null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
 
             UpdateFormTitle(true);
