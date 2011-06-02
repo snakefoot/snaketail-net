@@ -100,7 +100,6 @@ namespace SnakeTail
             // 
             // _tailTimer
             // 
-            this._tailTimer.Interval = 50;
             this._tailTimer.Tick += new System.EventHandler(this._tailTimer_Tick);
             // 
             // _statusStrip
