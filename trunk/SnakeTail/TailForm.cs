@@ -347,8 +347,17 @@ namespace SnakeTail
             tailConfig.IconFile = _formIconFile;
             tailConfig.Modeless = MdiParent == null;
             tailConfig.WindowState = WindowState;
-            tailConfig.WindowSize = Size;
-            tailConfig.WindowPosition = DesktopLocation;
+            if (WindowState == FormWindowState.Minimized)
+            {
+                tailConfig.WindowSize = RestoreBounds.Size;
+                tailConfig.WindowPosition = RestoreBounds.Location;
+            }
+            else
+            {
+                tailConfig.WindowSize = Size;
+                tailConfig.WindowPosition = DesktopLocation;
+            }
+            
             if (_taskMonitor != null)
                 tailConfig.ServiceName = _taskMonitor.ServiceName;
             else
