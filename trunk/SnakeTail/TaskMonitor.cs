@@ -50,10 +50,18 @@ namespace SnakeTail
             else
             {
                 Process[] processList = Process.GetProcessesByName(serviceName.Substring(0, serviceName.LastIndexOf('.')));
-                foreach (Process process in processList)
+                try
                 {
-                    if (process.Id > 0)
-                        return (uint)process.Id;
+                    foreach (Process process in processList)
+                    {
+                        if (process.Id > 0)
+                            return (uint)process.Id;
+                    }
+                }
+                finally
+                {
+                    foreach (Process process in processList)
+                        process.Dispose();
                 }
                 return 0;
             }
