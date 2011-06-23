@@ -80,8 +80,6 @@ namespace SnakeTail
         {
             if (activeTailForm != null)
             {
-                if (!Visible)
-                    Show(MainForm.Instance);
                 ActiveTailForm = activeTailForm;
 
                 bool found = false;

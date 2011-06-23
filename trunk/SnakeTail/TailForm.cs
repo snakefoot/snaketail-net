@@ -484,8 +484,10 @@ namespace SnakeTail
                         if (lastMatchFound != -1)
                         {
                             SetStatusBar(null);
+                            _tailListView.SelectedIndices.Clear();
                             _tailListView.EnsureVisible(lastMatchFound);
                             _tailListView.SelectedIndices.Add(lastMatchFound);
+                            _tailListView.Items[lastMatchFound].Focused = true;
                             return true;
                         }
                         else
@@ -503,6 +505,7 @@ namespace SnakeTail
                             _tailListView.SelectedIndices.Clear();
                             _tailListView.EnsureVisible(i);
                             _tailListView.SelectedIndices.Add(i);
+                            _tailListView.Items[i].Focused = true;
                             return true;
                         }
                     }
@@ -514,6 +517,7 @@ namespace SnakeTail
                             _tailListView.SelectedIndices.Clear();
                             _tailListView.EnsureVisible(i);
                             _tailListView.SelectedIndices.Add(i);
+                            _tailListView.Items[i].Focused = true;
                             return true;
                         }
                     }
@@ -537,6 +541,7 @@ namespace SnakeTail
                         _logFileCache = searchFileCache;    // Swap cache before displaying search result
                     _tailListView.EnsureVisible(matchFound);
                     _tailListView.SelectedIndices.Add(matchFound);   // Set selection after having scrolled to avoid top-index cache miss
+                    _tailListView.Items[matchFound].Focused = true;
                     return true;
                 }
                 else
@@ -708,7 +713,11 @@ namespace SnakeTail
             {
                 _tailListView.SelectedIndices.Clear();
                 if (_tailListView.VirtualListSize > 0)
+                {
+                    _tailListView.EnsureVisible(0);
                     _tailListView.SelectedIndices.Add(0);
+                    _tailListView.Items[0].Focused = true;
+                }
             }
 
             if (e.Control && e.KeyCode == Keys.End)
@@ -716,9 +725,10 @@ namespace SnakeTail
                 _tailListView.SelectedIndices.Clear();
                 if (_tailListView.VirtualListSize > 0)
                 {
-                    _tailListView.SelectedIndices.Add(_tailListView.VirtualListSize-1);
                     _logFileCache.PrepareCache(Math.Max(_tailListView.VirtualListSize - _logFileCache.Items.Count,0), _tailListView.VirtualListSize, false);
                     _tailListView.EnsureVisible(_tailListView.VirtualListSize - 1);
+                    _tailListView.SelectedIndices.Add(_tailListView.VirtualListSize-1);
+                    _tailListView.Items[_tailListView.VirtualListSize - 1].Focused = true;
                 }
             }
 
@@ -754,6 +764,9 @@ namespace SnakeTail
         private bool ListAtBottom()
         {
             if (Paused)
+                return false;
+
+            if (WindowState == FormWindowState.Minimized)
                 return false;
 
             if (_tailListView.VirtualListSize <= 5)
@@ -856,10 +869,13 @@ namespace SnakeTail
         {
             if (keyData == (Keys.Shift | Keys.F3))
             {
-                if (SearchForm.Instance.Visible)
-                {
-                    SearchForm.Instance.SearchAgain(this, false);
-                }
+                SearchForm.Instance.SearchAgain(this, false);
+                return true;
+            }
+            else
+            if (keyData == Keys.F3)
+            {
+                SearchForm.Instance.SearchAgain(this, true);
                 return true;
             }
             return base.ProcessCmdKey(ref msg, keyData);
@@ -872,17 +888,15 @@ namespace SnakeTail
             bool maximized = WindowState == FormWindowState.Maximized;
             base.OnResize(e);
             _tailListView.Invalidate();
-            if (WindowState == FormWindowState.Minimized)
+            if (WindowState != FormWindowState.Minimized)
             {
-                Paused = true;
-            }
-            else
                 if (Paused || listAtBottom)
                 {
                     Paused = false;
                     if (_tailListView.VirtualListSize > 0)
                         _tailListView.EnsureVisible(_tailListView.VirtualListSize - 1);
                 }
+            }
             _tailListView.Update();
         }
 
