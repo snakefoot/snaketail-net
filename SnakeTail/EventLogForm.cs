@@ -91,7 +91,6 @@ namespace SnakeTail
             try
             {
                 _eventLog = new EventLog(tailConfig.FilePath);
-                _eventLog.EnableRaisingEvents = true;
                 _eventLog.EntryWritten += new EntryWrittenEventHandler(_eventLog_EntryWritten);
                 _eventLog.EndInit();
             }
@@ -623,10 +622,13 @@ namespace SnakeTail
         {
             _filterActive = enableFilter;
 
-            _eventLog.EnableRaisingEvents = false;
-            _filterEventLogTimer.Enabled = false;
+            if (_eventLog.EnableRaisingEvents || _filterEventLogTimer.Enabled)
+            {
+                _eventLog.EnableRaisingEvents = false;
+                _filterEventLogTimer.Enabled = false;
+                Application.DoEvents(); // Process any pending updates from _eventLog or _filterThread
+            }
 
-            Application.DoEvents(); // Process any pending updates from _eventLog or _filterThread
             _lastEventLogEntry = -1;
             _eventListView.FocusedItem = null;
             _eventListView.SelectedIndices.Clear();
