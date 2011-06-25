@@ -324,9 +324,17 @@ namespace SnakeTail
 
         private void _eventListView_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
-            EventLogEntry entry = _eventLog.Entries[e.ItemIndex];
-            if (entry == null)
-                return;
+            EventLogEntry entry = null;
+            try
+            {
+                entry = _eventLog.Entries[e.ItemIndex];
+                if (entry == null)
+                    return;
+            }
+            catch (ArgumentException ex)
+            {
+                throw new ArgumentException("Index=" + e.ItemIndex.ToString() + " Count= " + _eventLog.Entries.Count.ToString(), ex);
+            }
 
             ListViewItem lvi = CreateListViewItem(entry);
             e.Item = lvi;
