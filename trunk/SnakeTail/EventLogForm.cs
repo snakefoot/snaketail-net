@@ -103,7 +103,7 @@ namespace SnakeTail
 
             if (System.Environment.OSVersion.Version.Major >= 6)
             {
-                GetEventLogItemMessages(_eventLog.MachineName, _eventLog.LogDisplayName);
+                GetEventLogItemMessages(_eventLog.MachineName, _eventLog.Log);
 
                 if (_eventLog.Entries.Count > 0)
                 {
@@ -328,14 +328,26 @@ namespace SnakeTail
             try
             {
                 entry = _eventLog.Entries[e.ItemIndex];
-                if (entry == null)
-                    return;
             }
-            catch (ArgumentException ex)
+            catch (InvalidOperationException)
             {
-                throw new ArgumentException("Index=" + e.ItemIndex.ToString() + " Count= " + _eventLog.Entries.Count.ToString(), ex);
             }
-
+            catch (ArgumentException)
+            {
+            }
+            catch (IndexOutOfRangeException)
+            {
+            }
+            finally
+            {
+                if (entry == null)
+                {
+                    // The EventLog is pruned from time to time, meaning suddenly items will disappear
+                    _eventListView.VirtualListSize = _eventLog.Entries.Count;
+                    _eventListView.Invalidate();
+                    _eventListView.EnsureVisible(_eventListView.VirtualListSize - 1);
+                }
+            }
             ListViewItem lvi = CreateListViewItem(entry);
             e.Item = lvi;
         }
@@ -501,22 +513,36 @@ namespace SnakeTail
 
         private ListViewItem CreateListViewItem(EventLogEntry entry)
         {
-            ListViewItem lvi = new ListViewItem(entry.EntryType.ToString());
-            lvi.SubItems.Add(entry.TimeWritten.ToString("yyyy'-'MM'-'dd' 'HH':'mm':'ss"));
-            lvi.SubItems.Add(entry.Source);
-            int eventid = (int)(entry.InstanceId & 0x3fff);
-            lvi.SubItems.Add(eventid.ToString());
-            lvi.SubItems.Add(entry.Category);
-            lvi.Tag = entry.Index;
-            switch (entry.EntryType)
+            if (entry != null)
             {
-                case 0: lvi.ImageIndex = 2; lvi.Text = "Success"; break;
-                case EventLogEntryType.Error: lvi.ImageIndex = 0; break;
-                case EventLogEntryType.Warning: lvi.ImageIndex = 1; break;
-                case EventLogEntryType.Information: lvi.ImageIndex = 2; break;
-                default: lvi.ImageIndex = -1; break;
+                ListViewItem lvi = new ListViewItem(entry.EntryType.ToString());
+                lvi.SubItems.Add(entry.TimeWritten.ToString("yyyy'-'MM'-'dd' 'HH':'mm':'ss"));
+                lvi.SubItems.Add(entry.Source);
+                int eventid = (int)(entry.InstanceId & 0x3fff);
+                lvi.SubItems.Add(eventid.ToString());
+                lvi.SubItems.Add(entry.Category);
+                lvi.Tag = entry.Index;
+                switch (entry.EntryType)
+                {
+                    case 0: lvi.ImageIndex = 2; lvi.Text = "Success"; break;
+                    case EventLogEntryType.Error: lvi.ImageIndex = 0; break;
+                    case EventLogEntryType.Warning: lvi.ImageIndex = 1; break;
+                    case EventLogEntryType.Information: lvi.ImageIndex = 2; break;
+                    default: lvi.ImageIndex = -1; break;
+                }
+                return lvi;
             }
-            return lvi;
+            else
+            {
+                ListViewItem lvi = new ListViewItem("Out of bounds");
+                lvi.SubItems.Add("");
+                lvi.SubItems.Add("");
+                lvi.SubItems.Add("");
+                lvi.SubItems.Add("");
+                lvi.Tag = -1;
+                lvi.ImageIndex = -1;
+                return lvi;
+            }
         }
 
         private bool AcceptFilterListViewItem(ListViewItem item)
@@ -701,6 +727,7 @@ namespace SnakeTail
             bool listAtBottom = ListAtBottom();
             bool listAtTop = _eventListView.TopItem != null && _eventListView.TopItem.Index == 0;
             int listCount = _eventListView.Items.Count;
+            ListViewItem topitem = listCount > 0 ? _eventListView.TopItem : null;          
 
             // Loop through the next 50 messages
             _eventListView.BeginUpdate();
@@ -715,29 +742,16 @@ namespace SnakeTail
                         _eventListView.Items.Insert(0, item);
                 }
             }
-
             _eventListView.EndUpdate();
 
-            if (listCount==0 && _eventListView.Items.Count > 0)
-                _eventListView.SelectedIndices.Add(_eventListView.Items.Count-1);
+            if (listCount == 0 && _eventListView.Items.Count > 0)
+                _eventListView.SelectedIndices.Add(_eventListView.Items.Count - 1);
 
             if (_eventListView.FocusedItem != null)
                 _eventListView.SelectedIndices.Add(_eventListView.FocusedItem.Index);
 
-            int itemsAdded = _eventListView.Items.Count - listCount;
-            if (itemsAdded > 0)
-            {
-                _eventListView.Invalidate();
-                if (listAtBottom)
-                    _eventListView.EnsureVisible(_eventListView.Items.Count - 1);
-                else
-                if (listAtTop)
-                    _eventListView.EnsureVisible(0);
-                else
-                if (_eventListView.SelectedIndices.Count > 0)
-                    _eventListView.EnsureVisible(_eventListView.SelectedIndices[0]);
-                _eventListView.Update();
-            }
+            if (topitem != null)
+                _eventListView.TopItem = topitem;
 
             _lastEventLogFilterIndex = lastEventLogFilterIndex;
             if (_lastEventLogFilterIndex == 0)
