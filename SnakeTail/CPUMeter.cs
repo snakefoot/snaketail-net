@@ -28,6 +28,7 @@ namespace SnakeTail
         /// Creates a per-process CPU meter instance tied to the current process.
         public CPUMeter()
         {
+			PerformanceCounter.CloseSharedResources();
             String instancename = GetCurrentProcessInstanceName();
             _cnt = new PerformanceCounter("Process", "% Processor Time", instancename, true);
             ResetCounter();
@@ -36,6 +37,7 @@ namespace SnakeTail
         /// Creates a per-process CPU meter instance tied to a specific process.
         public CPUMeter(int pid)
         {
+            PerformanceCounter.CloseSharedResources();
             String instancename = GetProcessInstanceName(pid);
             _cnt = new PerformanceCounter("Process", "% Processor Time", instancename, true);
             ResetCounter();
@@ -61,9 +63,11 @@ namespace SnakeTail
 
         private static string GetCurrentProcessInstanceName()
         {
-            Process proc = Process.GetCurrentProcess();
-            int pid = proc.Id;
-            return GetProcessInstanceName(pid);
+            using (Process proc = Process.GetCurrentProcess())
+            {
+                int pid = proc.Id;
+                return GetProcessInstanceName(pid);
+            }
         }
 
         private static string GetProcessInstanceName(int pid)
