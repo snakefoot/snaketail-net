@@ -92,6 +92,7 @@ namespace SnakeTail
         public string TextColor { get; set; }   // ColorTranslator
         public string BackColor { get; set; }   // ColorTranslator
         public string Font { get; set; }        // TypeConverter
+        public string FontInvariant { get; set; }        // TypeConverter
         public bool Modeless { get; set; }
         public string Title { get; set; }
         public System.Windows.Forms.FormWindowState WindowState { get; set; }
@@ -111,10 +112,17 @@ namespace SnakeTail
         {
             get
             {
-                if (Font != null)
+                if (FontInvariant != null)
                 {
                     TypeConverter fontConverter = TypeDescriptor.GetConverter(typeof(Font));
-                    return (Font)fontConverter.ConvertFromInvariantString(Font);
+                    return (Font)fontConverter.ConvertFromString(FontInvariant);
+                }
+                else
+                if (Font != null)
+                {
+                    // Old Config File
+                    TypeConverter fontConverter = TypeDescriptor.GetConverter(typeof(Font));
+                    return (Font)fontConverter.ConvertFromString(Font);
                 }
                 else
                 {
@@ -124,7 +132,7 @@ namespace SnakeTail
             set
             {
                 TypeConverter fontConverter = TypeDescriptor.GetConverter(typeof(Font));
-                Font = fontConverter.ConvertToInvariantString(value);
+                FontInvariant = fontConverter.ConvertToInvariantString(value);
             }
         }
 
