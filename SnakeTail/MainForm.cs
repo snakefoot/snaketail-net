@@ -360,17 +360,34 @@ namespace SnakeTail
             tailConfig.WindowPosition = DesktopLocation;
             tailConfig.MinimizedToTray = _trayIcon.Visible;
 
-            // We loop through the tabpages to store in proper TabPage order
+            List<Form> childForms = new List<Form>();
+
+            // We first loop through the tabpages to store in proper TabPage order
             foreach (TabPage tagPage in _MDITabControl.TabPages)
             {
-                TailForm tailForm = tagPage.Tag as TailForm;
+                Form tailForm = tagPage.Tag as Form;
+                if (tailForm != null)
+                    childForms.Add(tailForm);
+            }
+
+            // Then we loop through all forms (includes free floating)
+            foreach (Form childForm in Application.OpenForms)
+            {
+                if (childForms.IndexOf(childForm) == -1)
+                    childForms.Add(childForm);
+            }
+
+            // Save all forms and store in proper order
+            foreach (Form childForm in childForms)
+            {
+                TailForm tailForm = childForm as TailForm;
                 if (tailForm != null)
                 {
                     TailFileConfig tailFile = new TailFileConfig();
                     tailForm.SaveConfig(tailFile);
                     tailConfig.TailFiles.Add(tailFile);
                 }
-                EventLogForm eventlogForm = tagPage.Tag as EventLogForm;
+                EventLogForm eventlogForm = childForm as EventLogForm;
                 if (eventlogForm != null)
                 {
                     TailFileConfig tailFile = new TailFileConfig();
