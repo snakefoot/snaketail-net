@@ -98,6 +98,8 @@ namespace SnakeTail
                 {
                     _process = value;
                     _process.Exited += new EventHandler(_process_Exited);
+                    if (IsAdministrator)
+                        PerformanceCounter.CloseSharedResources();
                     _cpuMeter = new CPUMeter(_process.Id);
                 }
             }
