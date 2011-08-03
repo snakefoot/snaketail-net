@@ -61,8 +61,8 @@ namespace SnakeTail
         public void SetStatusBar(string text, int progressValue, int progressMax)
         {
             _statusProgressBar.Maximum = progressMax;
-            _statusProgressBar.Increment(progressValue - _statusProgressBar.Value);
-            if (progressMax == 0 && progressValue == 0 && text==null)
+            _statusProgressBar.Value = progressValue;
+            if (progressMax == 0 && progressValue == 0)
                 _statusProgressBar.Visible = false;
             else
                 _statusProgressBar.Visible = true;
