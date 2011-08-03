@@ -381,7 +381,31 @@ namespace SnakeTail
             Clipboard.SetText(selection.ToString());
         }
 
-        private int SearchForTextForward(string searchText, bool matchCase, int startIndex, int endIndex, ref LogFileCache searchFileCache)
+        private bool MatchTextSearch(string lineText, string searchText, bool matchCase, bool keywordHighlights)
+        {
+            if (keywordHighlights)
+            {
+                return MatchesKeyword(lineText, false) != null;
+            }
+            else
+            if (matchCase)
+            {
+                if (0 <= lineText.IndexOf(searchText))
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                if (0 <= lineText.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private int SearchForTextForward(string searchText, bool matchCase, bool keywordHighlights, int startIndex, int endIndex, ref LogFileCache searchFileCache)
         {
             for (int i = startIndex; i < endIndex; ++i)
             {
@@ -414,27 +438,18 @@ namespace SnakeTail
                     lineText = lvi.Text;
                 }
 
-                if (matchCase)
-                {
-                    if (0 <= lineText.IndexOf(searchText))
-                    {
-                        return i;
-                    }
-                }
-                else
-                {
-                    if (0 <= lineText.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        return i;
-                    }
-                }
+                if (MatchTextSearch(lineText, searchText, matchCase, keywordHighlights))
+                    return i;
             }
             return -1;
         }
 
-        public bool SearchForText(string searchText, bool matchCase, bool searchForward)
+        public bool SearchForText(string searchText, bool matchCase, bool searchForward, bool keywordHighlights)
         {
             if (_tailListView.VirtualListSize == 0)
+                return false;
+
+            if (keywordHighlights && (_keywordHighlight == null || _keywordHighlight.Count == 0))
                 return false;
 
             // Use selection if it is below top-index
@@ -468,7 +483,7 @@ namespace SnakeTail
                         int endIndex = i + 1;
                         do
                         {
-                            matchFound = SearchForTextForward(searchText, matchCase, startIndex, endIndex, ref searchFileCache);
+                            matchFound = SearchForTextForward(searchText, matchCase, keywordHighlights, startIndex, endIndex, ref searchFileCache);
                             if (matchFound != -1)
                             {
                                 lastMatchFound = matchFound;
@@ -497,29 +512,14 @@ namespace SnakeTail
                         }
                     }
 
-                    if (matchCase)
+                    if (MatchTextSearch(lineText, searchText, matchCase, keywordHighlights))
                     {
-                        if (0 <= lineText.IndexOf(searchText))
-                        {
-                            SetStatusBar(null);
-                            _tailListView.SelectedIndices.Clear();
-                            _tailListView.EnsureVisible(i);
-                            _tailListView.SelectedIndices.Add(i);
-                            _tailListView.Items[i].Focused = true;
-                            return true;
-                        }
-                    }
-                    else
-                    {
-                        if (0 <= lineText.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            SetStatusBar(null);
-                            _tailListView.SelectedIndices.Clear();
-                            _tailListView.EnsureVisible(i);
-                            _tailListView.SelectedIndices.Add(i);
-                            _tailListView.Items[i].Focused = true;
-                            return true;
-                        }
+                        SetStatusBar(null);
+                        _tailListView.SelectedIndices.Clear();
+                        _tailListView.EnsureVisible(i);
+                        _tailListView.SelectedIndices.Add(i);
+                        _tailListView.Items[i].Focused = true;
+                        return true;
                     }
                 }
 
@@ -532,7 +532,7 @@ namespace SnakeTail
                 startIndex += 1;
                 int endIndex = _tailListView.VirtualListSize;
 
-                int matchFound = SearchForTextForward(searchText, matchCase, startIndex, endIndex, ref searchFileCache);
+                int matchFound = SearchForTextForward(searchText, matchCase, keywordHighlights, startIndex, endIndex, ref searchFileCache);
                 if (matchFound != -1)
                 {
                     SetStatusBar(null);
@@ -869,13 +869,24 @@ namespace SnakeTail
         {
             if (keyData == (Keys.Shift | Keys.F3))
             {
-                SearchForm.Instance.SearchAgain(this, false);
+                SearchForm.Instance.SearchAgain(this, false, false);
                 return true;
             }
             else
             if (keyData == Keys.F3)
             {
-                SearchForm.Instance.SearchAgain(this, true);
+                SearchForm.Instance.SearchAgain(this, true, false);
+                return true;
+            }
+            if (keyData == (Keys.Control | Keys.Up))
+            {
+                SearchForm.Instance.SearchAgain(this, false, true);
+                return true;
+            }
+            else
+            if (keyData == (Keys.Control | Keys.Down))
+            {
+                SearchForm.Instance.SearchAgain(this, true, true);
                 return true;
             }
             return base.ProcessCmdKey(ref msg, keyData);
@@ -1065,7 +1076,7 @@ namespace SnakeTail
         {
             if (SearchForm.Instance.Visible)
             {
-                SearchForm.Instance.SearchAgain(this, true);
+                SearchForm.Instance.SearchAgain(this, true, false);
             }
         }
 
@@ -1076,6 +1087,16 @@ namespace SnakeTail
             TailConfigForm configForm = new TailConfigForm(configFile, true);
             if (configForm.ShowDialog() == DialogResult.OK)
                 LoadConfig(configForm.TailFileConfig, _configPath);
+        }
+
+        private void gotoPreviousHighlightToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SearchForm.Instance.SearchAgain(this, false, true);
+        }
+
+        private void gotoNextHighlightToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SearchForm.Instance.SearchAgain(this, true, true);
         }
     }
 
