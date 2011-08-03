@@ -19,7 +19,6 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Net;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
@@ -588,28 +587,7 @@ namespace SnakeTail
         {
             try
             {
-                using (HourGlass hourglass = new HourGlass(this))
-                using (WebClient client = new WebClient())
-                {
-                    string value = client.DownloadString("http://snakenest.com/snaketail.pad.xml");
-                    XmlDocument xmlDoc = new XmlDocument();
-                    xmlDoc.LoadXml(value);
-                    XmlNode appVerNode = xmlDoc.SelectSingleNode("/XML_DIZ_INFO/Program_Info/Program_Version");
-                    if (appVerNode != null)
-                    {
-                        Version appVer = new Version(appVerNode.InnerText);
-                        if (appVer > System.Reflection.Assembly.GetExecutingAssembly().GetName().Version)
-                        {
-                            DialogResult res = MessageBox.Show("New version " + appVer.ToString() + " available\n\nCheck homepage for changelog and download?", "New update available", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
-                            if (res == DialogResult.OK)
-                            {
-                                System.Diagnostics.Process.Start("http://snakenest.com/snaketail/");
-                                return;
-                            }
-                        }
-                    }
-                }
-                MessageBox.Show("Using the latest version", "Check for updates", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                ThreadExceptionDialogEx.CheckForUpdates(this, "http://snakenest.com/snaketail.pad.xml", true);
             }
             catch (Exception ex)
             {

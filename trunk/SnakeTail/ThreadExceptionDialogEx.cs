@@ -18,10 +18,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Net;
 using System.Net.Mail;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace SnakeTail
 {
@@ -57,6 +59,7 @@ namespace SnakeTail
             _reportListBox.Items.Add(new SystemReport());
         }
 
+        public virtual string PadUrl { get; set; }
         public virtual string EmailHost { get { return _emailHost; } set { _emailHost = value; } }
         public virtual int EmailPort { get { return _emailPort; } set { _emailPort = value; } }
         public virtual string EmailUsername { get { return _emailUsername; } set { _emailUsername = value; } }
@@ -78,6 +81,43 @@ namespace SnakeTail
                 }
                 return body.ToString();
             }
+        }
+
+        public static void CheckForUpdates(Form parentForm, string padUrl, bool promptAlways)
+        {
+            if (String.IsNullOrEmpty(padUrl) || parentForm==null)
+                return;
+
+            using (new HourGlass(parentForm))
+            using (WebClient client = new WebClient())
+            {
+                string value = client.DownloadString(padUrl);
+                XmlDocument xmlDoc = new XmlDocument();
+                xmlDoc.LoadXml(value);
+                XmlNode appVerNode = xmlDoc.SelectSingleNode("/XML_DIZ_INFO/Program_Info/Program_Version");
+                if (appVerNode != null)
+                {
+                    Version appVer = new Version(appVerNode.InnerText);
+                    if (appVer > System.Reflection.Assembly.GetExecutingAssembly().GetName().Version)
+                    {
+                        string message = "New version " + appVer.ToString() + " is available at application homepage.";
+                        XmlNode appInfoURL = xmlDoc.SelectSingleNode("/XML_DIZ_INFO/Web_Info/Application_URLs/Application_Info_URL");
+                        if (appInfoURL != null && !String.IsNullOrEmpty(appInfoURL.InnerText))
+                        {
+                            DialogResult res = MessageBox.Show(message + "\n\nCheck homepage for changelog and download?", "New update available", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+                            if (res == DialogResult.OK)
+                                System.Diagnostics.Process.Start(appInfoURL.InnerText);
+                        }
+                        else
+                        {
+                            DialogResult res = MessageBox.Show(message, "New update available", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        return;
+                    }
+                }
+            }
+            if (promptAlways)
+                MessageBox.Show("Using the latest version", "Check for updates", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void _detailsBtn_Click(object sender, EventArgs e)
@@ -131,6 +171,8 @@ namespace SnakeTail
                         smtp.Credentials = new System.Net.NetworkCredential(EmailUsername, EmailPassword);
                     smtp.EnableSsl = EmailSSL;
                     smtp.Send(msg);
+
+                    CheckForUpdates(this, PadUrl, false);
                 }
             }
             catch (Exception ex)
