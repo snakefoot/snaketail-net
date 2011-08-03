@@ -410,7 +410,7 @@ namespace SnakeTail
             for (int i = startIndex; i < endIndex; ++i)
             {
                 if (i % _logFileCache.Items.Count == 0)
-                    SetStatusBar("Searching...", i - startIndex, endIndex - startIndex);
+                    SetStatusBar("Searching...", i, endIndex);
 
                 string lineText = null;
                 if (searchFileCache == null)
@@ -1028,6 +1028,7 @@ namespace SnakeTail
             stopServiceToolStripMenuItem.Enabled = windowsService;
             pauseServiceToolStripMenuItem.Visible = pauseAndContinue;
             resumeServiceToolStripMenuItem.Visible = pauseAndContinue;
+            pauseWindowToolStripMenuItem.Checked = Paused;
         }
 
         private void TailForm_Activated(object sender, EventArgs e)
@@ -1097,6 +1098,19 @@ namespace SnakeTail
         private void gotoNextHighlightToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SearchForm.Instance.SearchAgain(this, true, true);
+        }
+
+        private void pauseWindowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!Paused)
+            {
+                Paused = true;
+            }
+            else
+            {
+                Paused = false;
+                _tailListView.EnsureVisible(_tailListView.VirtualListSize - 1);
+            }
         }
     }
 
