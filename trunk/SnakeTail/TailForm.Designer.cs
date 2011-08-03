@@ -57,6 +57,8 @@ namespace SnakeTail
             this._copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findNextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gotoPreviousHighlightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gotoNextHighlightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.switchModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configureStatisticsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.startServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -77,7 +79,7 @@ namespace SnakeTail
             // toolStripSeparator4
             // 
             toolStripSeparator4.Name = "toolStripSeparator4";
-            toolStripSeparator4.Size = new System.Drawing.Size(185, 6);
+            toolStripSeparator4.Size = new System.Drawing.Size(247, 6);
             // 
             // toolStripSeparator1
             // 
@@ -87,7 +89,7 @@ namespace SnakeTail
             // toolStripSeparator2
             // 
             toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new System.Drawing.Size(185, 6);
+            toolStripSeparator2.Size = new System.Drawing.Size(247, 6);
             // 
             // _contextMenuStrip
             // 
@@ -144,6 +146,8 @@ namespace SnakeTail
             this._copyToolStripMenuItem,
             this.findToolStripMenuItem,
             this.findNextToolStripMenuItem,
+            this.gotoPreviousHighlightToolStripMenuItem,
+            this.gotoNextHighlightToolStripMenuItem,
             toolStripSeparator2,
             this.switchModeToolStripMenuItem,
             this.configureStatisticsToolStripMenuItem,
@@ -163,7 +167,7 @@ namespace SnakeTail
             // 
             this._copyToolStripMenuItem.Name = "_copyToolStripMenuItem";
             this._copyToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this._copyToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this._copyToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
             this._copyToolStripMenuItem.Text = "Copy";
             this._copyToolStripMenuItem.Click += new System.EventHandler(this._copyToolStripMenuItem_Click);
             // 
@@ -171,7 +175,7 @@ namespace SnakeTail
             // 
             this.findToolStripMenuItem.Name = "findToolStripMenuItem";
             this.findToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
-            this.findToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.findToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
             this.findToolStripMenuItem.Text = "Find...";
             this.findToolStripMenuItem.Click += new System.EventHandler(this.findToolStripMenuItem_Click);
             // 
@@ -179,49 +183,65 @@ namespace SnakeTail
             // 
             this.findNextToolStripMenuItem.Name = "findNextToolStripMenuItem";
             this.findNextToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
-            this.findNextToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.findNextToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
             this.findNextToolStripMenuItem.Text = "Find Next";
             this.findNextToolStripMenuItem.Click += new System.EventHandler(this.findNextToolStripMenuItem_Click);
+            // 
+            // gotoPreviousHighlightToolStripMenuItem
+            // 
+            this.gotoPreviousHighlightToolStripMenuItem.Name = "gotoPreviousHighlightToolStripMenuItem";
+            this.gotoPreviousHighlightToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Up)));
+            this.gotoPreviousHighlightToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
+            this.gotoPreviousHighlightToolStripMenuItem.Text = "Goto Previous Highlight";
+            this.gotoPreviousHighlightToolStripMenuItem.Click += new System.EventHandler(this.gotoPreviousHighlightToolStripMenuItem_Click);
+            // 
+            // gotoNextHighlightToolStripMenuItem
+            // 
+            this.gotoNextHighlightToolStripMenuItem.Name = "gotoNextHighlightToolStripMenuItem";
+            this.gotoNextHighlightToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Down)));
+            this.gotoNextHighlightToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
+            this.gotoNextHighlightToolStripMenuItem.Text = "Goto Next Highlight";
+            this.gotoNextHighlightToolStripMenuItem.Click += new System.EventHandler(this.gotoNextHighlightToolStripMenuItem_Click);
             // 
             // switchModeToolStripMenuItem
             // 
             this.switchModeToolStripMenuItem.Name = "switchModeToolStripMenuItem";
-            this.switchModeToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.switchModeToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
             this.switchModeToolStripMenuItem.Text = "Switch window mode";
             this.switchModeToolStripMenuItem.Click += new System.EventHandler(this.switchToModelessToolStripMenuItem_Click);
             // 
             // configureStatisticsToolStripMenuItem
             // 
             this.configureStatisticsToolStripMenuItem.Name = "configureStatisticsToolStripMenuItem";
-            this.configureStatisticsToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.configureStatisticsToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
             this.configureStatisticsToolStripMenuItem.Text = "View Options...";
             this.configureStatisticsToolStripMenuItem.Click += new System.EventHandler(this.configureStatisticsToolStripMenuItem_Click);
             // 
             // startServiceToolStripMenuItem
             // 
             this.startServiceToolStripMenuItem.Name = "startServiceToolStripMenuItem";
-            this.startServiceToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.startServiceToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
             this.startServiceToolStripMenuItem.Text = "Start Service...";
             this.startServiceToolStripMenuItem.Click += new System.EventHandler(this.startServiceToolStripMenuItem_Click);
             // 
             // stopServiceToolStripMenuItem
             // 
             this.stopServiceToolStripMenuItem.Name = "stopServiceToolStripMenuItem";
-            this.stopServiceToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.stopServiceToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
             this.stopServiceToolStripMenuItem.Text = "Stop Service...";
             this.stopServiceToolStripMenuItem.Click += new System.EventHandler(this.stopServiceToolStripMenuItem_Click);
             // 
             // pauseServiceToolStripMenuItem
             // 
             this.pauseServiceToolStripMenuItem.Name = "pauseServiceToolStripMenuItem";
-            this.pauseServiceToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.pauseServiceToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
             this.pauseServiceToolStripMenuItem.Text = "Pause Service...";
             this.pauseServiceToolStripMenuItem.Click += new System.EventHandler(this.pauseServiceToolStripMenuItem_Click);
             // 
             // resumeServiceToolStripMenuItem
             // 
             this.resumeServiceToolStripMenuItem.Name = "resumeServiceToolStripMenuItem";
-            this.resumeServiceToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.resumeServiceToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
             this.resumeServiceToolStripMenuItem.Text = "Resume Service...";
             this.resumeServiceToolStripMenuItem.Click += new System.EventHandler(this.resumeServiceToolStripMenuItem_Click);
             // 
@@ -302,5 +322,7 @@ namespace SnakeTail
         private System.Windows.Forms.ToolStripMenuItem pauseServiceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem resumeServiceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem configureStatisticsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem gotoNextHighlightToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem gotoPreviousHighlightToolStripMenuItem;
     }
 }

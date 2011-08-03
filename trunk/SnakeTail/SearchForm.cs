@@ -76,7 +76,7 @@ namespace SnakeTail
             _searchTextBox.Focus();
         }
 
-        public void SearchAgain(TailForm activeTailForm, bool searchForward)
+        public void SearchAgain(TailForm activeTailForm, bool searchForward, bool keywordHighlights)
         {
             if (activeTailForm != null)
             {
@@ -87,11 +87,16 @@ namespace SnakeTail
                 {
                     using (new HourGlass(activeTailForm))
                     {
-                        found = ActiveTailForm.SearchForText(_searchTextBox.Text, _matchCaseCheckBox.Checked, searchForward);
+                        found = ActiveTailForm.SearchForText(_searchTextBox.Text, _matchCaseCheckBox.Checked, searchForward, keywordHighlights);
                     }
                 }
                 if (!found)
-                    MessageBox.Show("Cannot find \"" + _searchTextBox.Text + "\"", "Search Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                {
+                    if (keywordHighlights)
+                        MessageBox.Show("Cannot find any keyword highlights", "Search Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    else
+                        MessageBox.Show("Cannot find \"" + _searchTextBox.Text + "\"", "Search Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
         }
 
@@ -134,12 +139,12 @@ namespace SnakeTail
         {
             if (keyData == Keys.F3)
             {
-                SearchAgain(ActiveTailForm, !_upRadioBtn.Checked);
+                SearchAgain(ActiveTailForm, !_upRadioBtn.Checked, false);
                 return true;
             }
             if (keyData == (Keys.Shift | Keys.F3))
             {
-                SearchAgain(ActiveTailForm, _upRadioBtn.Checked);
+                SearchAgain(ActiveTailForm, _upRadioBtn.Checked, false);
                 return true;
             }
             return base.ProcessCmdKey(ref msg, keyData);
@@ -162,7 +167,7 @@ namespace SnakeTail
         private void _findNextBtn_Click(object sender, EventArgs e)
         {
             if (ActiveTailForm != null)
-                SearchAgain(ActiveTailForm, !_upRadioBtn.Checked);
+                SearchAgain(ActiveTailForm, !_upRadioBtn.Checked, false);
         }
 
         private void SearchForm_FormClosed(object sender, FormClosedEventArgs e)
