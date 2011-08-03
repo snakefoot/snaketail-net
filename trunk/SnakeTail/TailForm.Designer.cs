@@ -60,6 +60,7 @@ namespace SnakeTail
             this.gotoPreviousHighlightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gotoNextHighlightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.switchModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pauseWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configureStatisticsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.startServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stopServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -150,6 +151,7 @@ namespace SnakeTail
             this.gotoNextHighlightToolStripMenuItem,
             toolStripSeparator2,
             this.switchModeToolStripMenuItem,
+            this.pauseWindowToolStripMenuItem,
             this.configureStatisticsToolStripMenuItem,
             toolStripSeparator4,
             this.startServiceToolStripMenuItem,
@@ -209,6 +211,14 @@ namespace SnakeTail
             this.switchModeToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
             this.switchModeToolStripMenuItem.Text = "Switch window mode";
             this.switchModeToolStripMenuItem.Click += new System.EventHandler(this.switchToModelessToolStripMenuItem_Click);
+            // 
+            // pauseWindowToolStripMenuItem
+            // 
+            this.pauseWindowToolStripMenuItem.Name = "pauseWindowToolStripMenuItem";
+            this.pauseWindowToolStripMenuItem.ShortcutKeyDisplayString = "Pause";
+            this.pauseWindowToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
+            this.pauseWindowToolStripMenuItem.Text = "Pause window";
+            this.pauseWindowToolStripMenuItem.Click += new System.EventHandler(this.pauseWindowToolStripMenuItem_Click);
             // 
             // configureStatisticsToolStripMenuItem
             // 
@@ -324,5 +334,6 @@ namespace SnakeTail
         private System.Windows.Forms.ToolStripMenuItem configureStatisticsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem gotoNextHighlightToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem gotoPreviousHighlightToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem pauseWindowToolStripMenuItem;
     }
 }
