@@ -115,7 +115,7 @@ namespace SnakeTail
                 if (FontInvariant != null)
                 {
                     TypeConverter fontConverter = TypeDescriptor.GetConverter(typeof(Font));
-                    return (Font)fontConverter.ConvertFromString(FontInvariant);
+                    return (Font)fontConverter.ConvertFromInvariantString(FontInvariant);
                 }
                 else
                 if (Font != null)
