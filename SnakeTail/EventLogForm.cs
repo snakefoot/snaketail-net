@@ -35,6 +35,7 @@ namespace SnakeTail
         bool _filterActive = false;
         int _lastEventLogEntry = -1;
         int _lastEventLogFilterIndex = -1;
+        int _lastEventLogFilterEntry = -1;
         string _formTitle;
 
         public EventLogForm()
@@ -240,7 +241,7 @@ namespace SnakeTail
             if (entry == null)
                 return "";
 
-            if (System.Environment.OSVersion.Version.Major >= 6)
+            if (entry.Index != (int)listItem.Tag || System.Environment.OSVersion.Version.Major >= 6)
             {
                 string eventMessage = null;
                 if (entry.Index == (int)listItem.Tag && entry.Message.IndexOf(" Event ID '" + entry.InstanceId.ToString() + "' ") == -1)
@@ -286,23 +287,56 @@ namespace SnakeTail
             bool listAtBottom = ListAtBottom();
             if (_filterActive)
             {
-                // Add any new entries to the list
-                int lastEventLogEntry = -1;
-                for (int i = _eventLog.Entries.Count - 1; i >= 0; --i)
+                // Collect all relevant events that arrived since last check
+                List<ListViewItem> eventLogEvents = new List<ListViewItem>();
+
+                int lastEntryIndex = _lastEventLogEntry;
+                int prevEntryIndex = -1;
+                int count = _eventLog.Entries.Count;
+                for (int i = count - 1; i >= 0; --i)
                 {
-                    EventLogEntry entry = _eventLog.Entries[i];
-                    if (_lastEventLogEntry == entry.Index)
+                    EventLogEntry entry = null;
+
+                    try
+                    {
+                        entry = _eventLog.Entries[i];
+                        if (prevEntryIndex != -1)
+                        {
+                            // Sanity check to ensure the EventLog have not been pruned by Windows
+                            if (_eventLog.Entries[i + 1].Index != prevEntryIndex)
+                            {
+                                eventLogEvents.Clear();
+                                i = _eventLog.Entries.Count;    // Retry
+                                continue;
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Possible that the EventLog have been pruned by Windows
+                        eventLogEvents.Clear();
+                        i = _eventLog.Entries.Count;    // Retry
+                        continue;
+                    }
+
+                    if (entry.Index == _lastEventLogEntry)
                         break;
 
-                    if (lastEventLogEntry == -1)
-                        lastEventLogEntry = entry.Index;
+                    if (lastEntryIndex == _lastEventLogEntry)
+                        lastEntryIndex = entry.Index;
 
                     ListViewItem item = CreateListViewItem(entry);
                     if (AcceptFilterListViewItem(item))
-                        _eventListView.Items.Add(item);
+                        eventLogEvents.Add(item);
+
+                    prevEntryIndex = entry.Index;
                 }
-                if (lastEventLogEntry != -1)
-                    _lastEventLogEntry = lastEventLogEntry;
+
+                // Add any new entries to the list, in reported order
+                for (int i = eventLogEvents.Count - 1; i >= 0; --i)
+                    _eventListView.Items.Add(eventLogEvents[i]);
+
+                _lastEventLogEntry = lastEntryIndex;
 
                 if (listAtBottom && _eventListView.Items.Count > 0)
                 {
@@ -689,6 +723,7 @@ namespace SnakeTail
                 Text = _formTitle + " (Filter Mode)";
 
                 _lastEventLogFilterIndex = _eventLog.Entries.Count - 1;
+                _lastEventLogFilterEntry = -1;
                 _lastEventLogEntry = _eventLog.Entries[_lastEventLogFilterIndex].Index;
                 _filterEventLogTimer.Enabled = true;
             }
@@ -725,22 +760,35 @@ namespace SnakeTail
         private void _filterEventLogTimer_Tick(object sender, EventArgs e)
         {
             bool listAtBottom = ListAtBottom();
-            bool listAtTop = _eventListView.TopItem != null && _eventListView.TopItem.Index == 0;
             int listCount = _eventListView.Items.Count;
-            ListViewItem topitem = listCount > 0 ? _eventListView.TopItem : null;          
+            int topItemIndex = listCount > 0 ? _eventListView.TopItem.Index : -1;
+
+            bool foundLastEntry = _lastEventLogFilterEntry == -1;
 
             // Loop through the next 50 messages
+            // - When new messages arrrive, then the Count increases (ignores these)
+            // - When new old messages are pruned, then the Count decreases
+            // - Should only use _lastEventLogFilterIndex as hint and search for last position
             _eventListView.BeginUpdate();
             int lastEventLogFilterIndex = Math.Max(0, _lastEventLogFilterIndex - 50);
-            for (int i = _lastEventLogFilterIndex; i > lastEventLogFilterIndex; --i)
+            for (int i = _lastEventLogFilterIndex; i >= lastEventLogFilterIndex; --i)
             {
                 EventLogEntry entry = _eventLog.Entries[i];
+                if (!foundLastEntry)
+                {
+                    if (entry.Index == _lastEventLogFilterEntry)
+                        foundLastEntry = true;
+                    continue;
+                }
+
                 ListViewItem item = CreateListViewItem(entry);
                 if (AcceptFilterListViewItem(item))
                 {
                     if (_eventListView.Items.Count == 0 || entry.Index != (int)_eventListView.Items[0].Tag)
                         _eventListView.Items.Insert(0, item);
                 }
+
+                _lastEventLogFilterEntry = entry.Index;
             }
             _eventListView.EndUpdate();
 
@@ -750,8 +798,26 @@ namespace SnakeTail
             if (_eventListView.FocusedItem != null)
                 _eventListView.SelectedIndices.Add(_eventListView.FocusedItem.Index);
 
-            if (topitem != null)
-                _eventListView.TopItem = topitem;
+            if (topItemIndex != -1)
+            {
+                if (listAtBottom && topItemIndex == 0)
+                {
+                    _eventListView.Invalidate();
+                    _eventListView.EnsureVisible(_eventListView.Items.Count - 1);
+                    _eventListView.Update();
+                }
+                else
+                if (_eventListView.Items.Count - listCount > 0)
+                {
+                    int newTopItemIndex = topItemIndex + _eventListView.Items.Count - listCount;
+                    _eventListView.TopItem = _eventListView.Items[newTopItemIndex];
+                    if (_eventListView.TopItem.Index != newTopItemIndex)
+                    {
+                        System.Threading.Thread.Sleep(5);  // Some times TopItem fails to set the first time (Little weird)
+                        _eventListView.TopItem = _eventListView.Items[newTopItemIndex];
+                    }
+                }
+            }
 
             _lastEventLogFilterIndex = lastEventLogFilterIndex;
             if (_lastEventLogFilterIndex == 0)
