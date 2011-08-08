@@ -32,6 +32,7 @@ namespace SnakeTail
         public static MainForm Instance { get { return _instance; } }
 
         private TailFileConfig _defaultTailConfig = null;
+        private string _currenTailConfig = null;
 
         public MainForm()
         {
@@ -311,6 +312,7 @@ namespace SnakeTail
             }
             if (SearchForm.Instance.Visible)
                 SearchForm.Instance.Close();
+            _currenTailConfig = null;
         }
 
         private void enableTabsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -331,6 +333,11 @@ namespace SnakeTail
         private void saveSessionToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
+            if (!String.IsNullOrEmpty(_currenTailConfig))
+            {
+                saveFileDialog.FileName = Path.GetFileName(_currenTailConfig);
+                saveFileDialog.InitialDirectory = Path.GetDirectoryName(_currenTailConfig);
+            }
             saveFileDialog.Filter = "Xml files (*.xml)|*.xml|All files (*.*)|*.*";
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
@@ -403,6 +410,8 @@ namespace SnakeTail
                 xmlnsEmpty.Add("", "");
                 serializer.Serialize(writer, tailConfig, xmlnsEmpty);
             }
+
+            _currenTailConfig = filepath;
         }
 
         private TailConfig LoadSessionFile(string filepath)
@@ -413,7 +422,7 @@ namespace SnakeTail
                 XmlSerializer serializer = new XmlSerializer(typeof(TailConfig));
                 using (XmlTextReader reader = new XmlTextReader(filepath))
                 {
-                    filepath = new Uri(reader.BaseURI).LocalPath;
+                    _currenTailConfig = new Uri(reader.BaseURI).LocalPath;
                     tailConfig = serializer.Deserialize(reader) as TailConfig;
                 }
                 return tailConfig;
