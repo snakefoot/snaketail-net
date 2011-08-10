@@ -237,25 +237,51 @@ namespace SnakeTail
                 }
             }
 
-            EventLogEntry entry = _eventLog.Entries[listItem.Index];
-            if (entry == null)
-                return "";
-
-            if (entry.Index != (int)listItem.Tag || System.Environment.OSVersion.Version.Major >= 6)
+            string eventMessage = null;
+            string eventId = null;
             {
-                string eventMessage = null;
-                if (entry.Index == (int)listItem.Tag && entry.Message.IndexOf(" Event ID '" + entry.InstanceId.ToString() + "' ") == -1)
+                EventLogEntry entry = null;
+                if (_eventListView.VirtualMode)
                 {
-                    eventMessage = entry.Message;
+                    entry = _eventLog.Entries[listItem.Index];
+                    if (entry == null)
+                        return "";
+
+                    if (entry.Index == (int)listItem.Tag)
+                    {
+                        eventMessage = entry.Message;
+                        eventId = entry.InstanceId.ToString();
+                    }
                 }
                 else
                 {
-                    using (new HourGlass(this))
+                    if (listItem.SubItems.Count > 3)
                     {
-                        eventMessage = GetEventLogItemMessage(_eventLog.MachineName, _eventLog.LogDisplayName, (uint)(int)listItem.Tag);
+                        eventMessage = listItem.SubItems[3].Tag as string;
+                        eventId = listItem.SubItems[3].Text;
                     }
                 }
+            }
 
+            if (eventMessage != null)
+            {
+                if (System.Environment.OSVersion.Version.Major >= 6)
+                {
+                    if (String.IsNullOrEmpty(eventId) || eventMessage.IndexOf(" Event ID '" + eventId + "' ") != -1)
+                        eventMessage = null;
+                }
+            }
+
+            if (eventMessage == null)
+            {
+                using (new HourGlass(this))
+                {
+                    eventMessage = GetEventLogItemMessage(_eventLog.MachineName, _eventLog.LogDisplayName, (uint)(int)listItem.Tag);
+                }
+            }
+
+            if (eventMessage != null)
+            {
                 if (eventMessage != null)
                 {
                     lock (_eventMessages)
@@ -265,15 +291,9 @@ namespace SnakeTail
                     }
                     return eventMessage;
                 }
-                else
-                {
-                    return "";
-                }
             }
-            else
-            {
-                return entry.Message;
-            }
+
+            return "";
         }
 
         void _eventLog_EntryWritten(object sender, EntryWrittenEventArgs e)
@@ -325,7 +345,7 @@ namespace SnakeTail
                     if (lastEntryIndex == _lastEventLogEntry)
                         lastEntryIndex = entry.Index;
 
-                    ListViewItem item = CreateListViewItem(entry);
+                    ListViewItem item = CreateListViewItem(entry, true);
                     if (AcceptFilterListViewItem(item))
                         eventLogEvents.Add(item);
 
@@ -382,7 +402,7 @@ namespace SnakeTail
                     _eventListView.EnsureVisible(_eventListView.VirtualListSize - 1);
                 }
             }
-            ListViewItem lvi = CreateListViewItem(entry);
+            ListViewItem lvi = CreateListViewItem(entry, false);
             e.Item = lvi;
         }
 
@@ -545,7 +565,7 @@ namespace SnakeTail
             return logfiles;
         }
 
-        private ListViewItem CreateListViewItem(EventLogEntry entry)
+        private ListViewItem CreateListViewItem(EventLogEntry entry, bool includeMessage)
         {
             if (entry != null)
             {
@@ -553,7 +573,9 @@ namespace SnakeTail
                 lvi.SubItems.Add(entry.TimeWritten.ToString("yyyy'-'MM'-'dd' 'HH':'mm':'ss"));
                 lvi.SubItems.Add(entry.Source);
                 int eventid = (int)(entry.InstanceId & 0x3fff);
-                lvi.SubItems.Add(eventid.ToString());
+                ListViewItem.ListViewSubItem sublvi = lvi.SubItems.Add(eventid.ToString());
+                if (includeMessage)
+                    sublvi.Tag = entry.Message;
                 lvi.SubItems.Add(entry.Category);
                 lvi.Tag = entry.Index;
                 switch (entry.EntryType)
@@ -781,7 +803,7 @@ namespace SnakeTail
                     continue;
                 }
 
-                ListViewItem item = CreateListViewItem(entry);
+                ListViewItem item = CreateListViewItem(entry, true);
                 if (AcceptFilterListViewItem(item))
                 {
                     if (_eventListView.Items.Count == 0 || entry.Index != (int)_eventListView.Items[0].Tag)
