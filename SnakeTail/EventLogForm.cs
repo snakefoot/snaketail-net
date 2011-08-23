@@ -127,7 +127,10 @@ namespace SnakeTail
                 _eventListView.ForeColor = tailConfig.FormTextColor.Value;
 
             if (tailConfig.FormFont != null)
+            {
                 _eventListView.Font = tailConfig.FormFont;
+                _eventMessageText.Font = tailConfig.FormFont;
+            }
 
             if (tailConfig.Title != null)
                 _formTitle = tailConfig.Title;
@@ -411,6 +414,9 @@ namespace SnakeTail
             if (e.IsSelected)
             {
                 _eventMessageText.Text = LookupEventLogMessage(e.Item);
+                // Scroll to top of RichTextBox
+                _eventMessageText.DeselectAll();
+                _eventMessageText.ScrollToCaret();
             }
         }
 
