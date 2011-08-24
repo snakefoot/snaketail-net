@@ -583,6 +583,15 @@ namespace SnakeTail
                 ListViewItem.ListViewSubItem sublvi = lvi.SubItems.Add(eventid.ToString());
                 if (includeMessage)
                     sublvi.Tag = entry.Message;
+                string category = "Invalid Category";
+                try
+                {
+                    category = entry.Category;
+                }
+                catch (Exception)
+                {
+                    // Category lookup can cause 'Registry subkeys should not be greater than 255 characters' (System.ArgumentException)
+                }
                 lvi.SubItems.Add(entry.Category);
                 lvi.Tag = entry.Index;
                 switch (entry.EntryType)
