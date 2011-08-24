@@ -121,8 +121,9 @@ namespace SnakeTail
                     else
                         return 0;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.WriteLine("CPU Meter Failed: " + ex.Message);
                     Process = null;
                     return 0;
                 }
@@ -147,8 +148,9 @@ namespace SnakeTail
                         _serviceController.Refresh();
                         return _serviceController.Status != ServiceControllerStatus.Stopped;
                     }
-                    catch (System.InvalidOperationException)
+                    catch (System.InvalidOperationException ex)
                     {
+                        System.Diagnostics.Debug.WriteLine("ServiceController Failed: " + ex.Message);
                         Process = null;
                         return false;
                     }
@@ -168,8 +170,9 @@ namespace SnakeTail
                                 return false;
                             }
                     }
-                    catch (System.InvalidOperationException)
+                    catch (System.InvalidOperationException ex)
                     {
+                        System.Diagnostics.Debug.WriteLine("ServiceController Failed: " + ex.Message);
                         Process = null;
                         return false;
                     }
@@ -187,8 +190,9 @@ namespace SnakeTail
                     {
                         return ServiceController.CanPauseAndContinue;
                     }
-                    catch (System.InvalidOperationException)
+                    catch (System.InvalidOperationException ex)
                     {
+                        System.Diagnostics.Debug.WriteLine("ServiceController Failed: " + ex.Message);
                         return false;
                     }
                 }
