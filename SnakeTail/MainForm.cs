@@ -659,9 +659,10 @@ namespace SnakeTail
                 this.BeginInvoke(new Action<string[]>(OpenFileSelection), new object[] { filenames.ToArray() });
                 this.Activate();        // in the case Explorer overlaps this form
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 // don't show MessageBox here - Explorer is waiting !
+                System.Diagnostics.Debug.WriteLine("Drag Drop Failed: " + ex.Message);
             }
         }
 

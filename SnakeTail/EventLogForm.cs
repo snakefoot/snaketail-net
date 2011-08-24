@@ -337,6 +337,7 @@ namespace SnakeTail
                     catch (Exception ex)
                     {
                         // Possible that the EventLog have been pruned by Windows
+                        System.Diagnostics.Debug.WriteLine("EventLog Possible Pruned: " + ex.Message);
                         eventLogEvents.Clear();
                         i = _eventLog.Entries.Count;    // Retry
                         continue;
@@ -386,25 +387,17 @@ namespace SnakeTail
             {
                 entry = _eventLog.Entries[e.ItemIndex];
             }
-            catch (InvalidOperationException)
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine("EventLog Possible Pruned: " + ex.Message);
             }
-            catch (ArgumentException)
+            if (entry == null)
             {
-            }
-            catch (IndexOutOfRangeException)
-            {
-            }
-            finally
-            {
-                if (entry == null)
-                {
-                    // The EventLog is pruned from time to time, meaning suddenly items will disappear
-                    _eventListView.VirtualListSize = _eventLog.Entries.Count;
-                    _eventListView.Invalidate();
-                    if (_eventListView.VirtualListSize > 0)
-                        _eventListView.EnsureVisible(_eventListView.VirtualListSize - 1);
-                }
+                // The EventLog is pruned from time to time, meaning suddenly items will disappear
+                _eventListView.VirtualListSize = _eventLog.Entries.Count;
+                _eventListView.Invalidate();
+                if (_eventListView.VirtualListSize > 0)
+                    _eventListView.EnsureVisible(_eventListView.VirtualListSize - 1);
             }
             ListViewItem lvi = CreateListViewItem(entry, false);
             e.Item = lvi;
@@ -415,9 +408,7 @@ namespace SnakeTail
             if (e.IsSelected)
             {
                 _eventMessageText.Text = LookupEventLogMessage(e.Item);
-                // Scroll to top of RichTextBox
-                _eventMessageText.DeselectAll();
-                _eventMessageText.ScrollToCaret();
+                _eventMessageText.ScrollToCaret();  // Scroll to top of RichTextBox
             }
         }
 
@@ -588,11 +579,12 @@ namespace SnakeTail
                 {
                     category = entry.Category;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     // Category lookup can cause 'Registry subkeys should not be greater than 255 characters' (System.ArgumentException)
+                    System.Diagnostics.Debug.WriteLine("Invalid EventLog Category: " + ex.Message);
                 }
-                lvi.SubItems.Add(entry.Category);
+                lvi.SubItems.Add(category);
                 lvi.Tag = entry.Index;
                 switch (entry.EntryType)
                 {
