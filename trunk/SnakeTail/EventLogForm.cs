@@ -402,7 +402,8 @@ namespace SnakeTail
                     // The EventLog is pruned from time to time, meaning suddenly items will disappear
                     _eventListView.VirtualListSize = _eventLog.Entries.Count;
                     _eventListView.Invalidate();
-                    _eventListView.EnsureVisible(_eventListView.VirtualListSize - 1);
+                    if (_eventListView.VirtualListSize > 0)
+                        _eventListView.EnsureVisible(_eventListView.VirtualListSize - 1);
                 }
             }
             ListViewItem lvi = CreateListViewItem(entry, false);
