@@ -59,6 +59,9 @@ namespace SnakeTail
             this._backColorBtn = new System.Windows.Forms.Button();
             this._textColorBtn = new System.Windows.Forms.Button();
             this._tabPageFile = new System.Windows.Forms.TabPage();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this._fileChangeCheckIntervalEdt = new System.Windows.Forms.TextBox();
             this._fileCheckPatternChk = new System.Windows.Forms.CheckBox();
             this._fileReopenCheckIntervalEdt = new System.Windows.Forms.TextBox();
             this._windowServiceEdt = new System.Windows.Forms.TextBox();
@@ -75,9 +78,7 @@ namespace SnakeTail
             this._loghitColumn = new System.Windows.Forms.ColumnHeader();
             this._acceptBtn = new System.Windows.Forms.Button();
             this._cancelBtn = new System.Windows.Forms.Button();
-            this._fileChangeCheckIntervalEdt = new System.Windows.Forms.TextBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
+            this._browseBtn = new System.Windows.Forms.Button();
             label2 = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -161,6 +162,15 @@ namespace SnakeTail
             label6.TabIndex = 6;
             label6.Text = "File Reopen Check Interval";
             // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.Location = new System.Drawing.Point(3, 118);
+            label8.Name = "label8";
+            label8.Size = new System.Drawing.Size(135, 13);
+            label8.TabIndex = 11;
+            label8.Text = "File Change Check Interval";
+            // 
             // _tabControl
             // 
             this._tabControl.Controls.Add(this._tabPageView);
@@ -224,6 +234,7 @@ namespace SnakeTail
             // 
             // _tabPageFile
             // 
+            this._tabPageFile.Controls.Add(this._browseBtn);
             this._tabPageFile.Controls.Add(this.label10);
             this._tabPageFile.Controls.Add(this.label9);
             this._tabPageFile.Controls.Add(this._fileChangeCheckIntervalEdt);
@@ -246,6 +257,31 @@ namespace SnakeTail
             this._tabPageFile.TabIndex = 1;
             this._tabPageFile.Text = "Log File";
             this._tabPageFile.UseVisualStyleBackColor = true;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(209, 92);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(29, 13);
+            this.label10.TabIndex = 14;
+            this.label10.Text = "secs";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(209, 118);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(37, 13);
+            this.label9.TabIndex = 13;
+            this.label9.Text = "msecs";
+            // 
+            // _fileChangeCheckIntervalEdt
+            // 
+            this._fileChangeCheckIntervalEdt.Location = new System.Drawing.Point(144, 115);
+            this._fileChangeCheckIntervalEdt.Name = "_fileChangeCheckIntervalEdt";
+            this._fileChangeCheckIntervalEdt.Size = new System.Drawing.Size(59, 20);
+            this._fileChangeCheckIntervalEdt.TabIndex = 12;
             // 
             // _fileCheckPatternChk
             // 
@@ -291,7 +327,7 @@ namespace SnakeTail
             // 
             this._filePathEdt.Location = new System.Drawing.Point(103, 6);
             this._filePathEdt.Name = "_filePathEdt";
-            this._filePathEdt.Size = new System.Drawing.Size(250, 20);
+            this._filePathEdt.Size = new System.Drawing.Size(214, 20);
             this._filePathEdt.TabIndex = 1;
             // 
             // _tabPageKeyWords
@@ -397,39 +433,15 @@ namespace SnakeTail
             this._cancelBtn.Text = "Cancel";
             this._cancelBtn.UseVisualStyleBackColor = true;
             // 
-            // label8
+            // _browseBtn
             // 
-            label8.AutoSize = true;
-            label8.Location = new System.Drawing.Point(3, 118);
-            label8.Name = "label8";
-            label8.Size = new System.Drawing.Size(135, 13);
-            label8.TabIndex = 11;
-            label8.Text = "File Change Check Interval";
-            // 
-            // _fileChangeCheckIntervalEdt
-            // 
-            this._fileChangeCheckIntervalEdt.Location = new System.Drawing.Point(144, 115);
-            this._fileChangeCheckIntervalEdt.Name = "_fileChangeCheckIntervalEdt";
-            this._fileChangeCheckIntervalEdt.Size = new System.Drawing.Size(59, 20);
-            this._fileChangeCheckIntervalEdt.TabIndex = 12;
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(209, 118);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(37, 13);
-            this.label9.TabIndex = 13;
-            this.label9.Text = "msecs";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(209, 92);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(29, 13);
-            this.label10.TabIndex = 14;
-            this.label10.Text = "secs";
+            this._browseBtn.Location = new System.Drawing.Point(323, 6);
+            this._browseBtn.Name = "_browseBtn";
+            this._browseBtn.Size = new System.Drawing.Size(30, 20);
+            this._browseBtn.TabIndex = 15;
+            this._browseBtn.Text = "...";
+            this._browseBtn.UseVisualStyleBackColor = true;
+            this._browseBtn.Click += new System.EventHandler(this._browseBtn_Click);
             // 
             // TailConfigForm
             // 
@@ -485,6 +497,7 @@ namespace SnakeTail
         private System.Windows.Forms.TextBox _fileChangeCheckIntervalEdt;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Button _browseBtn;
 
 
 
