@@ -179,5 +179,19 @@ namespace SnakeTail
 
             _keywordListView.Items.Remove(_keywordListView.SelectedItems[0]);
         }
+
+        private void _browseBtn_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog fileDialog = new OpenFileDialog();
+            fileDialog.Multiselect = true;
+            fileDialog.Title = "Open Log File";
+            fileDialog.Filter = "Text Files|*.txt|Log Files|*.log|All Files|*.*";
+            fileDialog.InitialDirectory = System.IO.Path.GetDirectoryName(_filePathEdt.Text);
+            fileDialog.FileName = System.IO.Path.GetFileName(_filePathEdt.Text);
+            if (fileDialog.ShowDialog() != DialogResult.OK)
+                return;
+
+            _filePathEdt.Text = fileDialog.FileName;
+        }
     }
 }
