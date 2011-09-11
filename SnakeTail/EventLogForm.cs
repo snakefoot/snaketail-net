@@ -28,10 +28,9 @@ namespace SnakeTail
 {
     public partial class EventLogForm : Form
     {
-        Dictionary<int, string> _eventMessages = new Dictionary<int, string>();
-        ManagementOperationObserver _eventMessagesObserver = null;
         EventLog _eventLog;
         List<List<Regex>> _columnFilters = new List<List<Regex>>();
+        EventLogMesageLookup _messageLookup;
         bool _filterActive = false;
         int _lastEventLogEntry = -1;
         int _lastEventLogFilterIndex = -1;
@@ -94,6 +93,8 @@ namespace SnakeTail
                 _eventLog = new EventLog(tailConfig.FilePath);
                 _eventLog.EntryWritten += new EntryWrittenEventHandler(_eventLog_EntryWritten);
                 _eventLog.EndInit();
+                if (_eventLog.Entries.Count == -1)
+                    return; // Crazy check just to ensure we have permissions to read the log
             }
             catch (System.Security.SecurityException ex)
             {
@@ -102,24 +103,7 @@ namespace SnakeTail
                 return;
             }
 
-            if (System.Environment.OSVersion.Version.Major >= 6)
-            {
-                GetEventLogItemMessages(_eventLog.MachineName, _eventLog.Log);
-
-                if (_eventLog.Entries.Count > 0)
-                {
-                    // Wait for the first eventlog message to be read from WMI
-                    while (true)
-                    {
-                        lock (_eventMessages)
-                        {
-                            if (_eventMessages.Count > 0)
-                                break;
-                        }
-                        System.Threading.Thread.Sleep(10);
-                    }
-                }
-            }
+            _messageLookup = new EventLogMesageLookup(_eventLog);
 
             if (tailConfig.FormBackColor != null)
                 _eventListView.BackColor = tailConfig.FormBackColor.Value;
@@ -231,72 +215,22 @@ namespace SnakeTail
 
         string LookupEventLogMessage(ListViewItem listItem)
         {
-            lock (_eventMessages)
+            if (_eventListView.VirtualMode)
             {
-                string message;
-                if (_eventMessages.TryGetValue((int)listItem.Tag, out message))
+                EventLogEntry entry = _eventLog.Entries[listItem.Index];
+                if (entry == null)
+                    return "";
+
+                if (entry.Index == (int)listItem.Tag)
                 {
-                    return message;
+                    _messageLookup.UpdateMesageCache(entry);
                 }
             }
 
-            string eventMessage = null;
-            string eventId = null;
+            using (new HourGlass(this))
             {
-                EventLogEntry entry = null;
-                if (_eventListView.VirtualMode)
-                {
-                    entry = _eventLog.Entries[listItem.Index];
-                    if (entry == null)
-                        return "";
-
-                    if (entry.Index == (int)listItem.Tag)
-                    {
-                        eventMessage = entry.Message;
-                        eventId = entry.InstanceId.ToString();
-                    }
-                }
-                else
-                {
-                    if (listItem.SubItems.Count > 3)
-                    {
-                        eventMessage = listItem.SubItems[3].Tag as string;
-                        eventId = listItem.SubItems[3].Text;
-                    }
-                }
+                return _messageLookup.LookupMessage(_eventLog, (int)listItem.Tag, listItem.SubItems[3].Text);
             }
-
-            if (eventMessage != null)
-            {
-                if (System.Environment.OSVersion.Version.Major >= 6)
-                {
-                    if (String.IsNullOrEmpty(eventId) || eventMessage.IndexOf(" Event ID '" + eventId + "' ") != -1)
-                        eventMessage = null;
-                }
-            }
-
-            if (eventMessage == null)
-            {
-                using (new HourGlass(this))
-                {
-                    eventMessage = GetEventLogItemMessage(_eventLog.MachineName, _eventLog.LogDisplayName, (uint)(int)listItem.Tag);
-                }
-            }
-
-            if (eventMessage != null)
-            {
-                if (eventMessage != null)
-                {
-                    lock (_eventMessages)
-                    {
-                        if (!_eventMessages.ContainsKey((int)listItem.Tag))
-                            _eventMessages.Add((int)listItem.Tag, eventMessage);
-                    }
-                    return eventMessage;
-                }
-            }
-
-            return "";
         }
 
         void _eventLog_EntryWritten(object sender, EntryWrittenEventArgs e)
@@ -349,9 +283,12 @@ namespace SnakeTail
                     if (lastEntryIndex == _lastEventLogEntry)
                         lastEntryIndex = entry.Index;
 
-                    ListViewItem item = CreateListViewItem(entry, true);
+                    ListViewItem item = CreateListViewItem(entry);
                     if (AcceptFilterListViewItem(item))
+                    {
+                        _messageLookup.UpdateMesageCache(entry);
                         eventLogEvents.Add(item);
+                    }
 
                     prevEntryIndex = entry.Index;
                 }
@@ -399,7 +336,7 @@ namespace SnakeTail
                 if (_eventListView.VirtualListSize > 0)
                     _eventListView.EnsureVisible(_eventListView.VirtualListSize - 1);
             }
-            ListViewItem lvi = CreateListViewItem(entry, false);
+            ListViewItem lvi = CreateListViewItem(entry);
             e.Item = lvi;
         }
 
@@ -410,146 +347,6 @@ namespace SnakeTail
                 _eventMessageText.Text = LookupEventLogMessage(e.Item);
                 _eventMessageText.ScrollToCaret();  // Scroll to top of RichTextBox
             }
-        }
-
-        private static string GetStandardPath(string machinename)
-        {
-            return String.Concat(
-                        @"\\",
-                        machinename,
-                        @"\root\CIMV2"
-            );
-        }
-
-        private void GetEventLogItemMessages(string machinename, string logname)
-        {
-            if (_eventMessagesObserver == null)
-            {
-                ManagementScope messageScope = new ManagementScope(
-                             GetStandardPath(machinename)
-                 );
-
-                messageScope.Connect();
-
-                StringBuilder query = new StringBuilder();
-                query.Append("select Message, InsertionStrings, RecordNumber from Win32_NTLogEvent where LogFile ='");
-                query.Append(logname.Replace("'", "''"));
-                query.Append("'");
-
-                System.Management.ObjectQuery objectQuery = new System.Management.ObjectQuery(
-                    query.ToString()
-                );
-
-                EnumerationOptions objectQueryOptions = new EnumerationOptions();
-                objectQueryOptions.BlockSize = 100000;
-
-                ManagementObjectSearcher objectSearcher = new ManagementObjectSearcher(messageScope, objectQuery);
-
-                _eventMessagesObserver = new ManagementOperationObserver();
-                _eventMessagesObserver.ObjectReady += new ObjectReadyEventHandler(OnEventLogEntryReady);
-                _eventMessagesObserver.Completed += new CompletedEventHandler(_eventMessagesObserver_Completed);
-                objectSearcher.Get(_eventMessagesObserver);
-            }
-        }
-
-        void _eventMessagesObserver_Completed(object sender, CompletedEventArgs e)
-        {
-            _eventMessagesObserver = null;
-        }
-
-        void OnEventLogEntryReady(object sender, ObjectReadyEventArgs e)
-        {
-            lock (_eventMessages)
-            {
-                uint messageIndex = (uint)e.NewObject["RecordNumber"];
-                string message = (string)e.NewObject["Message"];
-                string[] insertionStrings = (string[])e.NewObject["InsertionStrings"];
-
-                if (message == null)
-                {
-                    if (insertionStrings.Length > 0)
-                    {
-                        StringBuilder sb = new StringBuilder();
-
-                        for (int i = 0; i < insertionStrings.Length; i++)
-                        {
-                            sb.Append(insertionStrings[i]);
-                            sb.Append(" ");
-                        }
-
-                        if (!_eventMessages.ContainsKey((int)messageIndex))
-                            _eventMessages.Add((int)messageIndex, sb.ToString());
-                    }
-                }
-                else
-                {
-                    if (!_eventMessages.ContainsKey((int)messageIndex))
-                        _eventMessages.Add((int)messageIndex, message);
-                }
-            }
-            System.Threading.Thread.Sleep(5);
-        }
-
-        private static string GetEventLogItemMessage(string machinename, string logname, uint thisIndex)
-        {
-            ManagementScope messageScope = new ManagementScope(
-                        GetStandardPath(machinename)
-            );
-
-            messageScope.Connect();
-
-            StringBuilder query = new StringBuilder();
-            query.Append("select Message, InsertionStrings from Win32_NTLogEvent where LogFile ='");
-            query.Append(logname.Replace("'", "''"));
-            query.Append("' AND RecordNumber='");
-            query.Append(thisIndex);
-            query.Append("'");
-
-            System.Management.ObjectQuery objectQuery = new System.Management.ObjectQuery(
-                query.ToString()
-            );
-
-            EnumerationOptions objectQueryOptions = new EnumerationOptions();
-            objectQueryOptions.Rewindable = false;
-
-            using (ManagementObjectSearcher objectSearcher = new ManagementObjectSearcher(messageScope, objectQuery, objectQueryOptions))
-            {
-                // Execute the query
-                using (ManagementObjectCollection collection = objectSearcher.Get())
-                {
-                    // Execute the query
-                    using (ManagementObjectCollection.ManagementObjectEnumerator enumerator = collection.GetEnumerator())
-                    {
-                        while (enumerator.MoveNext())
-                        {
-                            string message = (string)enumerator.Current["Message"];
-                            string[] insertionStrings = (string[])enumerator.Current["InsertionStrings"];
-
-                            if (message == null)
-                            {
-                                if (insertionStrings.Length > 0)
-                                {
-                                    StringBuilder sb = new StringBuilder();
-
-                                    for (int i = 0; i < insertionStrings.Length; i++)
-                                    {
-                                        sb.Append(insertionStrings[i]);
-                                        sb.Append(" ");
-                                    }
-
-                                    return sb.ToString();
-                                }
-                            }
-                            else
-                            {
-                                return message;
-                            }
-                        }
-                    }
-                }
-            }
-
-            return null;
         }
 
         public static List<string> GetEventLogFiles()
@@ -563,7 +360,7 @@ namespace SnakeTail
             return logfiles;
         }
 
-        private ListViewItem CreateListViewItem(EventLogEntry entry, bool includeMessage)
+        private ListViewItem CreateListViewItem(EventLogEntry entry)
         {
             if (entry != null)
             {
@@ -571,9 +368,7 @@ namespace SnakeTail
                 lvi.SubItems.Add(entry.TimeWritten.ToString("yyyy'-'MM'-'dd' 'HH':'mm':'ss"));
                 lvi.SubItems.Add(entry.Source);
                 int eventid = (int)(entry.InstanceId & 0x3fff);
-                ListViewItem.ListViewSubItem sublvi = lvi.SubItems.Add(eventid.ToString());
-                if (includeMessage)
-                    sublvi.Tag = entry.Message;
+                lvi.SubItems.Add(eventid.ToString());
                 string category = "Invalid Category";
                 try
                 {
@@ -741,6 +536,7 @@ namespace SnakeTail
                     _eventListView.SelectedIndices.Clear();
                     _eventListView.SelectedIndices.Add(_eventListView.VirtualListSize - 1);
                     _eventListView.EnsureVisible(_eventListView.VirtualListSize - 1);
+                    _eventListView.FocusedItem = _eventListView.Items[_eventListView.VirtualListSize - 1];
                     _eventListView.Update();
                 }
                 Text = _formTitle;
@@ -775,16 +571,10 @@ namespace SnakeTail
 
         private void EventLogForm_FormClosed(object sender, FormClosedEventArgs e)
         {
+            if (_messageLookup != null)
+                _messageLookup.Dispose();
             _filterEventLogTimer.Enabled = false;
             _eventLog.EnableRaisingEvents = false;
-            if (_eventMessagesObserver != null)
-            {
-                lock (_eventMessages)
-                {
-                    _eventMessagesObserver.ObjectReady -= new ObjectReadyEventHandler(OnEventLogEntryReady);
-                    _eventMessagesObserver = null;
-                }
-            }
         }
 
         private void _filterEventLogTimer_Tick(object sender, EventArgs e)
@@ -811,9 +601,10 @@ namespace SnakeTail
                     continue;
                 }
 
-                ListViewItem item = CreateListViewItem(entry, true);
+                ListViewItem item = CreateListViewItem(entry);
                 if (AcceptFilterListViewItem(item))
                 {
+                    _messageLookup.UpdateMesageCache(entry);
                     if (_eventListView.Items.Count == 0 || entry.Index != (int)_eventListView.Items[0].Tag)
                         _eventListView.Items.Insert(0, item);
                 }
@@ -908,7 +699,7 @@ namespace SnakeTail
                                 selection.AppendLine(columnHeader.Text + ": " + item.SubItems[columnHeader.Index].Text);
                             selection.AppendLine("Message:");
                             // Fix unix-newlines to environment newlines
-                            selection.Append(LookupEventLogMessage(item).Replace(Environment.NewLine, "\n").Replace("\n", Environment.NewLine));
+                            selection.Append( LookupEventLogMessage(item).Replace(Environment.NewLine, "\n").Replace("\n", Environment.NewLine));
                         }
                     }
             }
@@ -922,6 +713,353 @@ namespace SnakeTail
             TailConfigForm configForm = new TailConfigForm(configFile, false);
             if (configForm.ShowDialog() == DialogResult.OK)
                 LoadConfig(configForm.TailFileConfig);
+        }
+    }
+
+    class EventLogMesageLookup : IDisposable
+    {
+        Dictionary<int, string> _eventMessages = new Dictionary<int, string>();
+        ManagementOperationObserver _eventMessagesObserver = null;
+        System.Reflection.Assembly _eventLogReaderAssembly = null;
+        Type _eventLogReaderQueryType = null;
+        Type _eventLogReaderEnumType = null;
+        Type _eventLogReaderType = null;
+        Type _eventLogRecordType = null;
+        Type _eventLogPropertyType = null;
+        bool _eventLogReaderThreadContinue = true;
+        System.Threading.Thread _eventLogReaderThread = null;
+
+        public EventLogMesageLookup(EventLog eventLog)
+        {
+            if (System.Environment.OSVersion.Version.Major >= 6)
+            {
+                //System.Diagnostics.Eventing.Reader.EventLogReader 
+                try
+                {
+                    _eventLogReaderAssembly = System.Reflection.Assembly.Load("System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken= b77a5c561934e089");
+                    _eventLogReaderQueryType = _eventLogReaderAssembly.GetType("System.Diagnostics.Eventing.Reader.EventLogQuery");
+                    _eventLogReaderEnumType = _eventLogReaderAssembly.GetType("System.Diagnostics.Eventing.Reader.PathType");
+                    _eventLogReaderType = _eventLogReaderAssembly.GetType("System.Diagnostics.Eventing.Reader.EventLogReader");
+                    _eventLogRecordType = _eventLogReaderAssembly.GetType("System.Diagnostics.Eventing.Reader.EventRecord");
+                    _eventLogPropertyType = _eventLogReaderAssembly.GetType("System.Diagnostics.Eventing.Reader.EventProperty");
+
+                    _eventLogReaderThread = new System.Threading.Thread(new System.Threading.ParameterizedThreadStart(ThreadProc));
+                    _eventLogReaderThread.Start(eventLog.Log);
+                }
+                catch (Exception ex)
+                {
+                    _eventLogReaderAssembly = null;
+                    System.Diagnostics.Debug.WriteLine("EventLogReader unavailable reverts to WMI query: " + ex.Message);
+                    GetEventLogItemMessages(eventLog.MachineName, eventLog.Log);
+
+                    if (eventLog.Entries.Count > 0)
+                    {
+                        // Wait for the first eventlog message to be read from WMI
+                        while (true)
+                        {
+                            lock (_eventMessages)
+                            {
+                                if (_eventMessages.Count > 0)
+                                    break;
+                            }
+                            System.Threading.Thread.Sleep(10);
+                        }
+                    }
+                }
+            }            
+        }
+
+        public void Dispose()
+        {
+            if (_eventMessagesObserver != null)
+            {
+                lock (_eventMessages)
+                {
+                    _eventMessagesObserver.ObjectReady -= new ObjectReadyEventHandler(OnEventLogEntryReady);
+                    _eventMessagesObserver = null;
+                }
+            }
+            if (_eventLogReaderThread != null)
+            {
+                _eventLogReaderThreadContinue = false;
+                while (_eventLogReaderThread.IsAlive)
+                    continue;
+            }
+        }
+
+        public string LookupMessage(EventLog eventLog, int eventRecordId, string eventId)
+        {
+            string eventMessage = null;
+            lock (_eventMessages)
+            {
+                if (_eventMessages.TryGetValue(eventRecordId, out eventMessage))
+                {
+                    return eventMessage;
+                }
+            }
+
+            if (_eventLogReaderAssembly != null)
+            {
+                System.Globalization.CultureInfo backupCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
+                object readerObj = null;
+                try
+                {
+                    string queryStr = string.Format("*[System/EventRecordID={0}]", eventRecordId);
+                    object queryObj = Activator.CreateInstance(_eventLogReaderQueryType, new Object[] { eventLog.Log, Enum.GetValues(_eventLogReaderEnumType).GetValue(0), queryStr });
+                    readerObj = Activator.CreateInstance(_eventLogReaderType, new Object[] { queryObj });
+                    object eventRecordObj = _eventLogReaderType.InvokeMember("ReadEvent", System.Reflection.BindingFlags.InvokeMethod, null, readerObj, null);
+                    eventMessage = ExtractMessage(eventRecordObj);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("EventLog Message Lookup Failed: " + ex.Message);
+                    eventMessage = null;
+                }
+                finally
+                {
+                    System.Threading.Thread.CurrentThread.CurrentCulture = backupCulture;
+                    IDisposable disposeReader = readerObj as IDisposable;
+                    if (disposeReader != null)
+                        disposeReader.Dispose();
+                }
+            }
+
+            if (eventMessage == null)
+            {
+                eventMessage = GetEventLogItemMessage(eventLog.MachineName, eventLog.LogDisplayName, (uint)eventRecordId);
+            }
+
+            if (eventMessage != null)
+            {
+                if (eventMessage != null)
+                {
+                    lock (_eventMessages)
+                    {
+                        if (!_eventMessages.ContainsKey(eventRecordId))
+                            _eventMessages.Add(eventRecordId, eventMessage);
+                    }
+                    return eventMessage;
+                }
+            }
+
+            return "";
+        }
+
+        public void UpdateMesageCache(EventLogEntry eventLogEntry)
+        {
+            if (System.Environment.OSVersion.Version.Major >= 6)
+            {
+                string eventMessage = eventLogEntry.Message;
+                int eventId = (int)(eventLogEntry.InstanceId);
+                if (eventMessage.IndexOf(" Event ID '" + eventId.ToString() + "' ") != -1)
+                    return; // Cannot be used
+            }
+
+            lock (_eventMessages)
+            {
+                if (!_eventMessages.ContainsKey(eventLogEntry.Index))
+                    _eventMessages.Add(eventLogEntry.Index, eventLogEntry.Message);
+            }
+        }
+
+        private string ExtractMessage(object eventRecordObj)
+        {
+            object eventProperties = _eventLogRecordType.InvokeMember("Properties", System.Reflection.BindingFlags.GetProperty, null, eventRecordObj, null);
+            System.Collections.IEnumerable eventPropertiesList = eventProperties as System.Collections.IEnumerable;
+
+            List<string> eventPropertyValues = new List<string>();
+            foreach (object property in eventPropertiesList)
+            {
+                string propertyValue = _eventLogPropertyType.InvokeMember("Value", System.Reflection.BindingFlags.GetProperty, null, property, null) as string;
+                if (propertyValue != null)
+                    eventPropertyValues.Add(propertyValue);
+            }
+
+            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
+            object eventMessageStr = _eventLogRecordType.InvokeMember("FormatDescription", System.Reflection.BindingFlags.InvokeMethod, null, eventRecordObj, null, new System.Globalization.CultureInfo("en-US"));
+            if (eventMessageStr != null)
+                return eventMessageStr as string;
+            else
+            if (eventPropertyValues.Count == 1)
+                return eventPropertyValues[0];
+            else
+                return null;
+        }
+
+        private void ThreadProc(object logName)
+        {
+            object readerObj = null;
+            try
+            {
+                string queryStr = string.Format("*");
+                object queryObj = Activator.CreateInstance(_eventLogReaderQueryType, new Object[] { logName.ToString(), Enum.GetValues(_eventLogReaderEnumType).GetValue(0), queryStr });
+                _eventLogReaderQueryType.InvokeMember("ReverseDirection", System.Reflection.BindingFlags.SetProperty, null, queryObj, new object[] { true });
+                readerObj = Activator.CreateInstance(_eventLogReaderType, new Object[] { queryObj });
+                object eventRecordObj = _eventLogReaderType.InvokeMember("ReadEvent", System.Reflection.BindingFlags.InvokeMethod, null, readerObj, null);
+
+                while (_eventLogReaderThreadContinue && eventRecordObj != null)
+                {
+                    object eventRecordId = _eventLogRecordType.InvokeMember("RecordId", System.Reflection.BindingFlags.GetProperty, null, eventRecordObj, null);
+                    string eventMessage = ExtractMessage(eventRecordObj);
+                    if (eventMessage != null && eventRecordId != null)
+                    {
+                        lock (_eventMessages)
+                        {
+                            if (!_eventMessages.ContainsKey((int)(long)eventRecordId))
+                                _eventMessages.Add((int)(long)eventRecordId, eventMessage);
+                        }
+                    }
+
+                    eventRecordObj = _eventLogReaderType.InvokeMember("ReadEvent", System.Reflection.BindingFlags.InvokeMethod, null, readerObj, null);
+                    System.Threading.Thread.Sleep(100);
+                }
+            }
+            finally
+            {
+                IDisposable disposeReader = readerObj as IDisposable;
+                if (disposeReader != null)
+                    disposeReader.Dispose();
+            }
+        }
+
+        private static string GetStandardPath(string machinename)
+        {
+            return String.Concat(
+                        @"\\",
+                        machinename,
+                        @"\root\CIMV2"
+            );
+        }
+
+        private void GetEventLogItemMessages(string machinename, string logname)
+        {
+            if (_eventMessagesObserver == null)
+            {
+                ManagementScope messageScope = new ManagementScope(
+                             GetStandardPath(machinename)
+                 );
+
+                messageScope.Connect();
+
+                StringBuilder query = new StringBuilder();
+                query.Append("select Message, InsertionStrings, RecordNumber from Win32_NTLogEvent where LogFile ='");
+                query.Append(logname.Replace("'", "''"));
+                query.Append("'");
+
+                System.Management.ObjectQuery objectQuery = new System.Management.ObjectQuery(
+                    query.ToString()
+                );
+
+                EnumerationOptions objectQueryOptions = new EnumerationOptions();
+                objectQueryOptions.BlockSize = 100000;
+
+                ManagementObjectSearcher objectSearcher = new ManagementObjectSearcher(messageScope, objectQuery);
+
+                _eventMessagesObserver = new ManagementOperationObserver();
+                _eventMessagesObserver.ObjectReady += new ObjectReadyEventHandler(OnEventLogEntryReady);
+                _eventMessagesObserver.Completed += new CompletedEventHandler(OnEventLogEntryCompleted);
+                objectSearcher.Get(_eventMessagesObserver);
+            }
+        }
+
+        void OnEventLogEntryCompleted(object sender, CompletedEventArgs e)
+        {
+            _eventMessagesObserver = null;
+        }
+
+        void OnEventLogEntryReady(object sender, ObjectReadyEventArgs e)
+        {
+            lock (_eventMessages)
+            {
+                uint messageIndex = (uint)e.NewObject["RecordNumber"];
+                string message = (string)e.NewObject["Message"];
+                string[] insertionStrings = (string[])e.NewObject["InsertionStrings"];
+
+                if (message == null)
+                {
+                    if (insertionStrings.Length > 0)
+                    {
+                        StringBuilder sb = new StringBuilder();
+
+                        for (int i = 0; i < insertionStrings.Length; i++)
+                        {
+                            sb.Append(insertionStrings[i]);
+                            sb.Append(" ");
+                        }
+
+                        if (!_eventMessages.ContainsKey((int)messageIndex))
+                            _eventMessages.Add((int)messageIndex, sb.ToString());
+                    }
+                }
+                else
+                {
+                    if (!_eventMessages.ContainsKey((int)messageIndex))
+                        _eventMessages.Add((int)messageIndex, message);
+                }
+            }
+            System.Threading.Thread.Sleep(5);
+        }
+
+        private static string GetEventLogItemMessage(string machinename, string logname, uint thisIndex)
+        {
+            ManagementScope messageScope = new ManagementScope(
+                        GetStandardPath(machinename)
+            );
+
+            messageScope.Connect();
+
+            StringBuilder query = new StringBuilder();
+            query.Append("select Message, InsertionStrings from Win32_NTLogEvent where LogFile ='");
+            query.Append(logname.Replace("'", "''"));
+            query.Append("' AND RecordNumber='");
+            query.Append(thisIndex);
+            query.Append("'");
+
+            System.Management.ObjectQuery objectQuery = new System.Management.ObjectQuery(
+                query.ToString()
+            );
+
+            EnumerationOptions objectQueryOptions = new EnumerationOptions();
+            objectQueryOptions.Rewindable = false;
+
+            using (ManagementObjectSearcher objectSearcher = new ManagementObjectSearcher(messageScope, objectQuery, objectQueryOptions))
+            {
+                // Execute the query
+                using (ManagementObjectCollection collection = objectSearcher.Get())
+                {
+                    // Execute the query
+                    using (ManagementObjectCollection.ManagementObjectEnumerator enumerator = collection.GetEnumerator())
+                    {
+                        while (enumerator.MoveNext())
+                        {
+                            string message = (string)enumerator.Current["Message"];
+                            string[] insertionStrings = (string[])enumerator.Current["InsertionStrings"];
+
+                            if (message == null)
+                            {
+                                if (insertionStrings.Length > 0)
+                                {
+                                    StringBuilder sb = new StringBuilder();
+
+                                    for (int i = 0; i < insertionStrings.Length; i++)
+                                    {
+                                        sb.Append(insertionStrings[i]);
+                                        sb.Append(" ");
+                                    }
+
+                                    return sb.ToString();
+                                }
+                            }
+                            else
+                            {
+                                return message;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return null;
         }
     }
 
