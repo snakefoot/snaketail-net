@@ -907,12 +907,18 @@ namespace SnakeTail
                         {
                             if (!_eventMessages.ContainsKey((int)(long)eventRecordId))
                                 _eventMessages.Add((int)(long)eventRecordId, eventMessage);
+                            if (_eventMessages.Count > 100)
+                                break;
                         }
                     }
 
                     eventRecordObj = _eventLogReaderType.InvokeMember("ReadEvent", System.Reflection.BindingFlags.InvokeMethod, null, readerObj, null);
                     System.Threading.Thread.Sleep(100);
                 }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("EventLog Message Lookup Failed: " + ex.Message);
             }
             finally
             {
