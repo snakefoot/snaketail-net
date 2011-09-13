@@ -40,21 +40,21 @@ namespace SnakeTail
             }
         }
 
-        private TailForm _activeTailForm = null;
-        public TailForm ActiveTailForm
+        private ITailForm _activeTailForm = null;
+        public ITailForm ActiveTailForm
         {
             get
             {
                 if (_activeTailForm != null)
                     return _activeTailForm;
                 else
-                    return MainForm.Instance.ActiveMdiChild as TailForm;
+                    return MainForm.Instance.ActiveMdiChild as ITailForm;
             }
             set
             {
                 if (_activeTailForm != null)
                 {
-                    _activeTailForm.FormClosed -= _activeForm_FormClosed;
+                    _activeTailForm.TailWindow.FormClosed -= _activeForm_FormClosed;
                 }
                 _activeTailForm = value;
                 if (Visible)
@@ -62,11 +62,11 @@ namespace SnakeTail
                     SetWindowPos(this.Handle, HWND_TOP, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);  // BringToFront without focus
                 }
                 if (_activeTailForm != null)
-                    _activeTailForm.FormClosed += new FormClosedEventHandler(_activeForm_FormClosed);
+                    _activeTailForm.TailWindow.FormClosed += new FormClosedEventHandler(_activeForm_FormClosed);
             }
         }
 
-        public void StartSearch(TailForm activeTailForm)
+        public void StartSearch(ITailForm activeTailForm)
         {
             if (!Visible)
                 Show(MainForm.Instance);
@@ -76,7 +76,7 @@ namespace SnakeTail
             _searchTextBox.Focus();
         }
 
-        public void SearchAgain(TailForm activeTailForm, bool searchForward, bool keywordHighlights)
+        public void SearchAgain(ITailForm activeTailForm, bool searchForward, bool keywordHighlights)
         {
             if (activeTailForm != null)
             {
@@ -85,7 +85,7 @@ namespace SnakeTail
                 bool found = false;
                 using (new HourGlass(this))
                 {
-                    using (new HourGlass(activeTailForm))
+                    using (new HourGlass(activeTailForm.TailWindow))
                     {
                         found = ActiveTailForm.SearchForText(_searchTextBox.Text, _matchCaseCheckBox.Checked, searchForward, keywordHighlights);
                     }

@@ -20,12 +20,15 @@ namespace SnakeTail
 {
     internal class HourGlass : IDisposable
     {
-        private Form m_Form;
+        private Form m_Form = null;
 
         public HourGlass(Form form)
         {
-            m_Form = form;
-            m_Form.Cursor = Cursors.WaitCursor;
+            if (form.Cursor != Cursors.WaitCursor)
+            {
+                m_Form = form;
+                m_Form.Cursor = Cursors.WaitCursor;
+            }
         }
 
         ~HourGlass()
@@ -36,8 +39,11 @@ namespace SnakeTail
 
         public void Dispose()
         {
-            m_Form.Cursor = Cursors.Default;
-            m_Form = null;
+            if (m_Form != null)
+            {
+                m_Form.Cursor = Cursors.Default;
+                m_Form = null;
+            }
         }
     }
 }

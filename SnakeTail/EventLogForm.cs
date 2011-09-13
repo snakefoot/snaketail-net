@@ -26,7 +26,7 @@ using System.Windows.Forms;
 
 namespace SnakeTail
 {
-    public partial class EventLogForm : Form
+    public partial class EventLogForm : Form, ITailForm
     {
         EventLog _eventLog;
         List<List<Regex>> _columnFilters = new List<List<Regex>>();
@@ -47,8 +47,10 @@ namespace SnakeTail
         {
             TailFileConfig tailConfig = new TailFileConfig();
             tailConfig.FilePath = eventLogFile;
-            LoadConfig(tailConfig);
+            LoadConfig(tailConfig, null);
         }
+
+        public Form TailWindow { get { return this; } }
 
         public void SaveConfig(TailFileConfig tailConfig)
         {
@@ -86,7 +88,7 @@ namespace SnakeTail
             tailConfig.ColumnFilterActive = _filterActive;
         }
 
-        public void LoadConfig(TailFileConfig tailConfig)
+        public void LoadConfig(TailFileConfig tailConfig, string configPath)
         {
             try
             {
@@ -147,6 +149,107 @@ namespace SnakeTail
             {
                 ConfigureColumnFilter(_filterActive);
             }
+        }
+
+        private bool MatchTextSearch(string itemText, string searchText, bool matchCase)
+        {
+            if (matchCase)
+            {
+                if (0 <= itemText.IndexOf(searchText))
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                if (0 <= itemText.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private bool MatchTextSearch(ListViewItem eventLogItem, string searchText, bool matchCase)
+        {
+            foreach (ListViewItem.ListViewSubItem subItem in eventLogItem.SubItems)
+            {
+                if (MatchTextSearch(subItem.Text, searchText, matchCase))
+                    return true;
+            }
+
+            string eventMessage = LookupEventLogMessage(eventLogItem);
+            if (MatchTextSearch(eventMessage, searchText, matchCase))
+                return true;
+
+            return false;
+        }
+
+        public bool SearchForText(string searchText, bool matchCase, bool searchForward, bool keywordHighlights)
+        {
+            int listCount = -1;
+
+            if (_eventListView.VirtualMode)
+            {
+                listCount = _eventListView.VirtualListSize;
+            }
+            else
+            {
+                listCount = _eventListView.Items.Count;
+            }
+
+            if (listCount <= 0)
+                return false;
+
+            // Use selection if it is below top-index
+            int startIndex = listCount - 1;
+            if (_eventListView.SelectedIndices.Count > 0)
+            {
+                if (_eventListView.TopItem == null || _eventListView.TopItem.Index - 1 < _eventListView.SelectedIndices[0])
+                    startIndex = _eventListView.SelectedIndices[0];
+            }
+
+            int matchFound = -1;
+            using (new HourGlass(this))
+            {
+                if (!searchForward)
+                {
+                    startIndex -= 1;
+                    for (int i = startIndex; i >= 0; --i)
+                    {
+                        ListViewItem lvItem = _eventListView.Items[i];
+                        if (MatchTextSearch(lvItem, searchText, matchCase))
+                        {
+                            matchFound = i;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    startIndex += 1;
+                    int endIndex = listCount;
+                    for (int i = startIndex; i < endIndex; ++i)
+                    {
+                        ListViewItem lvItem = _eventListView.Items[i];
+                        if (MatchTextSearch(lvItem, searchText, matchCase))
+                        {
+                            matchFound = i;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (matchFound >= 0)
+            {
+                _eventListView.SelectedIndices.Clear();  // Clear selection before changing cache to avoid cache miss
+                _eventListView.EnsureVisible(matchFound);
+                _eventListView.SelectedIndices.Add(matchFound);   // Set selection after having scrolled to avoid top-index cache miss
+                _eventListView.Items[matchFound].Focused = true;
+                return true;
+            }
+            return false;
         }
 
         private void EventLogForm_Load(object sender, EventArgs e)
@@ -483,7 +586,7 @@ namespace SnakeTail
 
             Close();
 
-            newform.LoadConfig(tailConfig);
+            newform.LoadConfig(tailConfig, null);
             newform.Show();
             newform.BringToFront();
         }
@@ -712,7 +815,27 @@ namespace SnakeTail
             SaveConfig(configFile);
             TailConfigForm configForm = new TailConfigForm(configFile, false);
             if (configForm.ShowDialog() == DialogResult.OK)
-                LoadConfig(configForm.TailFileConfig);
+                LoadConfig(configForm.TailFileConfig, null);
+        }
+
+        private void findToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SearchForm.Instance.StartSearch(this);
+        }
+
+        private void findNextToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+             SearchForm.Instance.SearchAgain(this, true, false);
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.Shift | Keys.F3))
+            {
+                SearchForm.Instance.SearchAgain(this, false, false);
+                return true;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
         }
     }
 
@@ -775,7 +898,7 @@ namespace SnakeTail
             {
                 lock (_eventMessages)
                 {
-                    _eventMessagesObserver.ObjectReady -= new ObjectReadyEventHandler(OnEventLogEntryReady);
+                    _eventMessagesObserver.ObjectReady -= OnEventLogEntryReady;
                     _eventMessagesObserver = null;
                 }
             }
@@ -812,8 +935,9 @@ namespace SnakeTail
                 }
                 catch (Exception ex)
                 {
+                    _eventLogReaderAssembly = null;
                     System.Diagnostics.Debug.WriteLine("EventLog Message Lookup Failed: " + ex.Message);
-                    eventMessage = null;
+                    throw;
                 }
                 finally
                 {
@@ -907,8 +1031,6 @@ namespace SnakeTail
                         {
                             if (!_eventMessages.ContainsKey((int)(long)eventRecordId))
                                 _eventMessages.Add((int)(long)eventRecordId, eventMessage);
-                            if (_eventMessages.Count > 100)
-                                break;
                         }
                     }
 

@@ -27,7 +27,7 @@ using System.Diagnostics;
 
 namespace SnakeTail
 {
-    public partial class TailForm : Form
+    public partial class TailForm : Form, ITailForm
     {
         // Todo Implement inline selection when owner-drawn
         // Todo Implement inline keyword highlight when owner-drawn
@@ -118,6 +118,8 @@ namespace SnakeTail
                     SetStatusBar(null);
             }
         }
+
+        public Form TailWindow { get { return this; } }
 
         public void LoadFile(string filepath)
         {
