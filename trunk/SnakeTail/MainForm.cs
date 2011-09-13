@@ -300,15 +300,9 @@ namespace SnakeTail
             FormCollection forms = Application.OpenForms;
             for (int i = forms.Count - 1; i >= 0; i--)
             {
-                TailForm tailForm = forms[i] as TailForm;
+                ITailForm tailForm = forms[i] as ITailForm;
                 if (tailForm != null)
-                    tailForm.Close();
-                else
-                {
-                    EventLogForm eventLogForm = forms[i] as EventLogForm;
-                    if (eventLogForm != null)
-                        eventLogForm.Close();
-                }
+                    tailForm.TailWindow.Close();
             }
             if (SearchForm.Instance.Visible)
                 SearchForm.Instance.Close();
@@ -386,18 +380,11 @@ namespace SnakeTail
             // Save all forms and store in proper order
             foreach (Form childForm in childForms)
             {
-                TailForm tailForm = childForm as TailForm;
+                ITailForm tailForm = childForm as ITailForm;
                 if (tailForm != null)
                 {
                     TailFileConfig tailFile = new TailFileConfig();
                     tailForm.SaveConfig(tailFile);
-                    tailConfig.TailFiles.Add(tailFile);
-                }
-                EventLogForm eventlogForm = childForm as EventLogForm;
-                if (eventlogForm != null)
-                {
-                    TailFileConfig tailFile = new TailFileConfig();
-                    eventlogForm.SaveConfig(tailFile);
                     tailConfig.TailFiles.Add(tailFile);
                 }
             }
@@ -457,17 +444,27 @@ namespace SnakeTail
 
                 foreach (TailFileConfig tailFile in tailConfig.TailFiles)
                 {
+                    Form mdiForm = null;
+
                     int index = eventLogFiles.FindIndex(delegate(string arrItem) { return arrItem.Equals(tailFile.FilePath); });
                     if (index >= 0)
+                        mdiForm = new EventLogForm();
+                    else
+                        mdiForm = new TailForm();
+
+                    if (mdiForm != null)
                     {
-                        EventLogForm mdiForm = new EventLogForm();
+                        ITailForm tailForm = mdiForm as ITailForm;
+                        string tailConfigPath = Path.GetDirectoryName(filepath);
+
                         mdiForm.Text = tailFile.Title;
                         if (!tailFile.Modeless)
                         {
                             mdiForm.MdiParent = this;
                             mdiForm.ShowInTaskbar = false;
                             AddMdiChildTab(mdiForm);
-                            mdiForm.LoadConfig(tailFile);
+                            if (tailForm != null)
+                                tailForm.LoadConfig(tailFile, tailConfigPath);
                             if (mdiForm.IsDisposed)
                                 continue;
                         }
@@ -485,34 +482,10 @@ namespace SnakeTail
                         }
 
                         if (tailFile.Modeless)
-                            mdiForm.LoadConfig(tailFile);
-                    }
-                    else
-                    {
-                        TailForm mdiForm = new TailForm();
-                        mdiForm.Text = tailFile.Title;
-                        if (!tailFile.Modeless)
                         {
-                            mdiForm.MdiParent = this;
-                            mdiForm.ShowInTaskbar = false;
-                            AddMdiChildTab(mdiForm);
-                            mdiForm.LoadConfig(tailFile, Path.GetDirectoryName(filepath));
+                           if (tailForm != null)
+                                tailForm.LoadConfig(tailFile, tailConfigPath);
                         }
-                        mdiForm.Show();
-
-                        if (tailConfig.SelectedTab == -1 || tailFile.Modeless)
-                        {
-                            if (tailFile.WindowState != FormWindowState.Maximized)
-                            {
-                                mdiForm.DesktopLocation = tailFile.WindowPosition;
-                                mdiForm.Size = tailFile.WindowSize;
-                            }
-                            if (mdiForm.WindowState != tailFile.WindowState)
-                                mdiForm.WindowState = tailFile.WindowState;
-                        }
-
-                        if (tailFile.Modeless)
-                            mdiForm.LoadConfig(tailFile, Path.GetDirectoryName(filepath));
                     }
                     Application.DoEvents();
                 }
