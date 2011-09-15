@@ -923,7 +923,6 @@ namespace SnakeTail
 
             if (_eventLogReaderAssembly != null)
             {
-                System.Globalization.CultureInfo backupCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
                 object readerObj = null;
                 try
                 {
@@ -941,7 +940,6 @@ namespace SnakeTail
                 }
                 finally
                 {
-                    System.Threading.Thread.CurrentThread.CurrentCulture = backupCulture;
                     IDisposable disposeReader = readerObj as IDisposable;
                     if (disposeReader != null)
                         disposeReader.Dispose();
@@ -999,15 +997,24 @@ namespace SnakeTail
                     eventPropertyValues.Add(propertyValue);
             }
 
-            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
-            object eventMessageStr = _eventLogRecordType.InvokeMember("FormatDescription", System.Reflection.BindingFlags.InvokeMethod, null, eventRecordObj, null, new System.Globalization.CultureInfo("en-US"));
-            if (eventMessageStr != null)
-                return eventMessageStr as string;
-            else
-            if (eventPropertyValues.Count == 1)
-                return eventPropertyValues[0];
-            else
-                return null;
+            System.Globalization.CultureInfo backupCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
+
+            try
+            {
+                System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
+                object eventMessageStr = _eventLogRecordType.InvokeMember("FormatDescription", System.Reflection.BindingFlags.InvokeMethod, null, eventRecordObj, null, new System.Globalization.CultureInfo("en-US"));
+                if (eventMessageStr != null)
+                    return eventMessageStr as string;
+                else
+                if (eventPropertyValues.Count == 1)
+                    return eventPropertyValues[0];
+                else
+                    return null;
+            }
+            finally
+            {
+                System.Threading.Thread.CurrentThread.CurrentCulture = backupCulture;
+            }
         }
 
         private void ThreadProc(object logName)
