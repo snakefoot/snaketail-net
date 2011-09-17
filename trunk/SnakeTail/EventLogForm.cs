@@ -209,6 +209,15 @@ namespace SnakeTail
                     startIndex = _eventListView.SelectedIndices[0];
             }
 
+            // We should not reverse the search if the next startindex is already in cache
+            _messageLookup.LoadMessageCache(_eventLog, !searchForward);
+
+            // We need to handle that EventLog can get pruned
+            //  - When in virtual mode, then the number of list items can change
+            //      - Always make sure to check current index against latest item count
+            //  - When in virtual mode, then index can return the same list item
+            //      - Always make sure the previous index is as expected, else search backwards
+            //      - Always make sure the next index is not the previous index, else ignore it
             int matchFound = -1;
             using (new HourGlass(this))
             {
@@ -318,21 +327,17 @@ namespace SnakeTail
 
         string LookupEventLogMessage(ListViewItem listItem)
         {
+            EventLogEntry entry = null;
             if (_eventListView.VirtualMode)
             {
-                EventLogEntry entry = _eventLog.Entries[listItem.Index];
-                if (entry == null)
-                    return "";
-
-                if (entry.Index == (int)listItem.Tag)
-                {
-                    _messageLookup.UpdateMesageCache(entry);
-                }
+                entry = _eventLog.Entries[listItem.Index];
+                if (entry != null && entry.Index != (int)listItem.Tag)
+                    entry = null;
             }
 
             using (new HourGlass(this))
             {
-                return _messageLookup.LookupMessage(_eventLog, (int)listItem.Tag, listItem.SubItems[3].Text);
+                return _messageLookup.LookupMessage(_eventLog, entry, (int)listItem.Tag, listItem.SubItems[3].Text);
             }
         }
 
@@ -851,12 +856,15 @@ namespace SnakeTail
         Type _eventLogPropertyType = null;
         bool _eventLogReaderThreadContinue = true;
         System.Threading.Thread _eventLogReaderThread = null;
+        bool _eventLogReaderReadForward = false;
+        bool _eventLogReaderReadEverything = false;
+        TimeSpan _eventLogReaderReadDelay = TimeSpan.FromMilliseconds(100);
 
         public EventLogMesageLookup(EventLog eventLog)
         {
             if (System.Environment.OSVersion.Version.Major >= 6)
             {
-                //System.Diagnostics.Eventing.Reader.EventLogReader 
+                //System.Diagnostics.Eventing.Reader.EventLogReader
                 try
                 {
                     _eventLogReaderAssembly = System.Reflection.Assembly.Load("System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken= b77a5c561934e089");
@@ -872,7 +880,8 @@ namespace SnakeTail
                 catch (Exception ex)
                 {
                     _eventLogReaderAssembly = null;
-                    System.Diagnostics.Debug.WriteLine("EventLogReader unavailable reverts to WMI query: " + ex.Message);
+                    _eventLogReaderReadDelay = TimeSpan.FromMilliseconds(5);
+                    //System.Diagnostics.Debug.WriteLine("EventLogReader unavailable reverts to WMI query: " + ex.Message);
                     GetEventLogItemMessages(eventLog.MachineName, eventLog.Log);
 
                     if (eventLog.Entries.Count > 0)
@@ -910,14 +919,25 @@ namespace SnakeTail
             }
         }
 
-        public string LookupMessage(EventLog eventLog, int eventRecordId, string eventId)
+        public string LookupMessage(EventLog eventLog, EventLogEntry eventLogEntry, int eventRecordId, string eventId)
         {
+            if (eventLogEntry != null)
+                UpdateMesageCache(eventLogEntry);
+
             string eventMessage = null;
             lock (_eventMessages)
             {
                 if (_eventMessages.TryGetValue(eventRecordId, out eventMessage))
                 {
-                    return eventMessage;
+                    if (eventMessage != null)
+                        return eventMessage;
+                    else
+                    if (eventLogEntry != null)
+                    {
+                        // Message lookup performed, but nothing found use default message
+                        _eventMessages[eventRecordId] = eventLogEntry.Message;
+                        return eventLogEntry.Message;
+                    }
                 }
             }
 
@@ -945,23 +965,29 @@ namespace SnakeTail
                         disposeReader.Dispose();
                 }
             }
-
-            if (eventMessage == null)
+            else
             {
                 eventMessage = GetEventLogItemMessage(eventLog.MachineName, eventLog.LogDisplayName, (uint)eventRecordId);
             }
 
             if (eventMessage != null)
             {
-                if (eventMessage != null)
+                lock (_eventMessages)
                 {
-                    lock (_eventMessages)
-                    {
-                        if (!_eventMessages.ContainsKey(eventRecordId))
-                            _eventMessages.Add(eventRecordId, eventMessage);
-                    }
-                    return eventMessage;
+                    if (!_eventMessages.ContainsKey(eventRecordId))
+                        _eventMessages.Add(eventRecordId, eventMessage);
                 }
+                return eventMessage;
+            }
+            else
+            if (eventLogEntry != null)
+            {
+                lock (_eventMessages)
+                {
+                    if (!_eventMessages.ContainsKey(eventRecordId))
+                        _eventMessages.Add(eventRecordId, eventLogEntry.Message);
+                }
+                return eventLogEntry.Message;
             }
 
             return "";
@@ -982,6 +1008,48 @@ namespace SnakeTail
                 if (!_eventMessages.ContainsKey(eventLogEntry.Index))
                     _eventMessages.Add(eventLogEntry.Index, eventLogEntry.Message);
             }
+        }
+
+        public void LoadMessageCache(EventLog eventLog, bool readForward)
+        {
+            if (_eventLogReaderAssembly != null)
+            {
+                if (_eventLogReaderThread != null)
+                {
+                    if (_eventLogReaderThreadContinue && _eventLogReaderThread.IsAlive)
+                    {
+                        if (_eventLogReaderReadForward != readForward)
+                        {
+                            _eventLogReaderThreadContinue = false;
+                            while (_eventLogReaderThread.IsAlive)
+                                continue;
+                        }
+                        else
+                        {
+                            _eventLogReaderReadDelay = TimeSpan.FromMilliseconds(0);
+                            return;
+                        }
+                    }
+                }
+
+                _eventLogReaderThreadContinue = true;
+                _eventLogReaderReadForward = readForward;
+                _eventLogReaderReadDelay = TimeSpan.FromMilliseconds(0);
+                _eventLogReaderThread = new System.Threading.Thread(new System.Threading.ParameterizedThreadStart(ThreadProc));
+                _eventLogReaderThread.Start(eventLog.Log);
+            }
+            else
+            {
+                _eventLogReaderReadDelay = TimeSpan.FromMilliseconds(0);
+            }
+        }
+
+        public void StopMessageCache()
+        {
+            if (_eventLogReaderAssembly != null)
+                _eventLogReaderReadDelay = TimeSpan.FromMilliseconds(1000);
+            else
+                _eventLogReaderReadDelay = TimeSpan.FromMilliseconds(5);
         }
 
         private string ExtractMessage(object eventRecordObj)
@@ -1006,7 +1074,7 @@ namespace SnakeTail
                 if (eventMessageStr != null)
                     return eventMessageStr as string;
                 else
-                if (eventPropertyValues.Count == 1)
+                if (eventPropertyValues != null && eventPropertyValues.Count == 1)
                     return eventPropertyValues[0];
                 else
                     return null;
@@ -1019,12 +1087,15 @@ namespace SnakeTail
 
         private void ThreadProc(object logName)
         {
+            if (_eventLogReaderReadEverything)
+                return;
+
             object readerObj = null;
             try
             {
                 string queryStr = string.Format("*");
                 object queryObj = Activator.CreateInstance(_eventLogReaderQueryType, new Object[] { logName.ToString(), Enum.GetValues(_eventLogReaderEnumType).GetValue(0), queryStr });
-                _eventLogReaderQueryType.InvokeMember("ReverseDirection", System.Reflection.BindingFlags.SetProperty, null, queryObj, new object[] { true });
+                _eventLogReaderQueryType.InvokeMember("ReverseDirection", System.Reflection.BindingFlags.SetProperty, null, queryObj, new object[] { !_eventLogReaderReadForward });
                 readerObj = Activator.CreateInstance(_eventLogReaderType, new Object[] { queryObj });
                 object eventRecordObj = _eventLogReaderType.InvokeMember("ReadEvent", System.Reflection.BindingFlags.InvokeMethod, null, readerObj, null);
 
@@ -1032,7 +1103,7 @@ namespace SnakeTail
                 {
                     object eventRecordId = _eventLogRecordType.InvokeMember("RecordId", System.Reflection.BindingFlags.GetProperty, null, eventRecordObj, null);
                     string eventMessage = ExtractMessage(eventRecordObj);
-                    if (eventMessage != null && eventRecordId != null)
+                    if (eventRecordId != null)
                     {
                         lock (_eventMessages)
                         {
@@ -1042,11 +1113,16 @@ namespace SnakeTail
                     }
 
                     eventRecordObj = _eventLogReaderType.InvokeMember("ReadEvent", System.Reflection.BindingFlags.InvokeMethod, null, readerObj, null);
-                    System.Threading.Thread.Sleep(100);
+                    if ((int)_eventLogReaderReadDelay.TotalMilliseconds > 0)
+                        System.Threading.Thread.Sleep((int)_eventLogReaderReadDelay.TotalMilliseconds);
                 }
+
+                if (eventRecordObj == null)
+                    _eventLogReaderReadEverything = true;
             }
             catch (Exception ex)
             {
+                _eventLogReaderAssembly = null;
                 System.Diagnostics.Debug.WriteLine("EventLog Message Lookup Failed: " + ex.Message);
             }
             finally
@@ -1102,37 +1178,31 @@ namespace SnakeTail
             _eventMessagesObserver = null;
         }
 
+        static string GetManagementBaseObjectMessage(ManagementBaseObject obj)
+        {
+            string message = (string)obj["Message"];
+            string[] insertionStrings = (string[])obj["InsertionStrings"];
+
+            if (message != null)
+                return message;
+
+            if (insertionStrings != null && insertionStrings.Length == 1)
+                return insertionStrings[0];
+
+            return null;
+        }
+
         void OnEventLogEntryReady(object sender, ObjectReadyEventArgs e)
         {
+            uint eventRecordId = (uint)e.NewObject["RecordNumber"];
+            string eventMessage = GetManagementBaseObjectMessage(e.NewObject);
             lock (_eventMessages)
             {
-                uint messageIndex = (uint)e.NewObject["RecordNumber"];
-                string message = (string)e.NewObject["Message"];
-                string[] insertionStrings = (string[])e.NewObject["InsertionStrings"];
-
-                if (message == null)
-                {
-                    if (insertionStrings.Length > 0)
-                    {
-                        StringBuilder sb = new StringBuilder();
-
-                        for (int i = 0; i < insertionStrings.Length; i++)
-                        {
-                            sb.Append(insertionStrings[i]);
-                            sb.Append(" ");
-                        }
-
-                        if (!_eventMessages.ContainsKey((int)messageIndex))
-                            _eventMessages.Add((int)messageIndex, sb.ToString());
-                    }
-                }
-                else
-                {
-                    if (!_eventMessages.ContainsKey((int)messageIndex))
-                        _eventMessages.Add((int)messageIndex, message);
-                }
+                if (!_eventMessages.ContainsKey((int)eventRecordId))
+                    _eventMessages.Add((int)eventRecordId, eventMessage);
             }
-            System.Threading.Thread.Sleep(5);
+            if ((int)_eventLogReaderReadDelay.TotalMilliseconds > 0)
+                System.Threading.Thread.Sleep((int)_eventLogReaderReadDelay.TotalMilliseconds);
         }
 
         private static string GetEventLogItemMessage(string machinename, string logname, uint thisIndex)
@@ -1167,28 +1237,8 @@ namespace SnakeTail
                     {
                         while (enumerator.MoveNext())
                         {
-                            string message = (string)enumerator.Current["Message"];
-                            string[] insertionStrings = (string[])enumerator.Current["InsertionStrings"];
-
-                            if (message == null)
-                            {
-                                if (insertionStrings.Length > 0)
-                                {
-                                    StringBuilder sb = new StringBuilder();
-
-                                    for (int i = 0; i < insertionStrings.Length; i++)
-                                    {
-                                        sb.Append(insertionStrings[i]);
-                                        sb.Append(" ");
-                                    }
-
-                                    return sb.ToString();
-                                }
-                            }
-                            else
-                            {
-                                return message;
-                            }
+                            string message = GetManagementBaseObjectMessage(enumerator.Current);
+                            return message;
                         }
                     }
                 }
