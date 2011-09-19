@@ -261,7 +261,7 @@ namespace SnakeTail
 
                                         if ((int)lvItem.Tag == previousRecordId)
                                         {
-                                            i = j - 1;
+                                            i = j;
                                             break;
                                         }
                                     }
@@ -326,7 +326,7 @@ namespace SnakeTail
 
                                         if ((int)lvItem.Tag == previousRecordId)
                                         {
-                                            i = j + 1;
+                                            i = j;
                                             break;
                                         }
                                     }
@@ -1215,7 +1215,7 @@ namespace SnakeTail
 
         private void ThreadProc(object logName)
         {
-            if (_eventLogReaderReadEverything)
+            if (_eventLogReaderReadEverything || _eventLogReaderAssembly == null)
                 return;
 
             object readerObj = null;
