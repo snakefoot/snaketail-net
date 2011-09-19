@@ -198,7 +198,7 @@ namespace SnakeTail
                 listCount = _eventListView.Items.Count;
             }
 
-            if (listCount <= 0)
+            if (listCount <= 1)
                 return false;
 
             // Use selection if it is below top-index
@@ -209,45 +209,154 @@ namespace SnakeTail
                     startIndex = _eventListView.SelectedIndices[0];
             }
 
-            // We should not reverse the search if the next startindex is already in cache
-            _messageLookup.LoadMessageCache(_eventLog, !searchForward);
 
-            // We need to handle that EventLog can get pruned
-            //  - When in virtual mode, then the number of list items can change
-            //      - Always make sure to check current index against latest item count
-            //  - When in virtual mode, then index can return the same list item
-            //      - Always make sure the previous index is as expected, else search backwards
-            //      - Always make sure the next index is not the previous index, else ignore it
             int matchFound = -1;
-            using (new HourGlass(this))
+
+            try
             {
-                if (!searchForward)
+                // We need to handle that EventLog can get pruned
+                //  - Make sure the previous index is as expected, else resync
+                int previousRecordId = (int)_eventListView.Items[startIndex].Tag;
+                using (new HourGlass(this))
                 {
-                    startIndex -= 1;
-                    for (int i = startIndex; i >= 0; --i)
+                    if (searchForward)
                     {
-                        ListViewItem lvItem = _eventListView.Items[i];
-                        if (MatchTextSearch(lvItem, searchText, matchCase))
+                        startIndex += 1;
+
+                        // We should not reverse the search if the next startindex is already in cache
+                        if (_eventListView.VirtualMode && startIndex < listCount)
                         {
-                            matchFound = i;
-                            break;
+                            _messageLookup.StartMessageCacheThread(_eventLog, searchForward, (int)_eventListView.Items[startIndex].Tag);
+                        }
+
+                        int endIndex = listCount;
+                        for (int i = startIndex; i < endIndex; ++i)
+                        {
+                            ListViewItem lvItem = _eventListView.Items[i];
+                            if (_eventListView.VirtualMode)
+                            {
+                                // Sanity checks
+                                bool validItem = true;
+                                if ((int)lvItem.Tag == -1)
+                                    validItem = false;
+                                else
+                                {
+                                    ListViewItem prevItem = _eventListView.Items[i - 1];
+                                    if ((int)prevItem.Tag != previousRecordId)
+                                        validItem = false;
+                                }
+
+                                if (!validItem)
+                                {
+                                    endIndex = _eventListView.VirtualListSize;
+                                    for (int j = 0; j < endIndex; ++j)
+                                    {
+                                        lvItem = _eventListView.Items[j];
+                                        if ((int)lvItem.Tag == -1)
+                                        {
+                                            endIndex = _eventListView.VirtualListSize;
+                                            j = -1;
+                                            continue;   // Restart search
+                                        }
+
+                                        if ((int)lvItem.Tag == previousRecordId)
+                                        {
+                                            i = j - 1;
+                                            break;
+                                        }
+                                    }
+
+                                    if ((int)lvItem.Tag != previousRecordId)
+                                    {
+                                        // Resync failed, restart search
+                                        i = -1;
+                                        previousRecordId = -1;
+                                    }
+                                    continue;
+                                }
+                                else
+                                {
+                                    previousRecordId = (int)lvItem.Tag;
+                                }
+                            }
+
+                            if (MatchTextSearch(lvItem, searchText, matchCase))
+                            {
+                                matchFound = i;
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        startIndex -= 1;
+
+                        // We should not reverse the search if the next startindex is already in cache
+                        if (_eventListView.VirtualMode && startIndex >= 0)
+                        {
+                            _messageLookup.StartMessageCacheThread(_eventLog, searchForward, (int)_eventListView.Items[startIndex].Tag);
+                        }
+
+                        for (int i = startIndex; i >= 0; --i)
+                        {
+                            ListViewItem lvItem = _eventListView.Items[i];
+                            if (_eventListView.VirtualMode)
+                            {
+                                // Sanity checks
+                                bool validItem = true;
+                                if ((int)lvItem.Tag == -1)
+                                    validItem = false;
+                                else
+                                {
+                                    ListViewItem prevItem = _eventListView.Items[i + 1];
+                                    if ((int)prevItem.Tag != previousRecordId)
+                                        validItem = false;
+                                }
+
+                                if (!validItem)
+                                {
+                                    for (int j = _eventListView.VirtualListSize - 1; j >= 0; --j)
+                                    {
+                                        lvItem = _eventListView.Items[j];
+                                        if ((int)lvItem.Tag == -1)
+                                        {
+                                            j = _eventListView.VirtualListSize;
+                                            continue;   // Restart search
+                                        }
+
+                                        if ((int)lvItem.Tag == previousRecordId)
+                                        {
+                                            i = j + 1;
+                                            break;
+                                        }
+                                    }
+
+                                    if ((int)lvItem.Tag != previousRecordId)
+                                    {
+                                        // Resync failed, restart search
+                                        i = _eventListView.VirtualListSize;
+                                        previousRecordId = -1;
+                                    }
+                                    continue;
+                                }
+                                else
+                                {
+                                    previousRecordId = (int)lvItem.Tag;
+                                }
+                            }
+
+                            if (MatchTextSearch(lvItem, searchText, matchCase))
+                            {
+                                matchFound = i;
+                                break;
+                            }
                         }
                     }
                 }
-                else
-                {
-                    startIndex += 1;
-                    int endIndex = listCount;
-                    for (int i = startIndex; i < endIndex; ++i)
-                    {
-                        ListViewItem lvItem = _eventListView.Items[i];
-                        if (MatchTextSearch(lvItem, searchText, matchCase))
-                        {
-                            matchFound = i;
-                            break;
-                        }
-                    }
-                }
+            }
+            finally
+            {
+                _messageLookup.StopMessageCacheThread();
             }
 
             if (matchFound >= 0)
@@ -881,7 +990,7 @@ namespace SnakeTail
                 {
                     _eventLogReaderAssembly = null;
                     _eventLogReaderReadDelay = TimeSpan.FromMilliseconds(5);
-                    //System.Diagnostics.Debug.WriteLine("EventLogReader unavailable reverts to WMI query: " + ex.Message);
+                    System.Diagnostics.Debug.WriteLine("EventLogReader unavailable reverts to WMI query: " + ex.Message);
                     GetEventLogItemMessages(eventLog.MachineName, eventLog.Log);
 
                     if (eventLog.Entries.Count > 0)
@@ -915,7 +1024,10 @@ namespace SnakeTail
             {
                 _eventLogReaderThreadContinue = false;
                 while (_eventLogReaderThread.IsAlive)
+                {
+                    System.Threading.Thread.Sleep(5);
                     continue;
+                }
             }
         }
 
@@ -1010,7 +1122,7 @@ namespace SnakeTail
             }
         }
 
-        public void LoadMessageCache(EventLog eventLog, bool readForward)
+        public void StartMessageCacheThread(EventLog eventLog, bool readForward, int nextEventRecordId)
         {
             if (_eventLogReaderAssembly != null)
             {
@@ -1020,9 +1132,25 @@ namespace SnakeTail
                     {
                         if (_eventLogReaderReadForward != readForward)
                         {
-                            _eventLogReaderThreadContinue = false;
-                            while (_eventLogReaderThread.IsAlive)
-                                continue;
+                            lock (_eventMessages)
+                            {
+                                if (readForward && _eventMessages.ContainsKey(nextEventRecordId))
+                                {
+                                    // Continue current search direction
+                                    _eventLogReaderReadDelay = TimeSpan.FromMilliseconds(0);
+                                    return;
+                                }
+                                else
+                                {
+                                    // Reverse search direction
+                                    _eventLogReaderThreadContinue = false;
+                                    while (_eventLogReaderThread.IsAlive)
+                                    {
+                                        System.Threading.Thread.Sleep(5);
+                                        continue;
+                                    }
+                                }
+                            }
                         }
                         else
                         {
@@ -1044,7 +1172,7 @@ namespace SnakeTail
             }
         }
 
-        public void StopMessageCache()
+        public void StopMessageCacheThread()
         {
             if (_eventLogReaderAssembly != null)
                 _eventLogReaderReadDelay = TimeSpan.FromMilliseconds(1000);
@@ -1113,8 +1241,7 @@ namespace SnakeTail
                     }
 
                     eventRecordObj = _eventLogReaderType.InvokeMember("ReadEvent", System.Reflection.BindingFlags.InvokeMethod, null, readerObj, null);
-                    if ((int)_eventLogReaderReadDelay.TotalMilliseconds > 0)
-                        System.Threading.Thread.Sleep((int)_eventLogReaderReadDelay.TotalMilliseconds);
+                    System.Threading.Thread.Sleep((int)_eventLogReaderReadDelay.TotalMilliseconds);
                 }
 
                 if (eventRecordObj == null)
@@ -1178,7 +1305,7 @@ namespace SnakeTail
             _eventMessagesObserver = null;
         }
 
-        static string GetManagementBaseObjectMessage(ManagementBaseObject obj)
+        static string ExtractMessage(ManagementBaseObject obj)
         {
             string message = (string)obj["Message"];
             string[] insertionStrings = (string[])obj["InsertionStrings"];
@@ -1195,7 +1322,7 @@ namespace SnakeTail
         void OnEventLogEntryReady(object sender, ObjectReadyEventArgs e)
         {
             uint eventRecordId = (uint)e.NewObject["RecordNumber"];
-            string eventMessage = GetManagementBaseObjectMessage(e.NewObject);
+            string eventMessage = ExtractMessage(e.NewObject);
             lock (_eventMessages)
             {
                 if (!_eventMessages.ContainsKey((int)eventRecordId))
@@ -1237,7 +1364,7 @@ namespace SnakeTail
                     {
                         while (enumerator.MoveNext())
                         {
-                            string message = GetManagementBaseObjectMessage(enumerator.Current);
+                            string message = ExtractMessage(enumerator.Current);
                             return message;
                         }
                     }
