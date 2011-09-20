@@ -167,7 +167,12 @@ namespace SnakeTail
         private void _findNextBtn_Click(object sender, EventArgs e)
         {
             if (ActiveTailForm != null)
-                SearchAgain(ActiveTailForm, !_upRadioBtn.Checked, false);
+            {
+                if ((Control.ModifierKeys & Keys.Shift) == Keys.None)
+                    SearchAgain(ActiveTailForm, !_upRadioBtn.Checked, false);
+                else
+                    SearchAgain(ActiveTailForm, _upRadioBtn.Checked, false);
+            }
         }
 
         private void SearchForm_FormClosed(object sender, FormClosedEventArgs e)
