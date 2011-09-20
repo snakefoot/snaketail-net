@@ -23,22 +23,28 @@ namespace SnakeTail
     class CPUMeter : IDisposable
     {
         CounterSample _prevSample;
-        PerformanceCounter _cnt;
+        PerformanceCounter _cnt = null;
 
         /// Creates a per-process CPU meter instance tied to the current process.
         public CPUMeter()
         {
             String instancename = GetCurrentProcessInstanceName();
-            _cnt = new PerformanceCounter("Process", "% Processor Time", instancename, true);
-            ResetCounter();
+            if (!String.IsNullOrEmpty(instancename))
+            {
+                _cnt = new PerformanceCounter("Process", "% Processor Time", instancename, true);
+                ResetCounter();
+            }
         }
 
         /// Creates a per-process CPU meter instance tied to a specific process.
         public CPUMeter(int pid)
         {
             String instancename = GetProcessInstanceName(pid);
-            _cnt = new PerformanceCounter("Process", "% Processor Time", instancename, true);
-            ResetCounter();
+            if (!String.IsNullOrEmpty(instancename))
+            {
+                _cnt = new PerformanceCounter("Process", "% Processor Time", instancename, true);
+                ResetCounter();
+            }
         }
 
         /// Resets the internal counter. All subsequent calls to GetCpuUtilization() will 
@@ -47,12 +53,16 @@ namespace SnakeTail
         /// CPU utilization measurements.
         public void ResetCounter()
         {
-            _prevSample = _cnt.NextSample();
+            if (_cnt != null)
+                _prevSample = _cnt.NextSample();
         }
 
         /// Returns this process's CPU utilization since the last call to ResetCounter().
         public float GetCpuUtilization()
         {
+            if (_cnt == null)
+                return float.NaN;
+
             CounterSample curr = _cnt.NextSample();
             float cpuutil = CounterSample.Calculate(_prevSample, curr);
             _prevSample = curr;
@@ -70,21 +80,30 @@ namespace SnakeTail
 
         private static string GetProcessInstanceName(int pid)
         {
-            PerformanceCounterCategory cat = new PerformanceCounterCategory("Process");
-
-            string[] instances = cat.GetInstanceNames();
-            foreach (string instance in instances)
+            try
             {
-                using (PerformanceCounter cnt = new PerformanceCounter("Process", "ID Process", instance, true))
+                PerformanceCounterCategory cat = new PerformanceCounterCategory("Process");
+
+                string[] instances = cat.GetInstanceNames();
+                foreach (string instance in instances)
                 {
-                    int val = (int)cnt.RawValue;
-                    if (val == pid)
+                    using (PerformanceCounter cnt = new PerformanceCounter("Process", "ID Process", instance, true))
                     {
-                        return instance;
+                        int val = (int)cnt.RawValue;
+                        if (val == pid)
+                        {
+                            return instance;
+                        }
                     }
                 }
+                System.Diagnostics.Debug.WriteLine("Performance Counters non existing (ProcessId=" + pid.ToString() + ")");
+                return null;
             }
-            throw new Exception("Could not find performance counter instance name for current process. This is truly strange ...");
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Performance Counters failed: " + ex.Message + " (ProcessId=" + pid.ToString() + ")");
+                return null;
+            }
         }
 
         public void Dispose()

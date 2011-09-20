@@ -125,7 +125,7 @@ namespace SnakeTail
                 {
                     System.Diagnostics.Debug.WriteLine("CPU Meter Failed: " + ex.Message);
                     Process = null;
-                    return 0;
+                    return float.NaN;
                 }
             }
         }
@@ -162,13 +162,13 @@ namespace SnakeTail
                         if (_process == null)
                             return GetProcessIDByServiceName(ServiceName) > 0;
                         else
-                            if (_process.Responding)
-                                return true;
-                            else
-                            {
-                                Process = null;
-                                return false;
-                            }
+                        if (_process.Responding)
+                            return true;
+                        else
+                        {
+                            Process = null;
+                            return false;
+                        }
                     }
                     catch (System.InvalidOperationException ex)
                     {
