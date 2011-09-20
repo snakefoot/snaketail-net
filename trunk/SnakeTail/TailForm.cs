@@ -250,13 +250,16 @@ namespace SnakeTail
             {
                 try
                 {
-                    double cpuUtilization = _taskMonitor.ProcessorUsage;
+                    float cpuUtilization = _taskMonitor.ProcessorUsage;
                     Process process = _taskMonitor.Process;
                     if (process != null)
                     {
-                        TimeSpan cpuTime = DateTime.Now.Subtract(_lastFormTitleUpdate);
-                        cpuUtilization = cpuUtilization / cpuTime.TotalMilliseconds * 1000.0;
-                        title += " CPU: " + cpuUtilization.ToString("F0");
+                        if (!float.IsNaN(cpuUtilization))
+                        {
+                            TimeSpan cpuTime = DateTime.Now.Subtract(_lastFormTitleUpdate);
+                            double cpuUsage = (double)cpuUtilization / cpuTime.TotalMilliseconds * 1000.0;
+                            title += " CPU: " + cpuUtilization.ToString("F0");
+                        }
                         process.Refresh();
                         title += " RAM: " + (process.PrivateMemorySize64 / (1024 * 1024)).ToString();
                         title += _taskMonitor.ServiceRunning ? " (Started)" : " (Stopped)";
