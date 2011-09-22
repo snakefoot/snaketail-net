@@ -227,6 +227,8 @@ namespace SnakeTail
                 if (_tailListView.VirtualListSize > 0)
                 {
                     _tailListView.EnsureVisible(_tailListView.VirtualListSize - 1);
+                    _tailListView.FocusedItem = _tailListView.Items[_tailListView.VirtualListSize - 1];
+                    _tailListView.SelectedIndices.Add(_tailListView.VirtualListSize - 1);
                     _tailListView.Invalidate();
                     _tailListView.Update();
                 }
@@ -620,6 +622,8 @@ namespace SnakeTail
             if (_tailListView.VirtualListSize > 0)
             {
                 _tailListView.EnsureVisible(_tailListView.VirtualListSize - 1);
+                _tailListView.FocusedItem = _tailListView.Items[_tailListView.VirtualListSize - 1];
+                _tailListView.SelectedIndices.Add(_tailListView.VirtualListSize - 1);
                 _tailListView.Invalidate();
                 _tailListView.Update();
             }
