@@ -718,26 +718,12 @@ namespace SnakeTail
                 return;
             }
 
-            if (e.Control && e.KeyCode == Keys.Home)
+            if (e.KeyCode == Keys.End)
             {
-                _tailListView.SelectedIndices.Clear();
-                if (_tailListView.VirtualListSize > 0)
-                {
-                    _tailListView.EnsureVisible(0);
-                    _tailListView.SelectedIndices.Add(0);
-                    _tailListView.Items[0].Focused = true;
-                }
-            }
-
-            if (e.Control && e.KeyCode == Keys.End)
-            {
-                _tailListView.SelectedIndices.Clear();
                 if (_tailListView.VirtualListSize > 0)
                 {
                     _logFileCache.PrepareCache(Math.Max(_tailListView.VirtualListSize - _logFileCache.Items.Count,0), _tailListView.VirtualListSize, false);
                     _tailListView.EnsureVisible(_tailListView.VirtualListSize - 1);
-                    _tailListView.SelectedIndices.Add(_tailListView.VirtualListSize-1);
-                    _tailListView.Items[_tailListView.VirtualListSize - 1].Focused = true;
                 }
             }
 
