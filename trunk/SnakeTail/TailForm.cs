@@ -751,7 +751,10 @@ namespace SnakeTail
                 {
                     Paused = false;
                     if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Space)
-                        _tailListView.EnsureVisible(_tailListView.VirtualListSize - 1);
+                    {
+                        if (_tailListView.VirtualListSize > 0)
+                            _tailListView.EnsureVisible(_tailListView.VirtualListSize - 1);
+                    }
                 }
             }
         }
@@ -1104,7 +1107,8 @@ namespace SnakeTail
             else
             {
                 Paused = false;
-                _tailListView.EnsureVisible(_tailListView.VirtualListSize - 1);
+                if (_tailListView.VirtualListSize > 0)
+                    _tailListView.EnsureVisible(_tailListView.VirtualListSize - 1);
             }
         }
     }
