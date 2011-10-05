@@ -219,6 +219,9 @@ namespace SnakeTail
                 TailFileConfig tailConfig = _defaultTailConfig;
                 tailConfig.FilePath = filename;
                 mdiForm.LoadConfig(tailConfig, "");
+                if (mdiForm.IsDisposed)
+                    continue;
+
                 mdiForm.MdiParent = this;
                 mdiForm.Show();
                 Application.DoEvents();
@@ -625,18 +628,25 @@ namespace SnakeTail
                     filenames.Add(filename.ToString());
                 }
 
+                this.Activate();        // in the case Explorer overlaps this form
+
                 // Call OpenFile asynchronously.
                 // Explorer instance from which file is dropped is not responding
                 // all the time when DragDrop handler is active, so we need to return
                 // immidiately (especially if OpenFile shows MessageBox).
-                this.BeginInvoke(new Action<string[]>(OpenFileSelection), new object[] { filenames.ToArray() });
-                this.Activate();        // in the case Explorer overlaps this form
+                System.Threading.ThreadPool.QueueUserWorkItem(new System.Threading.WaitCallback(worker_DoWork), filenames.ToArray());
             }
             catch (Exception ex)
             {
                 // don't show MessageBox here - Explorer is waiting !
                 System.Diagnostics.Debug.WriteLine("Drag Drop Failed: " + ex.Message);
             }
+        }
+
+        void worker_DoWork(object param)
+        {
+            System.Threading.Thread.Sleep(100);
+            this.BeginInvoke(new Action<string[]>(OpenFileSelection), new object[] { param });
         }
 
         private void MainForm_SizeChanged(object sender, EventArgs e)
