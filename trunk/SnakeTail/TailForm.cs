@@ -96,6 +96,7 @@ namespace SnakeTail
         string _configPath = "";
         List<TailKeywordConfig> _keywordHighlight;
         int _loghitCounter = -1;
+        bool _displayTabIcon = false;
 
         public TailForm()
         {
@@ -212,6 +213,8 @@ namespace SnakeTail
             TabPage parentTab = this.Tag as TabPage;
             if (parentTab != null)
                 parentTab.Text = _formTitle;
+
+            _displayTabIcon = tailConfig.DisplayTabIcon;
 
             if (!string.IsNullOrEmpty(tailConfig.IconFile))
             {
@@ -382,6 +385,8 @@ namespace SnakeTail
                 tailConfig.ServiceName = _taskMonitor.ServiceName;
             else
                 tailConfig.ServiceName = "";
+
+            tailConfig.DisplayTabIcon = _displayTabIcon;
         }
 
         public void CopySelectionToClipboard()
@@ -805,6 +810,16 @@ namespace SnakeTail
 
             int lineCount = _tailListView.VirtualListSize;
             bool listAtBottom = ListAtBottom();
+            bool warningIcon = false;
+
+            if (_displayTabIcon)
+            {
+                TabPage parentTab = this.Tag as TabPage;
+                if (parentTab != null && parentTab.ImageIndex == 1)
+                    warningIcon = true;
+            }
+            else
+                warningIcon = true;
 
             string line = _logTailStream.ReadLine(lineCount + 1);
             while(line != null)
@@ -813,6 +828,8 @@ namespace SnakeTail
                 _logFileCache.AppendTailCache(line, lineCount);
                 if (MatchesKeyword(line, true) != null)
                     _loghitCounter++;
+                if (!warningIcon && MatchesKeyword(line, false) != null)
+                    warningIcon = true;
                 line = _logTailStream.ReadLine(lineCount + 1);
             }
 
@@ -829,6 +846,18 @@ namespace SnakeTail
                     return;
 
                 lineCount = 0;
+            }
+
+            if (_displayTabIcon)
+            {
+                TabPage parentTab = this.Tag as TabPage;
+                if (parentTab != null && parentTab.Parent != null && parentTab.Parent.Visible && !parentTab.Visible)
+                {
+                    if (warningIcon)
+                        parentTab.ImageIndex = 1;
+                    else
+                        parentTab.ImageIndex = 0;
+                }
             }
 
             if (lineCount < _tailListView.VirtualListSize)
@@ -1042,6 +1071,9 @@ namespace SnakeTail
         {
             SetStatusBar(null);
             SearchForm.Instance.ActiveTailForm = this;
+            TabPage parentTab = this.Tag as TabPage;
+            if (parentTab != null)
+                parentTab.ImageIndex = -1;
         }
 
         private void TailForm_Resize(object sender, EventArgs e)

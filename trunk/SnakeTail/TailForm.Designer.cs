@@ -59,8 +59,8 @@ namespace SnakeTail
             this.findNextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gotoPreviousHighlightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gotoNextHighlightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.switchModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pauseWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.switchModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configureStatisticsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.startServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stopServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -205,13 +205,6 @@ namespace SnakeTail
             this.gotoNextHighlightToolStripMenuItem.Text = "Goto Next Highlight";
             this.gotoNextHighlightToolStripMenuItem.Click += new System.EventHandler(this.gotoNextHighlightToolStripMenuItem_Click);
             // 
-            // switchModeToolStripMenuItem
-            // 
-            this.switchModeToolStripMenuItem.Name = "switchModeToolStripMenuItem";
-            this.switchModeToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
-            this.switchModeToolStripMenuItem.Text = "Switch window mode";
-            this.switchModeToolStripMenuItem.Click += new System.EventHandler(this.switchToModelessToolStripMenuItem_Click);
-            // 
             // pauseWindowToolStripMenuItem
             // 
             this.pauseWindowToolStripMenuItem.Name = "pauseWindowToolStripMenuItem";
@@ -219,6 +212,13 @@ namespace SnakeTail
             this.pauseWindowToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
             this.pauseWindowToolStripMenuItem.Text = "Pause window";
             this.pauseWindowToolStripMenuItem.Click += new System.EventHandler(this.pauseWindowToolStripMenuItem_Click);
+            // 
+            // switchModeToolStripMenuItem
+            // 
+            this.switchModeToolStripMenuItem.Name = "switchModeToolStripMenuItem";
+            this.switchModeToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
+            this.switchModeToolStripMenuItem.Text = "Switch window mode";
+            this.switchModeToolStripMenuItem.Click += new System.EventHandler(this.switchToModelessToolStripMenuItem_Click);
             // 
             // configureStatisticsToolStripMenuItem
             // 

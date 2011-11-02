@@ -40,6 +40,13 @@ namespace SnakeTail
             Icon = Properties.Resources.SnakeIcon;
             _trayIcon.Icon = Properties.Resources.SnakeIcon; 
             _instance = this;
+
+            _MDITabControl.ImageList = new ImageList();
+            _MDITabControl.ImageList.ImageSize = new System.Drawing.Size(16, 16);
+            _MDITabControl.ImageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+            _MDITabControl.ImageList.TransparentColor = System.Drawing.Color.Transparent;
+            _MDITabControl.ImageList.Images.Add(new Bitmap(Properties.Resources.GreenBulletIcon.ToBitmap()));
+            _MDITabControl.ImageList.Images.Add(new Bitmap(Properties.Resources.YellowBulletIcon.ToBitmap()));
         }
 
         private void MainForm_Shown(object sender, EventArgs e)
