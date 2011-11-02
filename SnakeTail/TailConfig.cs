@@ -100,6 +100,7 @@ namespace SnakeTail
         public System.Drawing.Point WindowPosition { get; set; }
         public string ServiceName { get; set; }
         public string IconFile { get; set; }
+        public bool DisplayTabIcon { get; set; }
         public bool ColumnFilterActive { get; set; }
         [XmlArray("ColumnFilters")]
         [XmlArrayItem("Filters")]
@@ -133,6 +134,7 @@ namespace SnakeTail
             {
                 TypeConverter fontConverter = TypeDescriptor.GetConverter(typeof(Font));
                 FontInvariant = fontConverter.ConvertToInvariantString(value);
+                Font = null;
             }
         }
 

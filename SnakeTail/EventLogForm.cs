@@ -36,6 +36,7 @@ namespace SnakeTail
         int _lastEventLogFilterIndex = -1;
         int _lastEventLogFilterEntry = -1;
         string _formTitle;
+        bool _displayTabIcon;
 
         public EventLogForm()
         {
@@ -86,6 +87,7 @@ namespace SnakeTail
                 tailConfig.ColumnFilters.Add(columnFilter);
             }
             tailConfig.ColumnFilterActive = _filterActive;
+            tailConfig.DisplayTabIcon = _displayTabIcon;
         }
 
         public void LoadConfig(TailFileConfig tailConfig, string configPath)
@@ -144,6 +146,7 @@ namespace SnakeTail
             }
 
             _filterActive = tailConfig.ColumnFilterActive;
+            _displayTabIcon = tailConfig.DisplayTabIcon;
 
             if (Visible)
             {
@@ -386,6 +389,14 @@ namespace SnakeTail
                 ConfigureColumnFilter(_filterActive);
         }
 
+        private void EventLogForm_Activated(object sender, EventArgs e)
+        {
+            SearchForm.Instance.ActiveTailForm = this;
+            TabPage parentTab = this.Tag as TabPage;
+            if (parentTab != null)
+                parentTab.ImageIndex = -1;
+        }
+
         protected override void OnResize(EventArgs e)
         {
             bool listAtBottom = ListAtBottom();
@@ -531,6 +542,13 @@ namespace SnakeTail
                 if (listAtBottom)
                     _eventListView.EnsureVisible(_eventListView.VirtualListSize - 1);
                 _eventListView.Update();
+            }
+
+            if (_displayTabIcon)
+            {
+                TabPage parentTab = this.Tag as TabPage;
+                if (parentTab != null && parentTab.Parent != null && parentTab.Parent.Visible && !parentTab.Visible)
+                    parentTab.ImageIndex = 0;
             }
         }
 

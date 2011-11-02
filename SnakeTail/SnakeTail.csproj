@@ -12,7 +12,7 @@
     <AssemblyName>SnakeTail</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <ApplicationIcon>Snake.ico</ApplicationIcon>
+    <ApplicationIcon>Icons\Snake.ico</ApplicationIcon>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -65,6 +65,7 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="StopwatchProfiler.cs" />
     <Compile Include="CPUMeter.cs" />
     <Compile Include="EventLogForm.cs">
       <SubType>Form</SubType>
@@ -115,7 +116,7 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -167,8 +168,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="log.ico" />
-    <Content Include="Snake.ico" />
+    <None Include="Icons\log.ico" />
+    <Content Include="Icons\bullet ball glass green.ico" />
+    <Content Include="Icons\bullet ball glass yellow.ico" />
+    <Content Include="Icons\Error.png" />
+    <Content Include="Icons\Info.png" />
+    <Content Include="Icons\Snake.ico" />
+    <Content Include="Icons\Warning.png" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

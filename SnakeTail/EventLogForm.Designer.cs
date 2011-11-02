@@ -256,6 +256,7 @@ namespace SnakeTail
             this.Name = "EventLogForm";
             this.Text = "EventLog";
             this.Load += new System.EventHandler(this.EventLogForm_Load);
+            this.Activated += new System.EventHandler(this.EventLogForm_Activated);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.EventLogForm_FormClosed);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();

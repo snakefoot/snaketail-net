@@ -59,6 +59,7 @@ namespace SnakeTail
             this._backColorBtn = new System.Windows.Forms.Button();
             this._textColorBtn = new System.Windows.Forms.Button();
             this._tabPageFile = new System.Windows.Forms.TabPage();
+            this._browseBtn = new System.Windows.Forms.Button();
             this.label10 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this._fileChangeCheckIntervalEdt = new System.Windows.Forms.TextBox();
@@ -78,7 +79,7 @@ namespace SnakeTail
             this._loghitColumn = new System.Windows.Forms.ColumnHeader();
             this._acceptBtn = new System.Windows.Forms.Button();
             this._cancelBtn = new System.Windows.Forms.Button();
-            this._browseBtn = new System.Windows.Forms.Button();
+            this._displayIconChk = new System.Windows.Forms.CheckBox();
             label2 = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -184,6 +185,7 @@ namespace SnakeTail
             // 
             // _tabPageView
             // 
+            this._tabPageView.Controls.Add(this._displayIconChk);
             this._tabPageView.Controls.Add(label2);
             this._tabPageView.Controls.Add(this._windowIconEdt);
             this._tabPageView.Controls.Add(label1);
@@ -257,6 +259,16 @@ namespace SnakeTail
             this._tabPageFile.TabIndex = 1;
             this._tabPageFile.Text = "Log File";
             this._tabPageFile.UseVisualStyleBackColor = true;
+            // 
+            // _browseBtn
+            // 
+            this._browseBtn.Location = new System.Drawing.Point(323, 6);
+            this._browseBtn.Name = "_browseBtn";
+            this._browseBtn.Size = new System.Drawing.Size(30, 20);
+            this._browseBtn.TabIndex = 15;
+            this._browseBtn.Text = "...";
+            this._browseBtn.UseVisualStyleBackColor = true;
+            this._browseBtn.Click += new System.EventHandler(this._browseBtn_Click);
             // 
             // label10
             // 
@@ -433,15 +445,15 @@ namespace SnakeTail
             this._cancelBtn.Text = "Cancel";
             this._cancelBtn.UseVisualStyleBackColor = true;
             // 
-            // _browseBtn
+            // _displayIconChk
             // 
-            this._browseBtn.Location = new System.Drawing.Point(323, 6);
-            this._browseBtn.Name = "_browseBtn";
-            this._browseBtn.Size = new System.Drawing.Size(30, 20);
-            this._browseBtn.TabIndex = 15;
-            this._browseBtn.Text = "...";
-            this._browseBtn.UseVisualStyleBackColor = true;
-            this._browseBtn.Click += new System.EventHandler(this._browseBtn_Click);
+            this._displayIconChk.AutoSize = true;
+            this._displayIconChk.Location = new System.Drawing.Point(11, 136);
+            this._displayIconChk.Name = "_displayIconChk";
+            this._displayIconChk.Size = new System.Drawing.Size(172, 17);
+            this._displayIconChk.TabIndex = 14;
+            this._displayIconChk.Text = "Display tab icon on log change";
+            this._displayIconChk.UseVisualStyleBackColor = true;
             // 
             // TailConfigForm
             // 
@@ -498,6 +510,7 @@ namespace SnakeTail
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Button _browseBtn;
+        private System.Windows.Forms.CheckBox _displayIconChk;
 
 
 
