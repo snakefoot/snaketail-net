@@ -54,6 +54,7 @@ namespace SnakeTail
             System.Windows.Forms.Label label8;
             this._tabControl = new System.Windows.Forms.TabControl();
             this._tabPageView = new System.Windows.Forms.TabPage();
+            this._displayIconChk = new System.Windows.Forms.CheckBox();
             this._windowIconEdt = new System.Windows.Forms.TextBox();
             this._windowTitleEdt = new System.Windows.Forms.TextBox();
             this._backColorBtn = new System.Windows.Forms.Button();
@@ -74,19 +75,18 @@ namespace SnakeTail
             this._edtWordBtn = new System.Windows.Forms.Button();
             this._addWordBtn = new System.Windows.Forms.Button();
             this._keywordListView = new System.Windows.Forms.ListView();
-            this._caseColumn = new System.Windows.Forms.ColumnHeader();
-            this._regexColumn = new System.Windows.Forms.ColumnHeader();
-            this._loghitColumn = new System.Windows.Forms.ColumnHeader();
+            this._caseColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this._regexColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this._loghitColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this._acceptBtn = new System.Windows.Forms.Button();
             this._cancelBtn = new System.Windows.Forms.Button();
-            this._displayIconChk = new System.Windows.Forms.CheckBox();
             label2 = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
             label4 = new System.Windows.Forms.Label();
             label5 = new System.Windows.Forms.Label();
             label7 = new System.Windows.Forms.Label();
-            _keywordColumn = new System.Windows.Forms.ColumnHeader();
+            _keywordColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             label6 = new System.Windows.Forms.Label();
             label8 = new System.Windows.Forms.Label();
             this._tabControl.SuspendLayout();
@@ -199,6 +199,16 @@ namespace SnakeTail
             this._tabPageView.TabIndex = 0;
             this._tabPageView.Text = "View";
             this._tabPageView.UseVisualStyleBackColor = true;
+            // 
+            // _displayIconChk
+            // 
+            this._displayIconChk.AutoSize = true;
+            this._displayIconChk.Location = new System.Drawing.Point(11, 136);
+            this._displayIconChk.Name = "_displayIconChk";
+            this._displayIconChk.Size = new System.Drawing.Size(172, 17);
+            this._displayIconChk.TabIndex = 14;
+            this._displayIconChk.Text = "Display tab icon on log change";
+            this._displayIconChk.UseVisualStyleBackColor = true;
             // 
             // _windowIconEdt
             // 
@@ -388,9 +398,9 @@ namespace SnakeTail
             // 
             // _keywordListView
             // 
-            this._keywordListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this._keywordListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this._keywordListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             _keywordColumn,
             this._caseColumn,
@@ -444,16 +454,6 @@ namespace SnakeTail
             this._cancelBtn.TabIndex = 15;
             this._cancelBtn.Text = "Cancel";
             this._cancelBtn.UseVisualStyleBackColor = true;
-            // 
-            // _displayIconChk
-            // 
-            this._displayIconChk.AutoSize = true;
-            this._displayIconChk.Location = new System.Drawing.Point(11, 136);
-            this._displayIconChk.Name = "_displayIconChk";
-            this._displayIconChk.Size = new System.Drawing.Size(172, 17);
-            this._displayIconChk.TabIndex = 14;
-            this._displayIconChk.Text = "Display tab icon on log change";
-            this._displayIconChk.UseVisualStyleBackColor = true;
             // 
             // TailConfigForm
             // 

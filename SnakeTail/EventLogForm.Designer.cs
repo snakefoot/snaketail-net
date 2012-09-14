@@ -49,6 +49,7 @@ namespace SnakeTail
             System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EventLogForm));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this._eventListView = new SnakeTail.EventLogListView();
             this._contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this._eventImageList = new System.Windows.Forms.ImageList(this.components);
             this._menuStrip = new System.Windows.Forms.MenuStrip();
@@ -63,7 +64,6 @@ namespace SnakeTail
             this._filterModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._eventMessageText = new System.Windows.Forms.RichTextBox();
             this._filterEventLogTimer = new System.Windows.Forms.Timer(this.components);
-            this._eventListView = new SnakeTail.EventLogListView();
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -107,6 +107,23 @@ namespace SnakeTail
             this.splitContainer1.Size = new System.Drawing.Size(602, 318);
             this.splitContainer1.SplitterDistance = 239;
             this.splitContainer1.TabIndex = 2;
+            // 
+            // _eventListView
+            // 
+            this._eventListView.ContextMenuStrip = this._contextMenuStrip;
+            this._eventListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._eventListView.FullRowSelect = true;
+            this._eventListView.HideSelection = false;
+            this._eventListView.Location = new System.Drawing.Point(0, 0);
+            this._eventListView.Name = "_eventListView";
+            this._eventListView.Size = new System.Drawing.Size(602, 239);
+            this._eventListView.SmallImageList = this._eventImageList;
+            this._eventListView.TabIndex = 1;
+            this._eventListView.UseCompatibleStateImageBehavior = false;
+            this._eventListView.View = System.Windows.Forms.View.Details;
+            this._eventListView.VirtualMode = true;
+            this._eventListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this._eventListView_ItemSelectionChanged);
+            this._eventListView.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this._eventListView_RetrieveVirtualItem);
             // 
             // _contextMenuStrip
             // 
@@ -229,23 +246,6 @@ namespace SnakeTail
             // 
             this._filterEventLogTimer.Tick += new System.EventHandler(this._filterEventLogTimer_Tick);
             // 
-            // _eventListView
-            // 
-            this._eventListView.ContextMenuStrip = this._contextMenuStrip;
-            this._eventListView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._eventListView.FullRowSelect = true;
-            this._eventListView.HideSelection = false;
-            this._eventListView.Location = new System.Drawing.Point(0, 24);
-            this._eventListView.Name = "_eventListView";
-            this._eventListView.Size = new System.Drawing.Size(602, 215);
-            this._eventListView.SmallImageList = this._eventImageList;
-            this._eventListView.TabIndex = 1;
-            this._eventListView.UseCompatibleStateImageBehavior = false;
-            this._eventListView.View = System.Windows.Forms.View.Details;
-            this._eventListView.VirtualMode = true;
-            this._eventListView.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this._eventListView_RetrieveVirtualItem);
-            this._eventListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this._eventListView_ItemSelectionChanged);
-            // 
             // EventLogForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -255,9 +255,9 @@ namespace SnakeTail
             this.MainMenuStrip = this._menuStrip;
             this.Name = "EventLogForm";
             this.Text = "EventLog";
-            this.Load += new System.EventHandler(this.EventLogForm_Load);
             this.Activated += new System.EventHandler(this.EventLogForm_Activated);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.EventLogForm_FormClosed);
+            this.Load += new System.EventHandler(this.EventLogForm_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);

@@ -218,8 +218,8 @@ namespace SnakeTail
             this.windowToolStripMenuItem.Name = "windowToolStripMenuItem";
             this.windowToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
             this.windowToolStripMenuItem.Text = "Window";
-            this.windowToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.windowToolStripMenuItem_DropDownItemClicked);
             this.windowToolStripMenuItem.DropDownOpening += new System.EventHandler(this.windowToolStripMenuItem_DropDownOpening);
+            this.windowToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.windowToolStripMenuItem_DropDownItemClicked);
             // 
             // enableTabsToolStripMenuItem
             // 
@@ -305,11 +305,11 @@ namespace SnakeTail
             this._MDITabControl.Size = new System.Drawing.Size(593, 23);
             this._MDITabControl.TabIndex = 5;
             this._MDITabControl.Visible = false;
-            this._MDITabControl.MouseMove += new System.Windows.Forms.MouseEventHandler(this._MDITabControl_MouseMove);
-            this._MDITabControl.DragDrop += new System.Windows.Forms.DragEventHandler(this._MDITabControl_DragDrop);
-            this._MDITabControl.MouseClick += new System.Windows.Forms.MouseEventHandler(this._MDITabControl_MouseClick);
-            this._MDITabControl.DragEnter += new System.Windows.Forms.DragEventHandler(this._MDITabControl_DragEnter);
             this._MDITabControl.SelectedIndexChanged += new System.EventHandler(this._MDITabControl_SelectedIndexChanged);
+            this._MDITabControl.DragDrop += new System.Windows.Forms.DragEventHandler(this._MDITabControl_DragDrop);
+            this._MDITabControl.DragEnter += new System.Windows.Forms.DragEventHandler(this._MDITabControl_DragEnter);
+            this._MDITabControl.MouseClick += new System.Windows.Forms.MouseEventHandler(this._MDITabControl_MouseClick);
+            this._MDITabControl.MouseMove += new System.Windows.Forms.MouseEventHandler(this._MDITabControl_MouseMove);
             // 
             // _trayIcon
             // 
@@ -343,10 +343,10 @@ namespace SnakeTail
             this.MainMenuStrip = this._mainMenu;
             this.Name = "MainForm";
             this.Text = "SnakeTail";
-            this.SizeChanged += new System.EventHandler(this.MainForm_SizeChanged);
-            this.Shown += new System.EventHandler(this.MainForm_Shown);
-            this.DragDrop += new System.Windows.Forms.DragEventHandler(this.MainForm_DragDrop);
             this.MdiChildActivate += new System.EventHandler(this.MainForm_MdiChildActivate);
+            this.Shown += new System.EventHandler(this.MainForm_Shown);
+            this.SizeChanged += new System.EventHandler(this.MainForm_SizeChanged);
+            this.DragDrop += new System.Windows.Forms.DragEventHandler(this.MainForm_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.MainForm_DragEnter);
             this._statusStrip.ResumeLayout(false);
             this._statusStrip.PerformLayout();

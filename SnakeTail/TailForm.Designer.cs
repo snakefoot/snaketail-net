@@ -67,8 +67,8 @@ namespace SnakeTail
             this.pauseServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resumeServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._tailListView = new SnakeTail.LogFileListView();
-            this.hiddenItem = new System.Windows.Forms.ColumnHeader();
-            this.lineItem = new System.Windows.Forms.ColumnHeader();
+            this.hiddenItem = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.lineItem = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -275,11 +275,11 @@ namespace SnakeTail
             this._tailListView.UseCompatibleStateImageBehavior = false;
             this._tailListView.View = System.Windows.Forms.View.Details;
             this._tailListView.VirtualMode = true;
-            this._tailListView.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(this._tailListView_DrawItem);
-            this._tailListView.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this._tailListView_RetrieveVirtualItem);
             this._tailListView.CacheVirtualItems += new System.Windows.Forms.CacheVirtualItemsEventHandler(this._tailListView_CacheVirtualItems);
-            this._tailListView.KeyDown += new System.Windows.Forms.KeyEventHandler(this._tailListView_KeyDown);
+            this._tailListView.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(this._tailListView_DrawItem);
             this._tailListView.DrawSubItem += new System.Windows.Forms.DrawListViewSubItemEventHandler(this._tailListView_DrawSubItem);
+            this._tailListView.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this._tailListView_RetrieveVirtualItem);
+            this._tailListView.KeyDown += new System.Windows.Forms.KeyEventHandler(this._tailListView_KeyDown);
             // 
             // hiddenItem
             // 
@@ -297,9 +297,9 @@ namespace SnakeTail
             this.MainMenuStrip = this._menuStrip;
             this.Name = "TailForm";
             this.Text = "TailForm";
-            this.Load += new System.EventHandler(this.TailForm_Load);
             this.Activated += new System.EventHandler(this.TailForm_Activated);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.TailForm_FormClosing);
+            this.Load += new System.EventHandler(this.TailForm_Load);
             this.Resize += new System.EventHandler(this.TailForm_Resize);
             this._contextMenuStrip.ResumeLayout(false);
             this._statusStrip.ResumeLayout(false);
