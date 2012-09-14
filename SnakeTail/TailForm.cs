@@ -173,14 +173,15 @@ namespace SnakeTail
             if (_logFileStream == null || _logFileStream.FilePath != tailConfig.FilePath || _logFileStream.FileEncoding != fileEncoding || _logFileStream.FileCheckInterval != tailConfig.FileCheckInterval || _logFileStream.FileCheckPattern != tailConfig.FileCheckPattern)
                 _logFileStream = new LogFileStream(configPath, tailConfig.FilePath, fileEncoding, tailConfig.FileCheckInterval, tailConfig.FileCheckPattern);
             if (_logTailStream == null || _logTailStream.FilePath != tailConfig.FilePath || _logTailStream.FileEncoding != fileEncoding || _logTailStream.FileCheckInterval != tailConfig.FileCheckInterval || _logTailStream.FileCheckPattern != tailConfig.FileCheckPattern)
-                _logTailStream = new LogFileStream(configPath, tailConfig.FilePath, fileEncoding, tailConfig.FileCheckInterval, tailConfig.FileCheckPattern);
-
-            if (_logTailStream.Length > 500 * 1024 * 1024)
             {
-                if (MessageBox.Show(String.Format("The file is very large, sure you want to open it?\n\nFile Name: {0}\nFile Size: {1} Megabytes", _logTailStream.FilePath, _logTailStream.Length / 1024 / 1024), "Large file detected", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                _logTailStream = new LogFileStream(configPath, tailConfig.FilePath, fileEncoding, tailConfig.FileCheckInterval, tailConfig.FileCheckPattern);
+                if (_logTailStream.Length > 500 * 1024 * 1024)
                 {
-                    Close();
-                    return;
+                    if (MessageBox.Show(String.Format("The file is very large, sure you want to open it?\n\nFile Name: {0}\nFile Size: {1} Megabytes", _logTailStream.FilePath, _logTailStream.Length / 1024 / 1024), "Large file detected", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                    {
+                        Close();
+                        return;
+                    }
                 }
             }
 
@@ -1152,6 +1153,36 @@ namespace SnakeTail
                 Paused = false;
                 if (_tailListView.VirtualListSize > 0)
                     _tailListView.EnsureVisible(_tailListView.VirtualListSize - 1);
+            }
+        }
+
+        private void applyViewOptionsToAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TailFileConfig configFile = new TailFileConfig();
+            SaveConfig(configFile);
+            TailConfigApplyAllForm configForm = new TailConfigApplyAllForm();
+            if (configForm.ShowDialog() == DialogResult.OK)
+            {
+                // Then we loop through all forms (includes free floating)
+                foreach (Form childForm in Application.OpenForms)
+                {
+                    TailForm tailForm = childForm as TailForm;
+                    if (tailForm != null && tailForm != this)
+                    {
+                        TailFileConfig configFileOther = new TailFileConfig();
+                        tailForm.SaveConfig(configFileOther);
+                        if (configForm._checkBoxColors.Checked)
+                        {
+                            configFileOther.FormBackColor = configFile.FormBackColor;
+                            configFileOther.FormTextColor = configFile.FormTextColor;
+                        }
+                        if (configForm._checkBoxFont.Checked)
+                            configFileOther.FontInvariant = configFile.FontInvariant;
+                        if (configForm._checkboxKeywords.Checked)
+                            configFileOther.KeywordHighlight = configFile.KeywordHighlight;
+                        tailForm.LoadConfig(configFileOther, _configPath);
+                    }
+                }
             }
         }
     }

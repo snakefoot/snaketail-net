@@ -436,7 +436,7 @@ namespace SnakeTail
             // 
             this._acceptBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this._acceptBtn.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this._acceptBtn.Location = new System.Drawing.Point(197, 209);
+            this._acceptBtn.Location = new System.Drawing.Point(198, 210);
             this._acceptBtn.Name = "_acceptBtn";
             this._acceptBtn.Size = new System.Drawing.Size(75, 23);
             this._acceptBtn.TabIndex = 14;
@@ -448,7 +448,7 @@ namespace SnakeTail
             // 
             this._cancelBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this._cancelBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this._cancelBtn.Location = new System.Drawing.Point(289, 209);
+            this._cancelBtn.Location = new System.Drawing.Point(290, 210);
             this._cancelBtn.Name = "_cancelBtn";
             this._cancelBtn.Size = new System.Drawing.Size(75, 23);
             this._cancelBtn.TabIndex = 15;
@@ -461,7 +461,7 @@ namespace SnakeTail
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this._cancelBtn;
-            this.ClientSize = new System.Drawing.Size(376, 235);
+            this.ClientSize = new System.Drawing.Size(377, 236);
             this.Controls.Add(this._cancelBtn);
             this.Controls.Add(this._acceptBtn);
             this.Controls.Add(this._tabControl);
