@@ -49,6 +49,13 @@ namespace SnakeTail
             _MDITabControl.ImageList.Images.Add(new Bitmap(Properties.Resources.YellowBulletIcon.ToBitmap()));
         }
 
+        private void UpdateTitle()
+        {
+            Text = Application.ProductName;
+            if (_currenTailConfig != null)
+                Text += " - " + Path.GetFileNameWithoutExtension(_currenTailConfig);
+        }
+
         private void MainForm_Shown(object sender, EventArgs e)
         {
             string[] args = Environment.GetCommandLineArgs();
@@ -317,6 +324,7 @@ namespace SnakeTail
             if (SearchForm.Instance.Visible)
                 SearchForm.Instance.Close();
             _currenTailConfig = null;
+            UpdateTitle();
         }
 
         private void enableTabsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -409,6 +417,7 @@ namespace SnakeTail
             }
 
             _currenTailConfig = filepath;
+            UpdateTitle();
         }
 
         private TailConfig LoadSessionFile(string filepath)
@@ -447,6 +456,8 @@ namespace SnakeTail
                     Size = tailConfig.WindowSize;
                     DesktopLocation = tailConfig.WindowPosition;
                 }
+
+                UpdateTitle();
 
                 List<string> eventLogFiles = EventLogForm.GetEventLogFiles();
 
