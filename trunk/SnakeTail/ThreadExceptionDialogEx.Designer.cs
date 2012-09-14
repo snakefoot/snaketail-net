@@ -117,9 +117,9 @@ namespace SnakeTail
             // 
             // _reportListBox
             // 
-            this._reportListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this._reportListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this._reportListBox.FormattingEnabled = true;
             this._reportListBox.Location = new System.Drawing.Point(12, 138);
             this._reportListBox.Name = "_reportListBox";
@@ -127,8 +127,8 @@ namespace SnakeTail
             this._reportListBox.TabIndex = 5;
             this._reportListBox.Visible = false;
             this._reportListBox.DoubleClick += new System.EventHandler(this._reportListBox_DoubleClick);
-            this._reportListBox.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this._reportListBox_PreviewKeyDown);
             this._reportListBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this._reportListBox_KeyPress);
+            this._reportListBox.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this._reportListBox_PreviewKeyDown);
             // 
             // ThreadExceptionDialogEx
             // 
