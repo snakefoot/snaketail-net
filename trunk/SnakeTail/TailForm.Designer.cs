@@ -62,6 +62,7 @@ namespace SnakeTail
             this.pauseWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.switchModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configureStatisticsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.applyViewOptionsToAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.startServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stopServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pauseServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -85,7 +86,7 @@ namespace SnakeTail
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new System.Drawing.Size(57, 6);
+            toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
             // 
             // toolStripSeparator2
             // 
@@ -153,6 +154,7 @@ namespace SnakeTail
             toolStripSeparator2,
             this.switchModeToolStripMenuItem,
             this.configureStatisticsToolStripMenuItem,
+            this.applyViewOptionsToAllToolStripMenuItem,
             toolStripSeparator4,
             this.startServiceToolStripMenuItem,
             this.stopServiceToolStripMenuItem,
@@ -210,14 +212,14 @@ namespace SnakeTail
             this.pauseWindowToolStripMenuItem.Name = "pauseWindowToolStripMenuItem";
             this.pauseWindowToolStripMenuItem.ShortcutKeyDisplayString = "Pause";
             this.pauseWindowToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
-            this.pauseWindowToolStripMenuItem.Text = "Pause window";
+            this.pauseWindowToolStripMenuItem.Text = "Pause Window";
             this.pauseWindowToolStripMenuItem.Click += new System.EventHandler(this.pauseWindowToolStripMenuItem_Click);
             // 
             // switchModeToolStripMenuItem
             // 
             this.switchModeToolStripMenuItem.Name = "switchModeToolStripMenuItem";
             this.switchModeToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
-            this.switchModeToolStripMenuItem.Text = "Switch window mode";
+            this.switchModeToolStripMenuItem.Text = "Switch Window Mode";
             this.switchModeToolStripMenuItem.Click += new System.EventHandler(this.switchToModelessToolStripMenuItem_Click);
             // 
             // configureStatisticsToolStripMenuItem
@@ -226,6 +228,13 @@ namespace SnakeTail
             this.configureStatisticsToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
             this.configureStatisticsToolStripMenuItem.Text = "View Options...";
             this.configureStatisticsToolStripMenuItem.Click += new System.EventHandler(this.configureStatisticsToolStripMenuItem_Click);
+            // 
+            // applyViewOptionsToAllToolStripMenuItem
+            // 
+            this.applyViewOptionsToAllToolStripMenuItem.Name = "applyViewOptionsToAllToolStripMenuItem";
+            this.applyViewOptionsToAllToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
+            this.applyViewOptionsToAllToolStripMenuItem.Text = "Apply View Options to All";
+            this.applyViewOptionsToAllToolStripMenuItem.Click += new System.EventHandler(this.applyViewOptionsToAllToolStripMenuItem_Click);
             // 
             // startServiceToolStripMenuItem
             // 
@@ -335,5 +344,6 @@ namespace SnakeTail
         private System.Windows.Forms.ToolStripMenuItem gotoNextHighlightToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem gotoPreviousHighlightToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pauseWindowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem applyViewOptionsToAllToolStripMenuItem;
     }
 }
