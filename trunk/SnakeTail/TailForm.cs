@@ -754,10 +754,7 @@ namespace SnakeTail
             }
             if (e.KeyCode == Keys.Pause)
             {
-                if (!Paused)
-                {
-                    Paused = true;
-                }
+                Paused = !Paused;
             }
             else
             {
