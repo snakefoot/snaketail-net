@@ -755,6 +755,11 @@ namespace SnakeTail
             if (e.KeyCode == Keys.Pause)
             {
                 Paused = !Paused;
+                if (!Paused)
+                {
+                    if (_tailListView.VirtualListSize > 0)
+                        _tailListView.EnsureVisible(_tailListView.VirtualListSize - 1);
+                }
             }
             else
             {
