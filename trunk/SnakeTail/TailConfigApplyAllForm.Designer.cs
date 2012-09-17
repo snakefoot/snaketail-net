@@ -103,7 +103,7 @@
             this.Name = "TailConfigApplyAllForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Apply Configuration to All";
+            this.Text = "Apply View Options to All";
             this.ResumeLayout(false);
             this.PerformLayout();
 
