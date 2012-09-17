@@ -80,6 +80,7 @@ namespace SnakeTail
             this._loghitColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this._acceptBtn = new System.Windows.Forms.Button();
             this._cancelBtn = new System.Windows.Forms.Button();
+            this._titleMatchFilenameChk = new System.Windows.Forms.CheckBox();
             label2 = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -125,7 +126,7 @@ namespace SnakeTail
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new System.Drawing.Point(3, 35);
+            label4.Location = new System.Drawing.Point(3, 56);
             label4.Name = "label4";
             label4.Size = new System.Drawing.Size(71, 13);
             label4.TabIndex = 2;
@@ -134,7 +135,7 @@ namespace SnakeTail
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new System.Drawing.Point(3, 63);
+            label5.Location = new System.Drawing.Point(3, 84);
             label5.Name = "label5";
             label5.Size = new System.Drawing.Size(80, 13);
             label5.TabIndex = 4;
@@ -143,7 +144,7 @@ namespace SnakeTail
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new System.Drawing.Point(3, 144);
+            label7.Location = new System.Drawing.Point(3, 165);
             label7.Name = "label7";
             label7.Size = new System.Drawing.Size(90, 13);
             label7.TabIndex = 9;
@@ -157,7 +158,7 @@ namespace SnakeTail
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new System.Drawing.Point(3, 92);
+            label6.Location = new System.Drawing.Point(3, 113);
             label6.Name = "label6";
             label6.Size = new System.Drawing.Size(136, 13);
             label6.TabIndex = 6;
@@ -166,7 +167,7 @@ namespace SnakeTail
             // label8
             // 
             label8.AutoSize = true;
-            label8.Location = new System.Drawing.Point(3, 118);
+            label8.Location = new System.Drawing.Point(3, 139);
             label8.Name = "label8";
             label8.Size = new System.Drawing.Size(135, 13);
             label8.TabIndex = 11;
@@ -180,7 +181,7 @@ namespace SnakeTail
             this._tabControl.Location = new System.Drawing.Point(6, 6);
             this._tabControl.Name = "_tabControl";
             this._tabControl.SelectedIndex = 0;
-            this._tabControl.Size = new System.Drawing.Size(367, 198);
+            this._tabControl.Size = new System.Drawing.Size(367, 233);
             this._tabControl.TabIndex = 8;
             // 
             // _tabPageView
@@ -195,7 +196,7 @@ namespace SnakeTail
             this._tabPageView.Location = new System.Drawing.Point(4, 22);
             this._tabPageView.Name = "_tabPageView";
             this._tabPageView.Padding = new System.Windows.Forms.Padding(3);
-            this._tabPageView.Size = new System.Drawing.Size(359, 172);
+            this._tabPageView.Size = new System.Drawing.Size(359, 207);
             this._tabPageView.TabIndex = 0;
             this._tabPageView.Text = "View";
             this._tabPageView.UseVisualStyleBackColor = true;
@@ -246,6 +247,7 @@ namespace SnakeTail
             // 
             // _tabPageFile
             // 
+            this._tabPageFile.Controls.Add(this._titleMatchFilenameChk);
             this._tabPageFile.Controls.Add(this._browseBtn);
             this._tabPageFile.Controls.Add(this.label10);
             this._tabPageFile.Controls.Add(this.label9);
@@ -265,7 +267,7 @@ namespace SnakeTail
             this._tabPageFile.Location = new System.Drawing.Point(4, 22);
             this._tabPageFile.Name = "_tabPageFile";
             this._tabPageFile.Padding = new System.Windows.Forms.Padding(3);
-            this._tabPageFile.Size = new System.Drawing.Size(359, 172);
+            this._tabPageFile.Size = new System.Drawing.Size(359, 207);
             this._tabPageFile.TabIndex = 1;
             this._tabPageFile.Text = "Log File";
             this._tabPageFile.UseVisualStyleBackColor = true;
@@ -283,7 +285,7 @@ namespace SnakeTail
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(209, 92);
+            this.label10.Location = new System.Drawing.Point(209, 113);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(29, 13);
             this.label10.TabIndex = 14;
@@ -292,7 +294,7 @@ namespace SnakeTail
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(209, 118);
+            this.label9.Location = new System.Drawing.Point(209, 139);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(37, 13);
             this.label9.TabIndex = 13;
@@ -300,7 +302,7 @@ namespace SnakeTail
             // 
             // _fileChangeCheckIntervalEdt
             // 
-            this._fileChangeCheckIntervalEdt.Location = new System.Drawing.Point(144, 115);
+            this._fileChangeCheckIntervalEdt.Location = new System.Drawing.Point(144, 136);
             this._fileChangeCheckIntervalEdt.Name = "_fileChangeCheckIntervalEdt";
             this._fileChangeCheckIntervalEdt.Size = new System.Drawing.Size(59, 20);
             this._fileChangeCheckIntervalEdt.TabIndex = 12;
@@ -308,30 +310,31 @@ namespace SnakeTail
             // _fileCheckPatternChk
             // 
             this._fileCheckPatternChk.AutoSize = true;
-            this._fileCheckPatternChk.Location = new System.Drawing.Point(241, 92);
+            this._fileCheckPatternChk.Location = new System.Drawing.Point(103, 30);
             this._fileCheckPatternChk.Name = "_fileCheckPatternChk";
             this._fileCheckPatternChk.Size = new System.Drawing.Size(112, 17);
             this._fileCheckPatternChk.TabIndex = 8;
             this._fileCheckPatternChk.Text = "Regex in File Path";
             this._fileCheckPatternChk.UseVisualStyleBackColor = true;
+            this._fileCheckPatternChk.CheckedChanged += new System.EventHandler(this._fileCheckPatternChk_CheckedChanged);
             // 
             // _fileReopenCheckIntervalEdt
             // 
-            this._fileReopenCheckIntervalEdt.Location = new System.Drawing.Point(144, 89);
+            this._fileReopenCheckIntervalEdt.Location = new System.Drawing.Point(144, 110);
             this._fileReopenCheckIntervalEdt.Name = "_fileReopenCheckIntervalEdt";
             this._fileReopenCheckIntervalEdt.Size = new System.Drawing.Size(59, 20);
             this._fileReopenCheckIntervalEdt.TabIndex = 7;
             // 
             // _windowServiceEdt
             // 
-            this._windowServiceEdt.Location = new System.Drawing.Point(103, 141);
+            this._windowServiceEdt.Location = new System.Drawing.Point(103, 162);
             this._windowServiceEdt.Name = "_windowServiceEdt";
             this._windowServiceEdt.Size = new System.Drawing.Size(100, 20);
             this._windowServiceEdt.TabIndex = 10;
             // 
             // _fileCacheSizeEdt
             // 
-            this._fileCacheSizeEdt.Location = new System.Drawing.Point(103, 60);
+            this._fileCacheSizeEdt.Location = new System.Drawing.Point(103, 81);
             this._fileCacheSizeEdt.Name = "_fileCacheSizeEdt";
             this._fileCacheSizeEdt.Size = new System.Drawing.Size(100, 20);
             this._fileCacheSizeEdt.TabIndex = 5;
@@ -340,7 +343,7 @@ namespace SnakeTail
             // 
             this._fileEncodingCmb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this._fileEncodingCmb.FormattingEnabled = true;
-            this._fileEncodingCmb.Location = new System.Drawing.Point(103, 32);
+            this._fileEncodingCmb.Location = new System.Drawing.Point(103, 53);
             this._fileEncodingCmb.Name = "_fileEncodingCmb";
             this._fileEncodingCmb.Size = new System.Drawing.Size(250, 21);
             this._fileEncodingCmb.TabIndex = 3;
@@ -361,7 +364,7 @@ namespace SnakeTail
             this._tabPageKeyWords.Location = new System.Drawing.Point(4, 22);
             this._tabPageKeyWords.Name = "_tabPageKeyWords";
             this._tabPageKeyWords.Padding = new System.Windows.Forms.Padding(3);
-            this._tabPageKeyWords.Size = new System.Drawing.Size(359, 172);
+            this._tabPageKeyWords.Size = new System.Drawing.Size(359, 207);
             this._tabPageKeyWords.TabIndex = 2;
             this._tabPageKeyWords.Text = "Keyword Highlight";
             this._tabPageKeyWords.UseVisualStyleBackColor = true;
@@ -411,7 +414,7 @@ namespace SnakeTail
             this._keywordListView.Location = new System.Drawing.Point(6, 6);
             this._keywordListView.MultiSelect = false;
             this._keywordListView.Name = "_keywordListView";
-            this._keywordListView.Size = new System.Drawing.Size(264, 160);
+            this._keywordListView.Size = new System.Drawing.Size(264, 195);
             this._keywordListView.TabIndex = 0;
             this._keywordListView.UseCompatibleStateImageBehavior = false;
             this._keywordListView.View = System.Windows.Forms.View.Details;
@@ -436,7 +439,7 @@ namespace SnakeTail
             // 
             this._acceptBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this._acceptBtn.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this._acceptBtn.Location = new System.Drawing.Point(198, 210);
+            this._acceptBtn.Location = new System.Drawing.Point(198, 245);
             this._acceptBtn.Name = "_acceptBtn";
             this._acceptBtn.Size = new System.Drawing.Size(75, 23);
             this._acceptBtn.TabIndex = 14;
@@ -448,12 +451,22 @@ namespace SnakeTail
             // 
             this._cancelBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this._cancelBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this._cancelBtn.Location = new System.Drawing.Point(290, 210);
+            this._cancelBtn.Location = new System.Drawing.Point(290, 245);
             this._cancelBtn.Name = "_cancelBtn";
             this._cancelBtn.Size = new System.Drawing.Size(75, 23);
             this._cancelBtn.TabIndex = 15;
             this._cancelBtn.Text = "Cancel";
             this._cancelBtn.UseVisualStyleBackColor = true;
+            // 
+            // _titleMatchFilenameChk
+            // 
+            this._titleMatchFilenameChk.AutoSize = true;
+            this._titleMatchFilenameChk.Location = new System.Drawing.Point(221, 30);
+            this._titleMatchFilenameChk.Name = "_titleMatchFilenameChk";
+            this._titleMatchFilenameChk.Size = new System.Drawing.Size(120, 17);
+            this._titleMatchFilenameChk.TabIndex = 16;
+            this._titleMatchFilenameChk.Text = "Title match filename";
+            this._titleMatchFilenameChk.UseVisualStyleBackColor = true;
             // 
             // TailConfigForm
             // 
@@ -461,7 +474,7 @@ namespace SnakeTail
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this._cancelBtn;
-            this.ClientSize = new System.Drawing.Size(377, 236);
+            this.ClientSize = new System.Drawing.Size(377, 271);
             this.Controls.Add(this._cancelBtn);
             this.Controls.Add(this._acceptBtn);
             this.Controls.Add(this._tabControl);
@@ -511,6 +524,7 @@ namespace SnakeTail
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Button _browseBtn;
         private System.Windows.Forms.CheckBox _displayIconChk;
+        private System.Windows.Forms.CheckBox _titleMatchFilenameChk;
 
 
 

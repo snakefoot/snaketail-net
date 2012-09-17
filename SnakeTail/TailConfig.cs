@@ -89,6 +89,7 @@ namespace SnakeTail
         public int FileCheckInterval { get; set; }
         public int FileChangeCheckInterval { get; set; }
         public bool FileCheckPattern { get; set; }
+        public bool TitleMatchFilename { get; set; }
         public string TextColor { get; set; }   // ColorTranslator
         public string BackColor { get; set; }   // ColorTranslator
         public string Font { get; set; }        // TypeConverter

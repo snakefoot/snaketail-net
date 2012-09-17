@@ -73,6 +73,9 @@ namespace SnakeTail
 
                 _fileCheckPatternChk.Checked = TailFileConfig.FileCheckPattern;
 
+                _titleMatchFilenameChk.Enabled = _fileCheckPatternChk.Checked;
+                _titleMatchFilenameChk.Checked = TailFileConfig.TitleMatchFilename;
+
                 _windowServiceEdt.Text = TailFileConfig.ServiceName;
 
                 if (TailFileConfig.KeywordHighlight != null)
@@ -112,6 +115,8 @@ namespace SnakeTail
                 TailFileConfig.FileChangeCheckInterval = Int32.Parse(_fileChangeCheckIntervalEdt.Text);
 
                 TailFileConfig.FileCheckPattern = _fileCheckPatternChk.Checked;
+
+                TailFileConfig.TitleMatchFilename = TailFileConfig.FileCheckPattern ? _titleMatchFilenameChk.Checked : false;
 
                 if (TailFileConfig.KeywordHighlight == null)
                     TailFileConfig.KeywordHighlight = new List<TailKeywordConfig>();
@@ -194,6 +199,11 @@ namespace SnakeTail
                 return;
 
             _filePathEdt.Text = fileDialog.FileName;
+        }
+
+        private void _fileCheckPatternChk_CheckedChanged(object sender, EventArgs e)
+        {
+            _titleMatchFilenameChk.Enabled = _fileCheckPatternChk.Checked;
         }
     }
 }
