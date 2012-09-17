@@ -88,6 +88,7 @@ namespace SnakeTail
         TaskMonitor _taskMonitor = null;
         bool _topIndexHack = false;
         bool _pauseMode = false;
+        bool _formTitleMatchFilename = false;
         string _formTitle = "";
         string _formIconFile = "";
         DateTime _lastFormTitleUpdate = DateTime.Now;
@@ -206,6 +207,10 @@ namespace SnakeTail
             if (!string.IsNullOrEmpty(tailConfig.ServiceName))
                 _taskMonitor = new TaskMonitor(tailConfig.ServiceName);
 
+            _formTitleMatchFilename = tailConfig.TitleMatchFilename;
+            if (_formTitleMatchFilename)
+                _formTitle = Path.GetFileName(_logTailStream.Name);
+            else
             if (tailConfig.Title != null)
                 _formTitle = tailConfig.Title;
             else
@@ -255,6 +260,10 @@ namespace SnakeTail
 
             string title = _formTitle;
 
+            TabPage parentTab = this.Tag as TabPage;
+            if (parentTab != null && parentTab.Text != title)
+                parentTab.Text = title;
+
             if (_loghitCounter != -1)
             {
                 title += " Hits: " + _loghitCounter.ToString();
@@ -291,7 +300,8 @@ namespace SnakeTail
             }
 
             _lastFormTitleUpdate = DateTime.Now;
-            Text = title;
+			if (Text != title)
+	            Text = title;
         }
 
         public void SetStatusBar(string text)
@@ -367,6 +377,7 @@ namespace SnakeTail
             tailConfig.FileCheckInterval = _logTailStream.FileCheckInterval;
             tailConfig.FileChangeCheckInterval = _tailTimer.Interval;
             tailConfig.FileCheckPattern = _logTailStream.FileCheckPattern;
+            tailConfig.TitleMatchFilename = _formTitleMatchFilename;
             tailConfig.Title = _formTitle;
             tailConfig.IconFile = _formIconFile;
             tailConfig.Modeless = MdiParent == null;
@@ -824,6 +835,8 @@ namespace SnakeTail
             else
                 warningIcon = true;
 
+            string oldFilename = _logTailStream.Name;
+
             string line = _logTailStream.ReadLine(lineCount + 1);
             while(line != null)
             {
@@ -834,6 +847,16 @@ namespace SnakeTail
                 if (!warningIcon && MatchesKeyword(line, false) != null)
                     warningIcon = true;
                 line = _logTailStream.ReadLine(lineCount + 1);
+            }
+
+            // If new file has arrived, then update form-title to display this
+            if (_formTitleMatchFilename)
+            {
+                if (oldFilename != _logTailStream.Name)
+                {
+                    _formTitle = Path.GetFileName(_logTailStream.Name);
+                    UpdateFormTitle(true);
+                }
             }
 
             if (lineCount == _tailListView.VirtualListSize)
