@@ -302,6 +302,7 @@ namespace SnakeTail
             this._MDITabControl.Location = new System.Drawing.Point(0, 24);
             this._MDITabControl.Name = "_MDITabControl";
             this._MDITabControl.SelectedIndex = 0;
+            this._MDITabControl.ShowToolTips = true;
             this._MDITabControl.Size = new System.Drawing.Size(593, 23);
             this._MDITabControl.TabIndex = 5;
             this._MDITabControl.Visible = false;

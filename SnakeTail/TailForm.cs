@@ -216,9 +216,7 @@ namespace SnakeTail
             else
                 _formTitle = Path.GetFileName(tailConfig.FilePath);
 
-            TabPage parentTab = this.Tag as TabPage;
-            if (parentTab != null)
-                parentTab.Text = _formTitle;
+            UpdateFormTitle(true);
 
             _displayTabIcon = tailConfig.DisplayTabIcon;
 
@@ -261,8 +259,17 @@ namespace SnakeTail
             string title = _formTitle;
 
             TabPage parentTab = this.Tag as TabPage;
-            if (parentTab != null && parentTab.Text != title)
-                parentTab.Text = title;
+            if (parentTab != null)
+            {
+                if (parentTab.Text != title)
+                    parentTab.Text = title;
+
+                string fileStreamPath = _logTailStream.Name;
+                if (fileStreamPath != null)
+                    parentTab.ToolTipText = fileStreamPath;
+                else
+                    parentTab.ToolTipText = "";
+            }
 
             if (_loghitCounter != -1)
             {
