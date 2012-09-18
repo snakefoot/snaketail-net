@@ -57,6 +57,7 @@ namespace JWC
 			{
 				Tag = filename;
 				Text = entryname;
+                ToolTipText = filename;
 				Click += eventHandler;
 			}
 
@@ -599,6 +600,7 @@ namespace JWC
 
 				menuItem.Text = FixupEntryname(0, entryname);
 				menuItem.Filename = filename;
+                menuItem.ToolTipText = filename; 
 
 				MenuItems.Insert(StartIndex, menuItem);
 
