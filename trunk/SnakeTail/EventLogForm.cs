@@ -1403,5 +1403,27 @@ namespace SnakeTail
         {
             DoubleBuffered = true;
         }
+
+        // http://blogs.msdn.com/b/cumgranosalis/archive/2006/03/18/listviewvirtualmodebugs.aspx
+        public new int VirtualListSize
+        {
+            get { return base.VirtualListSize; }
+
+            set
+            {
+                // If the new size is smaller than the Index of TopItem, we need to make
+                // sure the new TopItem is set to something smaller.
+                if (VirtualMode &&
+                    View == View.Details &&
+                    value > 0 &&
+                    TopItem != null &&
+                    TopItem.Index > value - 1)
+                {
+                    TopItem = Items[value - 1];
+                }
+
+                base.VirtualListSize = value;
+            }
+        }
     }
 }
