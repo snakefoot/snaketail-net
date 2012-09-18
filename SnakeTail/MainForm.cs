@@ -34,6 +34,9 @@ namespace SnakeTail
         private TailFileConfig _defaultTailConfig = null;
         private string _currenTailConfig = null;
 
+        private string _mruRegKey = "SOFTWARE\\SnakeNest.com\\SnakeTail\\MRU";
+        private JWC.MruStripMenu _mruMenu;
+
         public MainForm()
         {
             InitializeComponent();
@@ -47,6 +50,20 @@ namespace SnakeTail
             _MDITabControl.ImageList.TransparentColor = System.Drawing.Color.Transparent;
             _MDITabControl.ImageList.Images.Add(new Bitmap(Properties.Resources.GreenBulletIcon.ToBitmap()));
             _MDITabControl.ImageList.Images.Add(new Bitmap(Properties.Resources.YellowBulletIcon.ToBitmap()));
+
+            bool loadFromRegistry = false;
+            try
+            {
+                Microsoft.Win32.RegistryKey regKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(_mruRegKey);
+                if (regKey != null)
+                    loadFromRegistry = true;
+            }
+            catch
+            {
+            }
+
+            saveRecentFilesToRegistryToolStripMenuItem.Checked = loadFromRegistry;
+            _mruMenu = new JWC.MruStripMenuInline(recentFilesToolStripMenuItem, recentFile1ToolStripMenuItem, new JWC.MruStripMenu.ClickedHandler(OnMruFile), _mruRegKey, loadFromRegistry, 10);
         }
 
         private void UpdateTitle()
@@ -190,6 +207,25 @@ namespace SnakeTail
             OpenFileSelection(fileDialog.FileNames);
         }
 
+        private void OnMruFile(int number, String filename)
+        {
+            bool openedFile = false;
+            if (filename.EndsWith(".xml", StringComparison.CurrentCultureIgnoreCase))
+                openedFile = LoadSession(filename);
+            else
+            {
+                int formCount = Application.OpenForms.Count;
+                OpenFileSelection(new string[] { filename });
+                openedFile = formCount < Application.OpenForms.Count;
+            }
+
+            if (!openedFile)
+            {
+                MessageBox.Show("The file '" + filename + "'cannot be opened and will be removed from the Recent list(s)", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                _mruMenu.RemoveFile(number);
+            }
+        }
+
         private void OpenFileSelection(string[] filenames)
         {
             if (_defaultTailConfig == null)
@@ -235,6 +271,8 @@ namespace SnakeTail
                 mdiForm.LoadConfig(tailConfig, "");
                 if (mdiForm.IsDisposed)
                     continue;
+                
+                _mruMenu.AddFile(filename);
 
                 mdiForm.MdiParent = this;
                 mdiForm.Show();
@@ -416,7 +454,13 @@ namespace SnakeTail
                 serializer.Serialize(writer, tailConfig, xmlnsEmpty);
             }
 
+            if (String.IsNullOrEmpty(_currenTailConfig))
+                _mruMenu.AddFile(filepath);
+            else if (_currenTailConfig != filepath)
+                _mruMenu.RenameFile(_currenTailConfig, filepath);
+
             _currenTailConfig = filepath;
+
             UpdateTitle();
         }
 
@@ -446,88 +490,92 @@ namespace SnakeTail
             }
         }
 
-        private void LoadSession(string filepath)
+        private bool LoadSession(string filepath)
         {
             TailConfig tailConfig = LoadSessionFile(filepath);
-            if (tailConfig != null)
+            if (tailConfig == null)
+                return false;
+
+            _mruMenu.AddFile(filepath);
+
+            if (!tailConfig.MinimizedToTray)
             {
-                if (!tailConfig.MinimizedToTray)
-                {
-                    Size = tailConfig.WindowSize;
-                    DesktopLocation = tailConfig.WindowPosition;
-                }
-
-                UpdateTitle();
-
-                List<string> eventLogFiles = EventLogForm.GetEventLogFiles();
-
-                Application.DoEvents();
-
-                foreach (TailFileConfig tailFile in tailConfig.TailFiles)
-                {
-                    Form mdiForm = null;
-
-                    int index = eventLogFiles.FindIndex(delegate(string arrItem) { return arrItem.Equals(tailFile.FilePath); });
-                    if (index >= 0)
-                        mdiForm = new EventLogForm();
-                    else
-                        mdiForm = new TailForm();
-
-                    if (mdiForm != null)
-                    {
-                        ITailForm tailForm = mdiForm as ITailForm;
-                        string tailConfigPath = Path.GetDirectoryName(filepath);
-
-                        mdiForm.Text = tailFile.Title;
-                        if (!tailFile.Modeless)
-                        {
-                            mdiForm.MdiParent = this;
-                            mdiForm.ShowInTaskbar = false;
-                            AddMdiChildTab(mdiForm);
-                            if (tailForm != null)
-                                tailForm.LoadConfig(tailFile, tailConfigPath);
-                            if (mdiForm.IsDisposed)
-                                continue;
-                        }
-                        mdiForm.Show();
-
-                        if (tailConfig.SelectedTab == -1 || tailFile.Modeless)
-                        {
-                            if (tailFile.WindowState != FormWindowState.Maximized)
-                            {
-                                mdiForm.DesktopLocation = tailFile.WindowPosition;
-                                mdiForm.Size = tailFile.WindowSize;
-                            }
-                            if (mdiForm.WindowState != tailFile.WindowState)
-                                mdiForm.WindowState = tailFile.WindowState;
-                        }
-
-                        if (tailFile.Modeless)
-                        {
-                           if (tailForm != null)
-                                tailForm.LoadConfig(tailFile, tailConfigPath);
-                        }
-                    }
-                    Application.DoEvents();
-                }
-
-                if (tailConfig.SelectedTab != -1)
-                {
-                    foreach (Form childForm in MdiChildren)
-                        childForm.WindowState = FormWindowState.Minimized;
-
-                    _MDITabControl.SelectedIndex = tailConfig.SelectedTab;
-                    _MDITabControl.Visible = true;
-                    (_MDITabControl.SelectedTab.Tag as Form).WindowState = FormWindowState.Maximized;
-                }
-
-                if (tailConfig.MinimizedToTray)
-                {
-                    _trayIcon.Visible = true;
-                    WindowState = FormWindowState.Minimized;
-                    Visible = false;
-                }
+                Size = tailConfig.WindowSize;
+                DesktopLocation = tailConfig.WindowPosition;
             }
+
+            UpdateTitle();
+
+            List<string> eventLogFiles = EventLogForm.GetEventLogFiles();
+
+            Application.DoEvents();
+
+            foreach (TailFileConfig tailFile in tailConfig.TailFiles)
+            {
+                Form mdiForm = null;
+
+                int index = eventLogFiles.FindIndex(delegate(string arrItem) { return arrItem.Equals(tailFile.FilePath); });
+                if (index >= 0)
+                    mdiForm = new EventLogForm();
+                else
+                    mdiForm = new TailForm();
+
+                if (mdiForm != null)
+                {
+                    ITailForm tailForm = mdiForm as ITailForm;
+                    string tailConfigPath = Path.GetDirectoryName(filepath);
+
+                    mdiForm.Text = tailFile.Title;
+                    if (!tailFile.Modeless)
+                    {
+                        mdiForm.MdiParent = this;
+                        mdiForm.ShowInTaskbar = false;
+                        AddMdiChildTab(mdiForm);
+                        if (tailForm != null)
+                            tailForm.LoadConfig(tailFile, tailConfigPath);
+                        if (mdiForm.IsDisposed)
+                            continue;
+                    }
+                    mdiForm.Show();
+
+                    if (tailConfig.SelectedTab == -1 || tailFile.Modeless)
+                    {
+                        if (tailFile.WindowState != FormWindowState.Maximized)
+                        {
+                            mdiForm.DesktopLocation = tailFile.WindowPosition;
+                            mdiForm.Size = tailFile.WindowSize;
+                        }
+                        if (mdiForm.WindowState != tailFile.WindowState)
+                            mdiForm.WindowState = tailFile.WindowState;
+                    }
+
+                    if (tailFile.Modeless)
+                    {
+                        if (tailForm != null)
+                            tailForm.LoadConfig(tailFile, tailConfigPath);
+                    }
+                }
+                Application.DoEvents();
+            }
+
+            if (tailConfig.SelectedTab != -1)
+            {
+                foreach (Form childForm in MdiChildren)
+                    childForm.WindowState = FormWindowState.Minimized;
+
+                _MDITabControl.SelectedIndex = tailConfig.SelectedTab;
+                _MDITabControl.Visible = true;
+                (_MDITabControl.SelectedTab.Tag as Form).WindowState = FormWindowState.Maximized;
+            }
+
+            if (tailConfig.MinimizedToTray)
+            {
+                _trayIcon.Visible = true;
+                WindowState = FormWindowState.Minimized;
+                Visible = false;
+            }
+
+            return true;
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -707,6 +755,45 @@ namespace SnakeTail
                     _MDITabControl.SelectedIndex = i;
                     break;
                 }
+            }
+        }
+
+        private void clearListToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _mruMenu.RemoveAll();
+        }
+
+        private void saveRecentFilesToRegistryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (saveRecentFilesToRegistryToolStripMenuItem.Checked)
+            {
+                try
+                {
+                    Microsoft.Win32.RegistryKey regKey = Microsoft.Win32.Registry.CurrentUser;
+                    regKey.DeleteSubKey(_mruRegKey, false);
+                    saveRecentFilesToRegistryToolStripMenuItem.Checked = false;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Failed to remove list of recently used files from registry.\n\n" + ex.Message, "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                saveRecentFilesToRegistryToolStripMenuItem.Checked = true;
+            }
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            try
+            {
+                if (saveRecentFilesToRegistryToolStripMenuItem.Checked)
+                    _mruMenu.SaveToRegistry();
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Failed to save list of recently used files to registry.\n\n" + ex.Message, "", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

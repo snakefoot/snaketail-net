@@ -54,6 +54,11 @@ namespace SnakeTail
             this.loadSessionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveSessionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeSessionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.recentFilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.recentFile1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+            this.clearListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.minimizeToTrayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -75,6 +80,7 @@ namespace SnakeTail
             this._trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this._trayIconContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.saveRecentFilesToRegistryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._statusStrip.SuspendLayout();
             this._mainMenu.SuspendLayout();
             this._trayIconContextMenuStrip.SuspendLayout();
@@ -128,6 +134,8 @@ namespace SnakeTail
             this.loadSessionToolStripMenuItem,
             this.saveSessionToolStripMenuItem,
             this.closeSessionToolStripMenuItem,
+            this.toolStripSeparator5,
+            this.recentFilesToolStripMenuItem,
             this.toolStripSeparator4,
             this.minimizeToTrayToolStripMenuItem,
             this.exitToolStripMenuItem});
@@ -169,6 +177,40 @@ namespace SnakeTail
             this.closeSessionToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.closeSessionToolStripMenuItem.Text = "Close Session";
             this.closeSessionToolStripMenuItem.Click += new System.EventHandler(this.closeAllToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(161, 6);
+            // 
+            // recentFilesToolStripMenuItem
+            // 
+            this.recentFilesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.recentFile1ToolStripMenuItem,
+            this.toolStripSeparator6,
+            this.clearListToolStripMenuItem,
+            this.saveRecentFilesToRegistryToolStripMenuItem});
+            this.recentFilesToolStripMenuItem.Name = "recentFilesToolStripMenuItem";
+            this.recentFilesToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.recentFilesToolStripMenuItem.Text = "Recent Files";
+            // 
+            // recentFile1ToolStripMenuItem
+            // 
+            this.recentFile1ToolStripMenuItem.Name = "recentFile1ToolStripMenuItem";
+            this.recentFile1ToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.recentFile1ToolStripMenuItem.Text = "None";
+            // 
+            // toolStripSeparator6
+            // 
+            this.toolStripSeparator6.Name = "toolStripSeparator6";
+            this.toolStripSeparator6.Size = new System.Drawing.Size(219, 6);
+            // 
+            // clearListToolStripMenuItem
+            // 
+            this.clearListToolStripMenuItem.Name = "clearListToolStripMenuItem";
+            this.clearListToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.clearListToolStripMenuItem.Text = "Clear Recent Files";
+            this.clearListToolStripMenuItem.Click += new System.EventHandler(this.clearListToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
@@ -331,6 +373,13 @@ namespace SnakeTail
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(57, 6);
             // 
+            // saveRecentFilesToRegistryToolStripMenuItem
+            // 
+            this.saveRecentFilesToRegistryToolStripMenuItem.Name = "saveRecentFilesToRegistryToolStripMenuItem";
+            this.saveRecentFilesToRegistryToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.saveRecentFilesToRegistryToolStripMenuItem.Text = "Save in Windows Registry";
+            this.saveRecentFilesToRegistryToolStripMenuItem.Click += new System.EventHandler(this.saveRecentFilesToRegistryToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AllowDrop = true;
@@ -344,6 +393,7 @@ namespace SnakeTail
             this.MainMenuStrip = this._mainMenu;
             this.Name = "MainForm";
             this.Text = "SnakeTail";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.MdiChildActivate += new System.EventHandler(this.MainForm_MdiChildActivate);
             this.Shown += new System.EventHandler(this.MainForm_Shown);
             this.SizeChanged += new System.EventHandler(this.MainForm_SizeChanged);
@@ -392,6 +442,12 @@ namespace SnakeTail
         private System.Windows.Forms.ToolStripMenuItem checkForUpdateToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+        private System.Windows.Forms.ToolStripMenuItem recentFilesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem recentFile1ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem clearListToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
+        private System.Windows.Forms.ToolStripMenuItem saveRecentFilesToRegistryToolStripMenuItem;
 
     }
 }
