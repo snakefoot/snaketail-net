@@ -925,20 +925,31 @@ namespace SnakeTail
                     }
                 }
                 else
-                    if (_eventListView.SelectedIndices.Count == 1)
+                if (_eventListView.SelectedIndices.Count == 1)
+                {
+                    foreach (int itemIndex in _eventListView.SelectedIndices)
                     {
-                        foreach (int itemIndex in _eventListView.SelectedIndices)
-                        {
-                            ListViewItem item = _eventListView.Items[itemIndex];
-                            foreach (ColumnHeader columnHeader in _eventListView.Columns)
-                                selection.AppendLine(columnHeader.Text + ": " + item.SubItems[columnHeader.Index].Text);
-                            selection.AppendLine("Message:");
-                            // Fix unix-newlines to environment newlines
-                            selection.Append( LookupEventLogMessage(item).Replace(Environment.NewLine, "\n").Replace("\n", Environment.NewLine));
-                        }
+                        ListViewItem item = _eventListView.Items[itemIndex];
+                        foreach (ColumnHeader columnHeader in _eventListView.Columns)
+                            selection.AppendLine(columnHeader.Text + ": " + item.SubItems[columnHeader.Index].Text);
+                        selection.AppendLine("Message:");
+                        // Fix unix-newlines to environment newlines
+                        selection.Append( LookupEventLogMessage(item).Replace(Environment.NewLine, "\n").Replace("\n", Environment.NewLine));
                     }
+                }
+                else
+                if (_eventListView.FocusedItem != null)
+                {
+                    ListViewItem item = _eventListView.FocusedItem;
+                    foreach (ColumnHeader columnHeader in _eventListView.Columns)
+                        selection.AppendLine(columnHeader.Text + ": " + item.SubItems[columnHeader.Index].Text);
+                    selection.AppendLine("Message:");
+                    // Fix unix-newlines to environment newlines
+                    selection.Append(LookupEventLogMessage(item).Replace(Environment.NewLine, "\n").Replace("\n", Environment.NewLine));
+                }
             }
-            Clipboard.SetText(selection.ToString());
+            if (selection.Length > 0)
+                Clipboard.SetText(selection.ToString());
         }
 
         private void _configTextToolStripMenuItem_Click(object sender, EventArgs e)
