@@ -529,10 +529,13 @@ namespace SnakeTail
                                 lastMatchFound = matchFound;
                                 startIndex = matchFound + 1;
                                 _tailListView.SelectedIndices.Clear();
-                                _logFileCache = searchFileCache;    // Store the cache of the last match
-                                searchFileCache = new LogFileCache(_logFileCache.Items.Count);
-                                searchFileCache.Items = _logFileCache.Items.GetRange(0, _logFileCache.Items.Count);
-                                searchFileCache.FirstIndex = _logFileCache.FirstIndex;
+                                if (searchFileCache != null)
+                                {
+                                    _logFileCache = searchFileCache;    // Store the cache of the last match
+                                    searchFileCache = new LogFileCache(_logFileCache.Items.Count);
+                                    searchFileCache.Items = _logFileCache.Items.GetRange(0, _logFileCache.Items.Count);
+                                    searchFileCache.FirstIndex = _logFileCache.FirstIndex;
+                                }
                             }
                         } while (matchFound != -1);
 
