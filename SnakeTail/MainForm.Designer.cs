@@ -59,6 +59,7 @@ namespace SnakeTail
             this.recentFile1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.clearListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveRecentFilesToRegistryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.minimizeToTrayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -80,7 +81,6 @@ namespace SnakeTail
             this._trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this._trayIconContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.saveRecentFilesToRegistryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._statusStrip.SuspendLayout();
             this._mainMenu.SuspendLayout();
             this._trayIconContextMenuStrip.SuspendLayout();
@@ -197,20 +197,27 @@ namespace SnakeTail
             // recentFile1ToolStripMenuItem
             // 
             this.recentFile1ToolStripMenuItem.Name = "recentFile1ToolStripMenuItem";
-            this.recentFile1ToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.recentFile1ToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
             this.recentFile1ToolStripMenuItem.Text = "None";
             // 
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(219, 6);
+            this.toolStripSeparator6.Size = new System.Drawing.Size(205, 6);
             // 
             // clearListToolStripMenuItem
             // 
             this.clearListToolStripMenuItem.Name = "clearListToolStripMenuItem";
-            this.clearListToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.clearListToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
             this.clearListToolStripMenuItem.Text = "Clear Recent Files";
             this.clearListToolStripMenuItem.Click += new System.EventHandler(this.clearListToolStripMenuItem_Click);
+            // 
+            // saveRecentFilesToRegistryToolStripMenuItem
+            // 
+            this.saveRecentFilesToRegistryToolStripMenuItem.Name = "saveRecentFilesToRegistryToolStripMenuItem";
+            this.saveRecentFilesToRegistryToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.saveRecentFilesToRegistryToolStripMenuItem.Text = "Save in Windows Registry";
+            this.saveRecentFilesToRegistryToolStripMenuItem.Click += new System.EventHandler(this.saveRecentFilesToRegistryToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
@@ -372,13 +379,6 @@ namespace SnakeTail
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(57, 6);
-            // 
-            // saveRecentFilesToRegistryToolStripMenuItem
-            // 
-            this.saveRecentFilesToRegistryToolStripMenuItem.Name = "saveRecentFilesToRegistryToolStripMenuItem";
-            this.saveRecentFilesToRegistryToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
-            this.saveRecentFilesToRegistryToolStripMenuItem.Text = "Save in Windows Registry";
-            this.saveRecentFilesToRegistryToolStripMenuItem.Click += new System.EventHandler(this.saveRecentFilesToRegistryToolStripMenuItem_Click);
             // 
             // MainForm
             // 
