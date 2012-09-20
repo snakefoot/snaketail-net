@@ -1422,18 +1422,13 @@ namespace SnakeTail
 
             set
             {
-                // If the new size is smaller than the Index of TopItem, we need to make
-                // sure the new TopItem is set to something smaller.
-                if (VirtualMode &&
-                    View == View.Details &&
-                    value > 0 &&
-                    TopItem != null &&
-                    TopItem.Index > value - 1)
+                try
                 {
-                    TopItem = Items[value - 1];
+                    base.VirtualListSize = value;
                 }
-
-                base.VirtualListSize = value;
+                catch (ArgumentOutOfRangeException)
+                {
+                }
             }
         }
     }
