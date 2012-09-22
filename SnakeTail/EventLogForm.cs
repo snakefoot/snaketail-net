@@ -539,8 +539,17 @@ namespace SnakeTail
                 // Just refresh the list
                 _eventListView.VirtualListSize = _eventLog.Entries.Count;
                 _eventListView.Invalidate();
-                if (listAtBottom)
-                    _eventListView.EnsureVisible(_eventListView.VirtualListSize - 1);
+                if (_eventLog.Entries.Count > 0)
+                {
+                    // React only if actual change was detected
+                    EventLogEntry entry = _eventLog.Entries[_eventLog.Entries.Count - 1];
+                    if (_lastEventLogEntry != entry.Index)
+                    {
+                        _lastEventLogEntry = entry.Index;
+                        if (listAtBottom)
+                            _eventListView.EnsureVisible(_eventListView.VirtualListSize - 1);
+                    }
+                }
                 _eventListView.Update();
             }
 
@@ -768,6 +777,7 @@ namespace SnakeTail
                 _eventListView.VirtualListSize = _eventLog.Entries.Count;
                 if (_eventListView.VirtualListSize > 0)
                 {
+                    _lastEventLogEntry = _eventLog.Entries[_eventLog.Entries.Count-1].Index;
                     _eventListView.SelectedIndices.Clear();
                     _eventListView.SelectedIndices.Add(_eventListView.VirtualListSize - 1);
                     _eventListView.EnsureVisible(_eventListView.VirtualListSize - 1);
