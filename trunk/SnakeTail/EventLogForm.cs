@@ -1428,6 +1428,8 @@ namespace SnakeTail
                 }
                 catch (ArgumentOutOfRangeException)
                 {
+                    // If current TopItem.Index is larger than the new value, then exception is thrown
+                    base.Invalidate();
                 }
             }
         }
