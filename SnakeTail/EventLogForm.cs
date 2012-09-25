@@ -1426,6 +1426,8 @@ namespace SnakeTail
         }
 
         // http://blogs.msdn.com/b/cumgranosalis/archive/2006/03/18/listviewvirtualmodebugs.aspx
+        [DefaultValue(0)]
+        [RefreshProperties(RefreshProperties.Repaint)]
         public new int VirtualListSize
         {
             get { return base.VirtualListSize; }
@@ -1440,6 +1442,7 @@ namespace SnakeTail
                 {
                     // If current TopItem.Index is larger than the new value, then exception is thrown
                     base.Invalidate();
+                    base.Update();
                 }
             }
         }
