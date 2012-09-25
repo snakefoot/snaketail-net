@@ -711,6 +711,9 @@ namespace SnakeTail
 
         void worker_DoWork(object param)
         {
+            // Discovered a strange problem where the Windows Explorer would lock, eventhough I deferred the actual DragDrop operation using BeginInvoke().
+            // The solution was to create a thread, that slept for 100 ms and then invoked the wanted method. If I removed the sleep from the new thread,
+            // then Windows Explorer would lock again. Very strange indeed. 
             System.Threading.Thread.Sleep(100);
             this.BeginInvoke(new Action<string[]>(OpenFileSelection), new object[] { param });
         }
