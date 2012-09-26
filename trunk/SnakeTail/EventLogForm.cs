@@ -542,8 +542,9 @@ namespace SnakeTail
                 if (_eventLog.Entries.Count > 0)
                 {
                     // React only if actual change was detected
+                    //  - If returned EventLogEntry.Index == 0, then _eventLog-object i broken, and we should just refresh
                     EventLogEntry entry = _eventLog.Entries[_eventLog.Entries.Count - 1];
-                    if (_lastEventLogEntry != entry.Index)
+                    if (entry.Index == 0 || _lastEventLogEntry != entry.Index)
                     {
                         _lastEventLogEntry = entry.Index;
                         if (listAtBottom)
