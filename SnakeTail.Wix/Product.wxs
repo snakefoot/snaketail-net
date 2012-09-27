@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<?define ProductName="$(fileVersion.ProductName($(var.SnakeTail.TargetPath)))" ?>
+	<?define CompanyName="$(fileVersion.CompanyName($(var.SnakeTail.TargetPath)))" ?>
+	<?define ProductVersion="$(fileVersion.ProductVersion($(var.SnakeTail.TargetPath)))" ?>
+
+<?if $(var.Platform) = x64 ?>
+	<?define ProductDisplayName = "$(var.ProductName) 64-bit" ?>
+	<?define ProductUpgradeCode = "36F9B700-080E-11E2-B6BB-29996188709B" ?>
+	<?define Win64 = "yes" ?>
+	<?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+<?else ?>
+	<?define ProductDisplayName = "$(var.ProductName)" ?>
+	<?define ProductUpgradeCode = "3ADEC482-080E-11E2-9F18-2B996188709B" ?>
+	<?define Win64 = "no" ?>
+	<?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
+<?endif ?>
+
+	<Product Id="*" Name="$(var.ProductDisplayName) v$(var.ProductVersion)" Language="1033" Version="$(var.ProductVersion)" Manufacturer="$(var.CompanyName)" UpgradeCode="$(var.ProductUpgradeCode)">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Comments="Windows Installer Package" Description="$(var.ProductDisplayName) v$(var.ProductVersion)" />
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of $(var.ProductDisplayName) is already installed." />
+		<MediaTemplate EmbedCab="yes"/>
+
+		<Feature Id="ProductFeature" Title="$(var.SnakeTail.ProjectName)" Level="1">
+			<ComponentGroupRef Id="ProductComponents" />
+		</Feature>
+
+		<Property Id="ARPHELPLINK">http://snakenest.com/</Property>
+		<Property Id="ARPURLINFOABOUT">http://snakenest.com/</Property>
+		<Property Id="ARPSIZE">200</Property>
+		<Property Id="ARPNOMODIFY">1</Property>
+		<Property Id="ARPPRODUCTICON" Value="$(var.SnakeTail.TargetName).exe" />
+	</Product>
+
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<!-- Program files -->
+			<Directory Id="$(var.PlatformProgramFilesFolder)">
+				<Directory Id="INSTALLFOLDER" Name="$(var.ProductName)" />
+			</Directory>
+			<Directory Id="ProgramMenuFolder">
+			</Directory>
+		</Directory>
+	</Fragment>
+
+	<Fragment>
+		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+			<Component Id="ProductComponent" Win64="$(var.Win64)">
+				<Shortcut Id="ApplicationStartMenuShortcut" Directory="ProgramMenuFolder" Name="$(var.ProductName)" WorkingDirectory="INSTALLFOLDER" Advertise="yes" Icon="$(var.SnakeTail.TargetName).exe" IconIndex="0">
+					<Icon Id="$(var.SnakeTail.TargetName).exe" SourceFile="$(var.SnakeTail.TargetPath)" />
+				</Shortcut>
+				<File Source="$(var.SnakeTail.TargetPath)" />
+				<File Source="$(var.SnakeTail.TargetDir)$(var.SnakeTail.TargetName).pdb" />
+				<File Source="$(var.SnakeTail.TargetPath).config" />
+				<!-- TODO: Insert files, registry keys, and other resources here. -->
+			</Component>
+		</ComponentGroup>
+
+	</Fragment>
+</Wix>
