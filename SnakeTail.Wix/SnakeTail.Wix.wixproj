@@ -33,12 +33,6 @@
     <Compile Include="Product.wxs" />
   </ItemGroup>
   <ItemGroup>
-    <WixExtension Include="WixFileVersionExtension">
-      <HintPath>WixFileVersionExtension.dll</HintPath>
-      <Name>WixFileVersionExtension</Name>
-    </WixExtension>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\SnakeTail\SnakeTail.csproj">
       <Name>SnakeTail</Name>
       <Project>{003baf38-ee59-46ab-a90e-46b51791cdea}</Project>
