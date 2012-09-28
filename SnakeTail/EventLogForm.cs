@@ -562,6 +562,8 @@ namespace SnakeTail
             }
         }
 
+        public delegate void UpdateAction(); 
+
         private void _eventListView_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
             EventLogEntry entry = null;
@@ -581,6 +583,14 @@ namespace SnakeTail
                 if (_eventListView.VirtualListSize > 0)
                     _eventListView.EnsureVisible(_eventListView.VirtualListSize - 1);
             }
+            else
+            if (entry.Index == 0)
+            {
+                // The EventLog object sometimes get "broken" when pruned, and returns invalid entries
+                _eventListView.Invalidate();
+                _eventListView.Invoke(new UpdateAction(_eventListView.Update));
+            }
+
             ListViewItem lvi = CreateListViewItem(entry);
             e.Item = lvi;
         }
