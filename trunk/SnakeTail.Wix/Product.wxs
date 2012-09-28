@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<?define ProductName="$(fileVersion.ProductName($(var.SnakeTail.TargetPath)))" ?>
-	<?define CompanyName="$(fileVersion.CompanyName($(var.SnakeTail.TargetPath)))" ?>
-	<?define ProductVersion="$(fileVersion.ProductVersion($(var.SnakeTail.TargetPath)))" ?>
+	<?define ProductName="$(var.SnakeTail.TargetName)" ?>
+	<?define CompanyName="SnakeNest.com" ?>
+	<?define ProductVersion="!(bind.FileVersion.FileId$(var.SnakeTail.TargetName))" ?>
 
 <?if $(var.Platform) = x64 ?>
 	<?define ProductDisplayName = "$(var.ProductName) 64-bit" ?>
@@ -50,7 +50,7 @@
 				<Shortcut Id="ApplicationStartMenuShortcut" Directory="ProgramMenuFolder" Name="$(var.ProductName)" WorkingDirectory="INSTALLFOLDER" Advertise="yes" Icon="$(var.SnakeTail.TargetName).exe" IconIndex="0">
 					<Icon Id="$(var.SnakeTail.TargetName).exe" SourceFile="$(var.SnakeTail.TargetPath)" />
 				</Shortcut>
-				<File Source="$(var.SnakeTail.TargetPath)" />
+				<File Id="FileId$(var.SnakeTail.TargetName)" Source="$(var.SnakeTail.TargetPath)" />
 				<File Source="$(var.SnakeTail.TargetDir)$(var.SnakeTail.TargetName).pdb" />
 				<File Source="$(var.SnakeTail.TargetPath).config" />
 				<!-- TODO: Insert files, registry keys, and other resources here. -->
