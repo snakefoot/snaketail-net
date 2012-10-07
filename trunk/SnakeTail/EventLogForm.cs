@@ -536,7 +536,12 @@ namespace SnakeTail
             }
             else
             {
-                // Just refresh the list
+                // Just refresh the list (Almost)
+                //  - Need to know the number of items in the list
+                //  - Need to know the number of items added to the list
+                //  - New TopItem.Index = New VirtualListSize - (Old VirtualListSize - Old TopItem.Index) - New Item Count
+                int oldVirtualListSize = _eventListView.VirtualListSize;
+                int oldTopIndex = _eventListView.TopItem.Index;
                 _eventListView.VirtualListSize = _eventLog.Entries.Count;
                 _eventListView.Invalidate();
                 if (_eventLog.Entries.Count > 0)
@@ -544,11 +549,38 @@ namespace SnakeTail
                     // React only if actual change was detected
                     //  - If returned EventLogEntry.Index == 0, then _eventLog-object i broken, and we should just refresh
                     EventLogEntry entry = _eventLog.Entries[_eventLog.Entries.Count - 1];
-                    if (entry.Index == 0 || _lastEventLogEntry != entry.Index)
+                    if (entry.Index == 0)
                     {
-                        _lastEventLogEntry = entry.Index;
+                        // EventLog object is broken
                         if (listAtBottom)
                             _eventListView.EnsureVisible(_eventListView.VirtualListSize - 1);
+                    }
+                    else
+                    if (_lastEventLogEntry != entry.Index)
+                    {
+                        if (listAtBottom)
+                            _eventListView.EnsureVisible(_eventListView.VirtualListSize - 1);
+                        else
+                        if (_lastEventLogEntry != -1)
+                        {
+                            int newItemCount = 0;
+                            for (int i = _eventListView.VirtualListSize-1; i >= 0; --i)
+                            {
+                                if (_eventLog.Entries[i].Index == _lastEventLogEntry)
+                                    break;
+
+                                newItemCount++;
+                            }
+                            int newTopItemIndex = _eventListView.VirtualListSize - (oldVirtualListSize - oldTopIndex) - newItemCount;
+                            _eventListView.TopItem = _eventListView.Items[newTopItemIndex];
+                            if (_eventListView.TopItem.Index != newTopItemIndex)
+                            {
+                                System.Threading.Thread.Sleep(5);  // Some times TopItem fails to set the first time (Little weird)
+                                _eventListView.TopItem = _eventListView.Items[newTopItemIndex];
+                            }
+
+                        }                        
+                        _lastEventLogEntry = entry.Index;
                     }
                 }
                 _eventListView.Update();
