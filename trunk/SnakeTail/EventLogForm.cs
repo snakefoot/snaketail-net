@@ -37,6 +37,7 @@ namespace SnakeTail
         int _lastEventLogFilterEntry = -1;
         string _formTitle;
         bool _displayTabIcon;
+        bool _topItemIndexHack = false;
 
         public EventLogForm()
         {
@@ -188,6 +189,169 @@ namespace SnakeTail
             return false;
         }
 
+        ListViewItem GetNextEntry(int previousRecordId, bool searchForward, int startIndex)
+        {
+            if (searchForward)
+            {
+                if (!_eventListView.VirtualMode)
+                    return _eventListView.Items[startIndex];
+                else
+                {
+                    // Sanity checks
+                    int endIndex = _eventListView.VirtualListSize;
+                    if (endIndex == 0)
+                        return null;
+                    else
+                    if (startIndex < endIndex)
+                    {
+                        ListViewItem lvItem = _eventListView.Items[startIndex];
+                        if ((int)lvItem.Tag != -1 && (int)lvItem.Tag != 0)
+                        {
+                            if (startIndex > 0)
+                            {
+                                ListViewItem prevItem = _eventListView.Items[startIndex - 1];
+                                if ((int)prevItem.Tag == previousRecordId)
+                                    return lvItem;
+                            }
+                        }
+                    }
+                    else
+                    if (startIndex > 0 && startIndex == endIndex)
+                    {
+                        if (previousRecordId == (int)_eventListView.Items[startIndex - 1].Tag)
+                            return null;
+                    }
+
+                    endIndex = _eventListView.VirtualListSize;
+                    if (startIndex * 0.75 > endIndex * 0.5)
+                    {
+                        // Faster to search backwards
+                        ListViewItem lvItem = null;
+                        for (int j = endIndex - 1; j >= 0; --j)
+                        {
+                            ListViewItem prevItem = _eventListView.Items[j];
+                            if ((int)prevItem.Tag == -1 || (int)prevItem.Tag==0)
+                            {
+                                endIndex = _eventListView.VirtualListSize;
+                                j = endIndex - 2;
+                                continue;   // Restart search
+                            }
+
+                            if ((int)prevItem.Tag == previousRecordId)
+                            {
+                                return lvItem;
+                            }
+
+                            lvItem = prevItem;
+                        }
+                    }
+                    else
+                    {
+                        // Search from the beginning
+                        ListViewItem prevItem = null;
+                        for (int j = 0; j < endIndex; ++j)
+                        {
+                            ListViewItem lvItem = _eventListView.Items[j];
+                            if ((int)lvItem.Tag == -1 || (int)lvItem.Tag==0)
+                            {
+                                endIndex = _eventListView.VirtualListSize;
+                                j = -1;
+                                prevItem = null;
+                                continue;   // Restart search
+                            }
+
+                            if (prevItem != null)
+                                return lvItem;
+
+                            if ((int)lvItem.Tag == previousRecordId)
+                            {
+                                prevItem = lvItem;
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (!_eventListView.VirtualMode)
+                    return _eventListView.Items[startIndex];
+                else
+                {
+                    // Sanity checks
+                    int endIndex = _eventListView.VirtualListSize;
+                    if (endIndex == 0)
+                        return null;
+                    else
+                    if (startIndex < endIndex && startIndex >= 0)
+                    {
+                        ListViewItem lvItem = _eventListView.Items[startIndex];
+                        if ((int)lvItem.Tag != -1  && (int)lvItem.Tag!=0)
+                        {
+                            if ( (startIndex + 1) < endIndex)
+                            {
+                                ListViewItem prevItem = _eventListView.Items[startIndex + 1];
+                                if ((int)prevItem.Tag == previousRecordId)
+                                    return lvItem;
+                            }
+                        }
+                    }
+                    else
+                    if (startIndex < 0)
+                        return null;
+
+                    endIndex = _eventListView.VirtualListSize;
+                    if (startIndex * 0.75 > endIndex * 0.5)
+                    {
+                        // Faster to search backwards
+                        ListViewItem prevItem = null;
+                        for (int j = endIndex - 1; j >= 0; --j)
+                        {
+                            ListViewItem lvItem = _eventListView.Items[j];
+                            if ((int)lvItem.Tag == -1 || (int)lvItem.Tag == 0)
+                            {
+                                endIndex = _eventListView.VirtualListSize;
+                                j = endIndex - 2;
+                                prevItem = null;
+                                continue;   // Restart search
+                            }
+
+                            if (prevItem != null)
+                                return lvItem;
+
+                            if ((int)lvItem.Tag == previousRecordId)
+                            {
+                                prevItem = lvItem;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Search from the beginning
+                        ListViewItem lvItem = null;
+                        for (int j = 0; j < endIndex; ++j)
+                        {
+                            ListViewItem prevItem = _eventListView.Items[j];
+                            if ((int)prevItem.Tag == -1 || (int)prevItem.Tag == 0)
+                            {
+                                endIndex = _eventListView.VirtualListSize;
+                                j = -1;
+                                continue;   // Restart search
+                            }
+
+                            if ((int)prevItem.Tag == previousRecordId)
+                            {
+                                return lvItem;
+                            }
+
+                            lvItem = prevItem;
+                        }
+                    }
+                }
+            }
+
+            return null;    // Should never come here
+        }
+
         public bool SearchForText(string searchText, bool matchCase, bool searchForward, bool keywordHighlights)
         {
             int listCount = -1;
@@ -212,8 +376,7 @@ namespace SnakeTail
                     startIndex = _eventListView.SelectedIndices[0];
             }
 
-
-            int matchFound = -1;
+            ListViewItem lvItem = null;
 
             try
             {
@@ -232,63 +395,19 @@ namespace SnakeTail
                             _messageLookup.StartMessageCacheThread(_eventLog, searchForward, (int)_eventListView.Items[startIndex].Tag);
                         }
 
-                        int endIndex = listCount;
-                        for (int i = startIndex; i < endIndex; ++i)
+                        do
                         {
-                            ListViewItem lvItem = _eventListView.Items[i];
-                            if (_eventListView.VirtualMode)
+                            lvItem = GetNextEntry(previousRecordId, searchForward, startIndex);
+                            if (lvItem != null)
                             {
-                                // Sanity checks
-                                bool validItem = true;
-                                if ((int)lvItem.Tag == -1)
-                                    validItem = false;
-                                else
-                                {
-                                    ListViewItem prevItem = _eventListView.Items[i - 1];
-                                    if ((int)prevItem.Tag != previousRecordId)
-                                        validItem = false;
-                                }
+                                if (MatchTextSearch(lvItem, searchText, matchCase))
+                                    break;
 
-                                if (!validItem)
-                                {
-                                    endIndex = _eventListView.VirtualListSize;
-                                    for (int j = 0; j < endIndex; ++j)
-                                    {
-                                        lvItem = _eventListView.Items[j];
-                                        if ((int)lvItem.Tag == -1)
-                                        {
-                                            endIndex = _eventListView.VirtualListSize;
-                                            j = -1;
-                                            continue;   // Restart search
-                                        }
-
-                                        if ((int)lvItem.Tag == previousRecordId)
-                                        {
-                                            i = j;
-                                            break;
-                                        }
-                                    }
-
-                                    if ((int)lvItem.Tag != previousRecordId)
-                                    {
-                                        // Resync failed, restart search
-                                        i = -1;
-                                        previousRecordId = -1;
-                                    }
-                                    continue;
-                                }
-                                else
-                                {
-                                    previousRecordId = (int)lvItem.Tag;
-                                }
-                            }
-
-                            if (MatchTextSearch(lvItem, searchText, matchCase))
-                            {
-                                matchFound = i;
-                                break;
+                                previousRecordId = (int)lvItem.Tag;
+                                startIndex = lvItem.Index + 1;
                             }
                         }
+                        while (lvItem != null);
                     }
                     else
                     {
@@ -300,60 +419,19 @@ namespace SnakeTail
                             _messageLookup.StartMessageCacheThread(_eventLog, searchForward, (int)_eventListView.Items[startIndex].Tag);
                         }
 
-                        for (int i = startIndex; i >= 0; --i)
+                        do
                         {
-                            ListViewItem lvItem = _eventListView.Items[i];
-                            if (_eventListView.VirtualMode)
+                            lvItem = GetNextEntry(previousRecordId, searchForward, startIndex);
+                            if (lvItem != null)
                             {
-                                // Sanity checks
-                                bool validItem = true;
-                                if ((int)lvItem.Tag == -1)
-                                    validItem = false;
-                                else
-                                {
-                                    ListViewItem prevItem = _eventListView.Items[i + 1];
-                                    if ((int)prevItem.Tag != previousRecordId)
-                                        validItem = false;
-                                }
+                                if (MatchTextSearch(lvItem, searchText, matchCase))
+                                    break;
 
-                                if (!validItem)
-                                {
-                                    for (int j = _eventListView.VirtualListSize - 1; j >= 0; --j)
-                                    {
-                                        lvItem = _eventListView.Items[j];
-                                        if ((int)lvItem.Tag == -1)
-                                        {
-                                            j = _eventListView.VirtualListSize;
-                                            continue;   // Restart search
-                                        }
-
-                                        if ((int)lvItem.Tag == previousRecordId)
-                                        {
-                                            i = j;
-                                            break;
-                                        }
-                                    }
-
-                                    if ((int)lvItem.Tag != previousRecordId)
-                                    {
-                                        // Resync failed, restart search
-                                        i = _eventListView.VirtualListSize;
-                                        previousRecordId = -1;
-                                    }
-                                    continue;
-                                }
-                                else
-                                {
-                                    previousRecordId = (int)lvItem.Tag;
-                                }
-                            }
-
-                            if (MatchTextSearch(lvItem, searchText, matchCase))
-                            {
-                                matchFound = i;
-                                break;
+                                previousRecordId = (int)lvItem.Tag;
+                                startIndex = lvItem.Index - 1;
                             }
                         }
+                        while (lvItem != null);
                     }
                 }
             }
@@ -362,12 +440,12 @@ namespace SnakeTail
                 _messageLookup.StopMessageCacheThread();
             }
 
-            if (matchFound >= 0)
+            if (lvItem != null)
             {
                 _eventListView.SelectedIndices.Clear();  // Clear selection before changing cache to avoid cache miss
-                _eventListView.EnsureVisible(matchFound);
-                _eventListView.SelectedIndices.Add(matchFound);   // Set selection after having scrolled to avoid top-index cache miss
-                _eventListView.Items[matchFound].Focused = true;
+                _eventListView.EnsureVisible(lvItem.Index);
+                _eventListView.SelectedIndices.Add(lvItem.Index);   // Set selection after having scrolled to avoid top-index cache miss
+                _eventListView.Items[lvItem.Index].Focused = true;
                 return true;
             }
             return false;
@@ -423,9 +501,6 @@ namespace SnakeTail
                     return true;
             }
 
-            if (_eventListView.TopItem == null)
-                return false;   // There is no bottom
-
             if (_eventListView.VirtualMode)
                 return IsItemVisible(_eventListView.VirtualListSize - 5);
             else
@@ -434,15 +509,25 @@ namespace SnakeTail
 
         private bool IsItemVisible(int index)
         {
-            if (_eventListView.TopItem == null || _eventListView.TopItem.Index > index)
-                return false;
+            try
+            {
+                _topItemIndexHack = true;
+                ListViewItem topItem = _eventListView.TopItem;
+                if (topItem == null || topItem.Index > index)
+                    return false;
 
-            int heightOfFirstItem = _eventListView.TopItem.Bounds.Height;
-            if (heightOfFirstItem == 0)
-                return false;
-            int nVisibleLines = _eventListView.Height / heightOfFirstItem;
-            int lastVisibleIndexInDetailsMode = _eventListView.TopItem.Index + nVisibleLines;
-            return lastVisibleIndexInDetailsMode >= index;
+                int heightOfFirstItem = topItem.Bounds.Height;
+                if (heightOfFirstItem == 0)
+                    return false;
+
+                int nVisibleLines = _eventListView.Height / heightOfFirstItem;
+                int lastVisibleIndexInDetailsMode = topItem.Index + nVisibleLines;
+                return lastVisibleIndexInDetailsMode >= index;
+            }
+            finally
+            {
+                _topItemIndexHack = false;
+            }
         }
 
         string LookupEventLogMessage(ListViewItem listItem)
@@ -536,60 +621,95 @@ namespace SnakeTail
             }
             else
             {
-                // Just refresh the list (Almost)
-                //  - Need to know the number of items in the list
-                //  - Need to know the number of items added to the list
-                //  - New TopItem.Index = New VirtualListSize - (Old VirtualListSize - Old TopItem.Index) - New Item Count
-                int oldVirtualListSize = _eventListView.VirtualListSize;
-                int oldTopIndex = _eventListView.TopItem.Index;
-                if (!listAtBottom)
-                    _eventListView.BeginUpdate();
-                _eventListView.VirtualListSize = _eventLog.Entries.Count;
-                if (!listAtBottom)
-                    _eventListView.EndUpdate();
-                _eventListView.Invalidate();
-                if (_eventLog.Entries.Count > 0)
+                // React only if actual change was detected
+                int newVirtualListSize = _eventLog.Entries.Count;
+                EventLogEntry entry = null;
+                while (entry == null && _eventLog.Entries.Count > 0)
                 {
-                    // React only if actual change was detected
-                    //  - If returned EventLogEntry.Index == 0, then _eventLog-object i broken, and we should just refresh
-                    EventLogEntry entry = _eventLog.Entries[_eventLog.Entries.Count - 1];
-                    if (entry.Index == 0)
+                    try
                     {
-                        // EventLog object is broken
-                        if (listAtBottom)
-                            _eventListView.EnsureVisible(_eventListView.VirtualListSize - 1);
+                        newVirtualListSize = _eventLog.Entries.Count;
+                        entry = _eventLog.Entries[newVirtualListSize-1];
                     }
-                    else
-                    if (_lastEventLogEntry != entry.Index)
+                    catch (Exception ex)
                     {
-                        if (listAtBottom)
-                            _eventListView.EnsureVisible(_eventListView.VirtualListSize - 1);
-                        else
-                        if (_lastEventLogEntry != -1)
-                        {
-                            int newItemCount = 0;
-                            for (int i = _eventListView.VirtualListSize-1; i >= 0; --i)
-                            {
-                                if (_eventLog.Entries[i].Index == _lastEventLogEntry)
-                                    break;
+                        System.Diagnostics.Debug.WriteLine("EventLog Possible Pruned: " + ex.Message);
+                    }
+                }
 
-                                newItemCount++;
+                if (_lastEventLogEntry == entry.Index && _eventListView.VirtualListSize == newVirtualListSize)
+                    return;
+
+                // Just refresh if we are at the bottom
+                if (listAtBottom)
+                {
+                    _eventListView.BeginUpdate();
+                    _eventListView.VirtualListSize = _eventLog.Entries.Count;
+                    _eventListView.EnsureVisible(_eventListView.VirtualListSize - 1);
+                    _eventListView.EndUpdate();
+                    _eventListView.Invalidate();
+                    return;
+                }
+              
+                try
+                {
+                    // List count has changed, need to re-position TopItem
+                    _eventListView.BeginUpdate();   // Avoid redraw until we have set TopItem.Index
+                    int oldVirtualListSize = _eventListView.VirtualListSize;
+                    int oldTopIndex = GetTopItemIndex();
+                    if (_eventLog.Entries.Count > 0)
+                    {
+                        // If returned EventLogEntry.Index == 0, then _eventLog-object is broken, and we should just refresh
+                        if (entry.Index == 0)
+                        {
+                            // EventLog object is broken
+                            _eventListView.Invoke(new UpdateAction(_eventListView.Update));
+                        }
+                        else
+                        if (_lastEventLogEntry != entry.Index)
+                        {
+                            _eventListView.VirtualListSize = newVirtualListSize;
+
+                            int newItemCount = 1; // Number of elements added (at least one)
+                            if (_lastEventLogEntry != -1)
+                            {
+                                ListViewItem lvItem = null;
+                                int prevRecordId = entry.Index;
+                                int startIndex = _eventListView.VirtualListSize - 2;
+                                do
+                                {
+                                    lvItem = GetNextEntry(prevRecordId, false, startIndex);
+                                    if (lvItem != null)
+                                    {
+                                        if (_lastEventLogEntry == (int)lvItem.Tag)
+                                            break;
+
+                                        newItemCount++;
+                                        prevRecordId = (int)lvItem.Tag;
+                                        startIndex = lvItem.Index - 1;
+                                    }
+                                } while (lvItem != null);
                             }
+                            _lastEventLogEntry = entry.Index;
+
                             int newTopItemIndex = _eventListView.VirtualListSize - (oldVirtualListSize - oldTopIndex) - newItemCount;
                             if (newTopItemIndex < 0)
                                 newTopItemIndex = 0;
                             _eventListView.TopItem = _eventListView.Items[newTopItemIndex];
-                            if (_eventListView.TopItem.Index != newTopItemIndex)
+                            if (GetTopItemIndex() != newTopItemIndex)
                             {
                                 System.Threading.Thread.Sleep(5);  // Some times TopItem fails to set the first time (Little weird)
                                 _eventListView.TopItem = _eventListView.Items[newTopItemIndex];
                             }
-
-                        }                        
-                        _lastEventLogEntry = entry.Index;
+                        }
                     }
                 }
-                _eventListView.Update();
+                finally
+                {
+                    _eventListView.EndUpdate();
+                    _eventListView.Invalidate();
+                    //_eventListView.Update();
+                }
             }
 
             if (_displayTabIcon)
@@ -600,10 +720,32 @@ namespace SnakeTail
             }
         }
 
+        private int GetTopItemIndex()
+        {
+            try
+            {
+                _topItemIndexHack = true;
+                if (_eventListView.TopItem != null)
+                    return _eventListView.TopItem.Index;
+                else
+                    return -1;
+            }
+            finally
+            {
+                _topItemIndexHack = false;
+            }
+        }
+
         public delegate void UpdateAction(); 
 
         private void _eventListView_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
+            if (_topItemIndexHack)
+            {
+                e.Item = new ListViewItem();
+                return;
+            }
+
             EventLogEntry entry = null;
             try
             {
@@ -616,10 +758,31 @@ namespace SnakeTail
             if (entry == null)
             {
                 // The EventLog is pruned from time to time, meaning suddenly items will disappear
+                bool listAtBottom = ListAtBottom();
+                if (!listAtBottom)
+                    _eventListView.BeginUpdate();
+                int oldVirtualListSize = _eventListView.VirtualListSize;
+                int oldTopItemIndex = GetTopItemIndex();
                 _eventListView.VirtualListSize = _eventLog.Entries.Count;
+                if (listAtBottom)
+                {
+                    if (_eventListView.VirtualListSize > 0)
+                        _eventListView.EnsureVisible(_eventListView.VirtualListSize - 1);
+                }
+                else
+                {
+                    int newTopItemIndex = oldTopItemIndex - (oldVirtualListSize - _eventListView.VirtualListSize);
+                    _eventListView.TopItem = _eventListView.Items[newTopItemIndex];
+                    if (GetTopItemIndex() != newTopItemIndex)
+                    {
+                        System.Threading.Thread.Sleep(5);
+                        _eventListView.TopItem = _eventListView.Items[newTopItemIndex];
+                    }
+                }
+                if (!listAtBottom)
+                    _eventListView.EndUpdate();
                 _eventListView.Invalidate();
-                if (_eventListView.VirtualListSize > 0)
-                    _eventListView.EnsureVisible(_eventListView.VirtualListSize - 1);
+                _eventListView.Invoke(new UpdateAction(_eventListView.Update));
             }
             else
             if (entry.Index == 0)
@@ -1272,6 +1435,9 @@ namespace SnakeTail
 
         private string ExtractMessage(object eventRecordObj)
         {
+            if (eventRecordObj == null)
+                return null;
+
             object eventProperties = _eventLogRecordType.InvokeMember("Properties", System.Reflection.BindingFlags.GetProperty, null, eventRecordObj, null);
             System.Collections.IEnumerable eventPropertiesList = eventProperties as System.Collections.IEnumerable;
 
