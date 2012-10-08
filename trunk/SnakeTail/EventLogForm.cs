@@ -641,13 +641,11 @@ namespace SnakeTail
                     return;
 
                 // Just refresh if we are at the bottom
-                if (listAtBottom)
+                if (listAtBottom || newVirtualListSize==0)
                 {
-                    _eventListView.BeginUpdate();
-                    _eventListView.VirtualListSize = _eventLog.Entries.Count;
-                    _eventListView.EnsureVisible(_eventListView.VirtualListSize - 1);
-                    _eventListView.EndUpdate();
-                    _eventListView.Invalidate();
+                    ListViewUtil.SetVirtualListSizeWithoutRefresh(_eventListView, _eventLog.Entries.Count);
+                    if (_eventListView.VirtualListSize > 0)
+                        _eventListView.EnsureVisible(_eventListView.VirtualListSize - 1);
                     return;
                 }
               
@@ -668,7 +666,7 @@ namespace SnakeTail
                         else
                         if (_lastEventLogEntry != entry.Index)
                         {
-                            _eventListView.VirtualListSize = newVirtualListSize;
+							ListViewUtil.SetVirtualListSizeWithoutRefresh(_eventListView, newVirtualListSize);
 
                             int newItemCount = 1; // Number of elements added (at least one)
                             if (_lastEventLogEntry != -1)
