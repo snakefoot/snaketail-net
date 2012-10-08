@@ -808,20 +808,21 @@ namespace SnakeTail
             if (_tailListView.VirtualListSize <= 5)
                 return true;
 
-            if (_tailListView.TopItem == null)
-                return false;   // There is no bottom
-
             return IsItemVisible(_tailListView.VirtualListSize - 5);
         }
 
         private bool IsItemVisible(int index)
         {
-            if (_tailListView.TopItem == null || _tailListView.TopItem.Index > index)
+            ListViewItem topItem = _tailListView.TopItem;
+            if (topItem == null || topItem.Index > index)
                 return false;
 
-            int heightOfFirstItem = _tailListView.TopItem.Bounds.Height;
+            int heightOfFirstItem = topItem.Bounds.Height;
+            if (heightOfFirstItem == 0)
+                return false;
+
             int nVisibleLines = _tailListView.Height / heightOfFirstItem;
-            int lastVisibleIndexInDetailsMode = _tailListView.TopItem.Index + nVisibleLines;
+            int lastVisibleIndexInDetailsMode = topItem.Index + nVisibleLines;
             return lastVisibleIndexInDetailsMode >= index;
         }
 
