@@ -542,7 +542,11 @@ namespace SnakeTail
                 //  - New TopItem.Index = New VirtualListSize - (Old VirtualListSize - Old TopItem.Index) - New Item Count
                 int oldVirtualListSize = _eventListView.VirtualListSize;
                 int oldTopIndex = _eventListView.TopItem.Index;
+                if (!listAtBottom)
+                    _eventListView.BeginUpdate();
                 _eventListView.VirtualListSize = _eventLog.Entries.Count;
+                if (!listAtBottom)
+                    _eventListView.EndUpdate();
                 _eventListView.Invalidate();
                 if (_eventLog.Entries.Count > 0)
                 {
