@@ -82,6 +82,7 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="ListViewUtil.cs" />
     <Compile Include="MruStripMenu.cs" />
     <Compile Include="StopwatchProfiler.cs" />
     <Compile Include="CPUMeter.cs" />
