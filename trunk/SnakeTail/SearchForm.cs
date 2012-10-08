@@ -117,12 +117,12 @@ namespace SnakeTail
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
         }
 
-        public static IntPtr HWND_TOP = (IntPtr)0;
-        public const int SWP_NOACTIVATE = 0x0010;
-        public const int SWP_NOSIZE = 0x0001;
-        public const int SWP_NOMOVE = 0x0002;
+        static IntPtr HWND_TOP = (IntPtr)0;
+        const int SWP_NOACTIVATE = 0x0010;
+        const int SWP_NOSIZE = 0x0001;
+        const int SWP_NOMOVE = 0x0002;
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern int SetWindowPos(IntPtr hWnd,
+        static extern int SetWindowPos(IntPtr hWnd,
           IntPtr hWndInsertAfter,
           int x,
           int y,
