@@ -572,6 +572,8 @@ namespace SnakeTail
                                 newItemCount++;
                             }
                             int newTopItemIndex = _eventListView.VirtualListSize - (oldVirtualListSize - oldTopIndex) - newItemCount;
+                            if (newTopItemIndex < 0)
+                                newTopItemIndex = 0;
                             _eventListView.TopItem = _eventListView.Items[newTopItemIndex];
                             if (_eventListView.TopItem.Index != newTopItemIndex)
                             {
@@ -919,6 +921,8 @@ namespace SnakeTail
                 if (_eventListView.Items.Count - listCount > 0)
                 {
                     int newTopItemIndex = topItemIndex + _eventListView.Items.Count - listCount;
+                    if (newTopItemIndex < 0)
+                        newTopItemIndex = 0;
                     _eventListView.TopItem = _eventListView.Items[newTopItemIndex];
                     if (_eventListView.TopItem.Index != newTopItemIndex)
                     {
