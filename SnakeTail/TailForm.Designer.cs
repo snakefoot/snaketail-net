@@ -33,6 +33,19 @@ namespace SnakeTail
                 components.Dispose();
             }
             base.Dispose(disposing);
+            // base.Dispose() will close the window and cause resizing, must wait with stream dispose
+            if (disposing && (_logFileStream != null))
+            {
+                _logFileStream.Dispose();
+            }
+            if (disposing && (_logTailStream != null))
+            {
+                _logTailStream.Dispose();
+            }
+            if (disposing && (_taskMonitor != null))
+            {
+                _taskMonitor.Dispose();
+            }
         }
 
         #region Windows Form Designer generated code

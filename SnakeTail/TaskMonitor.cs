@@ -23,7 +23,7 @@ using System.Text;
 
 namespace SnakeTail
 {
-    class TaskMonitor
+    class TaskMonitor : IDisposable
     {
         public string ServiceName { get; set; }
         public System.ServiceProcess.ServiceController ServiceController { get { return _serviceController; } }
@@ -31,6 +31,14 @@ namespace SnakeTail
         System.ServiceProcess.ServiceController _serviceController;
         System.Diagnostics.Process _process;
         CPUMeter _cpuMeter;
+
+        public void Dispose()
+        {
+            if (_serviceController != null)
+                _serviceController.Dispose();
+            if (_cpuMeter != null)
+                _cpuMeter.Dispose();
+        }
 
         private uint GetProcessIDByServiceName(string serviceName)
         {

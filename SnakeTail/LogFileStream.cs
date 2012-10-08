@@ -20,7 +20,7 @@ using System.Text;
 
 namespace SnakeTail
 {
-    class LogFileStream
+    class LogFileStream : IDisposable
     {
         string _filePath = "";
         string _filePathAbsolute = "";
@@ -140,6 +140,14 @@ namespace SnakeTail
                 return lastestFile.FullName;
             else
                 return null;
+        }
+
+        public void Dispose()
+        {
+            if (_fileReader != null)
+                _fileReader.Dispose();
+            if (_fileStream != null)
+                _fileStream.Dispose();
         }
 
         bool LoadFile(string filepath, Encoding fileEncoding, bool fileCheckPattern)
