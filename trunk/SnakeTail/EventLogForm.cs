@@ -661,7 +661,9 @@ namespace SnakeTail
                     // List count has changed, need to re-position TopItem
                     _eventListView.BeginUpdate();   // Avoid redraw until we have set TopItem.Index
                     int oldVirtualListSize = _eventListView.VirtualListSize;
-                    int oldTopIndex = GetTopItemIndex();
+                    int oldTopItemIndex = GetTopItemIndex();
+                    int oldFocusedItemIndex = GetFocusedItemIndex();
+                    int oldSelectedItemIndex = (_eventListView.SelectedIndices.Count == 1 && _eventListView.SelectedIndices[0] == oldFocusedItemIndex) ? oldFocusedItemIndex : -1;
 
 					ListViewUtil.SetVirtualListSizeWithoutRefresh(_eventListView, newVirtualListSize);
 
@@ -687,7 +689,7 @@ namespace SnakeTail
                     }
                     _lastEventLogEntry = entry.Index;
 
-                    int newTopItemIndex = _eventListView.VirtualListSize - (oldVirtualListSize - oldTopIndex) - newItemCount;
+                    int newTopItemIndex = _eventListView.VirtualListSize - (oldVirtualListSize - oldTopItemIndex) - newItemCount;
                     if (newTopItemIndex < 0)
                         newTopItemIndex = 0;
                     _eventListView.TopItem = _eventListView.Items[newTopItemIndex];
@@ -695,6 +697,21 @@ namespace SnakeTail
                     {
                         System.Threading.Thread.Sleep(5);  // Some times TopItem fails to set the first time (Little weird)
                         _eventListView.TopItem = _eventListView.Items[newTopItemIndex];
+                    }
+                    if (oldFocusedItemIndex != -1)
+                    {
+                        int newFocusedItemIndex = _eventListView.VirtualListSize - (oldVirtualListSize - oldFocusedItemIndex) - newItemCount;
+                        if (newFocusedItemIndex != oldFocusedItemIndex)
+                            _eventListView.FocusedItem = _eventListView.Items[newFocusedItemIndex];
+                    }
+                    if (oldSelectedItemIndex != -1)
+                    {
+                        int newSelectedItemIndex = _eventListView.VirtualListSize - (oldVirtualListSize - oldSelectedItemIndex) - newItemCount;
+                        if (oldSelectedItemIndex != newSelectedItemIndex)
+                        {
+                            _eventListView.SelectedIndices.Clear();
+                            _eventListView.SelectedIndices.Add(newSelectedItemIndex);
+                        }
                     }
                 }
                 finally
@@ -710,6 +727,22 @@ namespace SnakeTail
                 TabPage parentTab = this.Tag as TabPage;
                 if (parentTab != null && parentTab.Parent != null && parentTab.Parent.Visible && !parentTab.Visible)
                     parentTab.ImageIndex = 0;
+            }
+        }
+
+        private int GetFocusedItemIndex()
+        {
+            try
+            {
+                _topItemIndexHack = true;
+                if (_eventListView.FocusedItem != null)
+                    return _eventListView.FocusedItem.Index;
+                else
+                    return -1;
+            }
+            finally
+            {
+                _topItemIndexHack = false;
             }
         }
 
@@ -756,6 +789,8 @@ namespace SnakeTail
                     _eventListView.BeginUpdate();
                 int oldVirtualListSize = _eventListView.VirtualListSize;
                 int oldTopItemIndex = GetTopItemIndex();
+                int oldFocusedItemIndex = GetFocusedItemIndex();
+                int oldSelectedItemIndex = (_eventListView.SelectedIndices.Count == 1 && _eventListView.SelectedIndices[0] == oldFocusedItemIndex) ? oldFocusedItemIndex : -1;
                 _eventListView.VirtualListSize = _eventLog.Entries.Count;
                 if (listAtBottom)
                 {
@@ -770,6 +805,21 @@ namespace SnakeTail
                     {
                         System.Threading.Thread.Sleep(5);
                         _eventListView.TopItem = _eventListView.Items[newTopItemIndex];
+                    }
+                    if (oldFocusedItemIndex != -1)
+                    {
+                        int newFocusedItemIndex = oldFocusedItemIndex - (oldVirtualListSize - _eventListView.VirtualListSize);
+                        if (newFocusedItemIndex != oldFocusedItemIndex)
+                            _eventListView.FocusedItem = _eventListView.Items[newFocusedItemIndex];
+                    }
+                    if (oldSelectedItemIndex != -1)
+                    {
+                        int newSelectedItemIndex = oldSelectedItemIndex - (oldVirtualListSize - _eventListView.VirtualListSize);
+                        if (newSelectedItemIndex != oldSelectedItemIndex)
+                        {
+                            _eventListView.SelectedIndices.Clear();
+                            _eventListView.SelectedIndices.Add(newSelectedItemIndex);
+                        }
                     }
                 }
                 if (!listAtBottom)
