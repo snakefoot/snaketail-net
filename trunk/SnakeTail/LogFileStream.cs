@@ -211,23 +211,51 @@ namespace SnakeTail
                 _lastFileCheckError = ex.Message;
                 return false;
             }
+
             _fileReader = new StreamReader(_fileStream, fileEncoding, true, 65536);
+
+            try
+            {
+                if (!_fileReader.EndOfStream)
+                    _lastFileCheckError = "";
+            }
+            catch (System.IO.IOException ex)
+            {
+                _fileStream.Dispose();
+                _fileStream = null;
+                _fileReader.Dispose();
+                _fileReader = null;
+                _lastFileCheckError = ex.Message;
+                return false;
+            }
+
             _lastLineNumber = 0;
             return true;
         }
 
         public bool CloseToEnd(int lineCount)
         {
-            if (_fileReader == null)
-                return true;
+            try
+            {
+                if (_fileReader == null)
+                    return true;
 
-            if (_fileReader.EndOfStream)
-                return true;
+                if (_fileReader.EndOfStream)
+                    return true;
 
-            if (_fileStream.Length <= _fileStream.Position + lineCount * 80)
-                return true;
-            else
-                return false;
+                if (_fileStream.Length <= _fileStream.Position + lineCount * 80)
+                    return true;
+                else
+                    return false;
+            }
+            catch (System.IO.IOException)
+            {
+                _fileStream.Dispose();
+                _fileStream = null;
+                _fileReader.Dispose();
+                _fileReader = null;
+                return true;    // File is non-existing (empty)
+            }
         }
 
         public string ReadLine(int lineNumber)
