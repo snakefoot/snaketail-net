@@ -155,15 +155,15 @@ namespace SnakeTail
             _lastFileCheckError = "";
             _lastLineNumber = 0;
 
-            if (_fileStream != null)
-            {
-                _fileStream.Dispose();
-                _fileStream = null;
-            }
             if (_fileReader != null)
             {
                 _fileReader.Dispose();
                 _fileReader = null;
+            } 
+            if (_fileStream != null)
+            {
+                _fileStream.Dispose();
+                _fileStream = null;
             }
 
             if (String.IsNullOrEmpty(filepath))
@@ -221,10 +221,10 @@ namespace SnakeTail
             }
             catch (System.IO.IOException ex)
             {
-                _fileStream.Dispose();
-                _fileStream = null;
                 _fileReader.Dispose();
                 _fileReader = null;
+                _fileStream.Dispose();
+                _fileStream = null;
                 _lastFileCheckError = ex.Message;
                 return false;
             }
@@ -250,10 +250,10 @@ namespace SnakeTail
             }
             catch (System.IO.IOException)
             {
-                _fileStream.Dispose();
-                _fileStream = null;
                 _fileReader.Dispose();
                 _fileReader = null;
+                _fileStream.Dispose();
+                _fileStream = null;
                 return true;    // File is non-existing (empty)
             }
         }
