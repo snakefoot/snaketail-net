@@ -634,11 +634,26 @@ namespace SnakeTail
                     catch (Exception ex)
                     {
                         System.Diagnostics.Debug.WriteLine("EventLog Possible Pruned: " + ex.Message);
+                        System.Threading.Thread.Sleep(5);	// No need to kick a dying man...too hard
                     }
                 }
 
-                if (_lastEventLogEntry == entry.Index && _eventListView.VirtualListSize == newVirtualListSize)
+                if (entry == null && _eventLog.Entries.Count==0)
+                {
+                    _eventListView.VirtualListSize = 0;
                     return;
+                }
+
+                if (_lastEventLogEntry == entry.Index && _eventListView.VirtualListSize == newVirtualListSize)
+                    return; // No change detected
+
+                // If returned EventLogEntry.Index == 0, then _eventLog-object is broken, and we should just refresh
+                if (entry.Index == 0)
+                {
+                    _eventListView.Invoke(new UpdateAction(_eventListView.Update));
+					this.Invoke(new EntryWrittenEventHandler(_eventLog_EntryWritten), new object[] { sender, null });
+                    return;
+                }
 
                 // Just refresh if we are at the bottom
                 if (listAtBottom || newVirtualListSize<=0)
@@ -646,13 +661,7 @@ namespace SnakeTail
                     ListViewUtil.SetVirtualListSizeWithoutRefresh(_eventListView, _eventLog.Entries.Count);
                     if (_eventListView.VirtualListSize > 0)
                         _eventListView.EnsureVisible(_eventListView.VirtualListSize - 1);
-                    return;
-                }
-
-                // If returned EventLogEntry.Index == 0, then _eventLog-object is broken, and we should just refresh
-                if (entry.Index == 0)
-                {
-                    _eventListView.Invoke(new UpdateAction(_eventListView.Update));
+                    _lastEventLogEntry = entry.Index;
                     return;
                 }
               
@@ -667,9 +676,11 @@ namespace SnakeTail
 
 					ListViewUtil.SetVirtualListSizeWithoutRefresh(_eventListView, newVirtualListSize);
 
-                    int newItemCount = 1; // Number of elements added (at least one)
-                    if (_lastEventLogEntry != -1)
+                    int newItemCount = 0;
+                    if (_lastEventLogEntry != -1 && _lastEventLogEntry != entry.Index)
                     {
+                        newItemCount = 1;   // Atleast 1 new element
+
                         ListViewItem lvItem = null;
                         int prevRecordId = entry.Index;
                         int startIndex = _eventListView.VirtualListSize - 2;
@@ -785,47 +796,16 @@ namespace SnakeTail
             {
                 // The EventLog is pruned from time to time, meaning suddenly items will disappear
                 bool listAtBottom = ListAtBottom();
-                if (!listAtBottom)
-                    _eventListView.BeginUpdate();
-                int oldVirtualListSize = _eventListView.VirtualListSize;
-                int oldTopItemIndex = GetTopItemIndex();
-                int oldFocusedItemIndex = GetFocusedItemIndex();
-                int oldSelectedItemIndex = (_eventListView.SelectedIndices.Count == 1 && _eventListView.SelectedIndices[0] == oldFocusedItemIndex) ? oldFocusedItemIndex : -1;
-                _eventListView.VirtualListSize = _eventLog.Entries.Count;
                 if (listAtBottom)
                 {
+                    ListViewUtil.SetVirtualListSizeWithoutRefresh(_eventListView, _eventLog.Entries.Count);
                     if (_eventListView.VirtualListSize > 0)
                         _eventListView.EnsureVisible(_eventListView.VirtualListSize - 1);
                 }
                 else
                 {
-                    int newTopItemIndex = oldTopItemIndex - (oldVirtualListSize - _eventListView.VirtualListSize);
-                    _eventListView.TopItem = _eventListView.Items[newTopItemIndex];
-                    if (GetTopItemIndex() != newTopItemIndex)
-                    {
-                        System.Threading.Thread.Sleep(5);
-                        _eventListView.TopItem = _eventListView.Items[newTopItemIndex];
-                    }
-                    if (oldFocusedItemIndex != -1)
-                    {
-                        int newFocusedItemIndex = oldFocusedItemIndex - (oldVirtualListSize - _eventListView.VirtualListSize);
-                        if (newFocusedItemIndex != oldFocusedItemIndex)
-                            _eventListView.FocusedItem = _eventListView.Items[newFocusedItemIndex];
-                    }
-                    if (oldSelectedItemIndex != -1)
-                    {
-                        int newSelectedItemIndex = oldSelectedItemIndex - (oldVirtualListSize - _eventListView.VirtualListSize);
-                        if (newSelectedItemIndex != oldSelectedItemIndex)
-                        {
-                            _eventListView.SelectedIndices.Clear();
-                            _eventListView.SelectedIndices.Add(newSelectedItemIndex);
-                        }
-                    }
+                    this.Invoke(new EntryWrittenEventHandler(_eventLog_EntryWritten), new object[] { sender, null });
                 }
-                if (!listAtBottom)
-                    _eventListView.EndUpdate();
-                _eventListView.Invalidate();
-                _eventListView.Invoke(new UpdateAction(_eventListView.Update));
             }
             else
             if (entry.Index == 0)
