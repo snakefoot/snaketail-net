@@ -146,6 +146,8 @@ namespace SnakeTail
             this.Controls.Add(this._detailsBtn);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.KeyPreview = true;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "ThreadExceptionDialogEx";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ThreadExceptionDialogEx";

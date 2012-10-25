@@ -170,7 +170,7 @@ namespace SnakeTail
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this._cancelBtn;
-            this.ClientSize = new System.Drawing.Size(331, 209);
+            this.ClientSize = new System.Drawing.Size(327, 201);
             this.Controls.Add(this._logHitChk);
             this.Controls.Add(this._okBtn);
             this.Controls.Add(this._cancelBtn);
@@ -182,7 +182,11 @@ namespace SnakeTail
             this.Controls.Add(this._matchCaseChk);
             this.Controls.Add(this._keywordEdt);
             this.Controls.Add(label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "KeywordConfigForm";
+            this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Configure Keyword Highlight";
