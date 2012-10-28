@@ -60,6 +60,7 @@ namespace SnakeTail
             System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+            System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
             this._contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this._tailTimer = new System.Windows.Forms.Timer(this.components);
             this._statusStrip = new System.Windows.Forms.StatusStrip();
@@ -76,6 +77,7 @@ namespace SnakeTail
             this.configureStatisticsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.applyViewOptionsToAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.switchModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.externalToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.startServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stopServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pauseServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -86,6 +88,7 @@ namespace SnakeTail
             toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this._contextMenuStrip.SuspendLayout();
             this._statusStrip.SuspendLayout();
             this._menuStrip.SuspendLayout();
@@ -99,19 +102,24 @@ namespace SnakeTail
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new System.Drawing.Size(57, 6);
+            toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
             // 
             // toolStripSeparator2
             // 
             toolStripSeparator2.Name = "toolStripSeparator2";
             toolStripSeparator2.Size = new System.Drawing.Size(247, 6);
             // 
+            // toolStripSeparator3
+            // 
+            toolStripSeparator3.Name = "toolStripSeparator3";
+            toolStripSeparator3.Size = new System.Drawing.Size(247, 6);
+            // 
             // _contextMenuStrip
             // 
             this._contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             toolStripSeparator1});
             this._contextMenuStrip.Name = "contextMenuStrip1";
-            this._contextMenuStrip.Size = new System.Drawing.Size(61, 10);
+            this._contextMenuStrip.Size = new System.Drawing.Size(153, 32);
             this._contextMenuStrip.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this._contextMenuStrip_Closed);
             this._contextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this._contextMenuStrip_Opening);
             // 
@@ -168,6 +176,8 @@ namespace SnakeTail
             this.configureStatisticsToolStripMenuItem,
             this.applyViewOptionsToAllToolStripMenuItem,
             this.switchModeToolStripMenuItem,
+            toolStripSeparator3,
+            this.externalToolsToolStripMenuItem,
             toolStripSeparator4,
             this.startServiceToolStripMenuItem,
             this.stopServiceToolStripMenuItem,
@@ -248,6 +258,12 @@ namespace SnakeTail
             this.switchModeToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
             this.switchModeToolStripMenuItem.Text = "Switch Window Mode";
             this.switchModeToolStripMenuItem.Click += new System.EventHandler(this.switchToModelessToolStripMenuItem_Click);
+            // 
+            // externalToolsToolStripMenuItem
+            // 
+            this.externalToolsToolStripMenuItem.Name = "externalToolsToolStripMenuItem";
+            this.externalToolsToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
+            this.externalToolsToolStripMenuItem.Text = "External Tools";
             // 
             // startServiceToolStripMenuItem
             // 
@@ -358,5 +374,6 @@ namespace SnakeTail
         private System.Windows.Forms.ToolStripMenuItem gotoPreviousHighlightToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pauseWindowToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem applyViewOptionsToAllToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem externalToolsToolStripMenuItem;
     }
 }

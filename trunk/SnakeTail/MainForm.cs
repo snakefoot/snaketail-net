@@ -31,6 +31,8 @@ namespace SnakeTail
         private static MainForm _instance = null;
         public static MainForm Instance { get { return _instance; } }
 
+        public string CurrenTailConfig { get { return _currenTailConfig != null ? _currenTailConfig : ""; } }
+
         private TailFileConfig _defaultTailConfig = null;
         private string _currenTailConfig = null;
 
@@ -462,6 +464,8 @@ namespace SnakeTail
             _currenTailConfig = filepath;
 
             UpdateTitle();
+
+            _defaultTailConfig = null;  // Force reload incase we saved a new default config
         }
 
         private TailConfig LoadSessionFile(string filepath)

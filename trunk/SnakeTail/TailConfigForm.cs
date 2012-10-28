@@ -37,6 +37,7 @@ namespace SnakeTail
 
         private void UpdateKeywordListItem(TailKeywordConfig keyword, ref ListViewItem lvi)
         {
+            lvi.SubItems.Clear();
             lvi.Text = keyword.Keyword;
             lvi.UseItemStyleForSubItems = false;
             if (keyword.FormTextColor.HasValue)
@@ -47,6 +48,15 @@ namespace SnakeTail
             lvi.SubItems.Add(keyword.MatchRegularExpression ? "Yes" : "No");
             lvi.SubItems.Add(keyword.LogHitCounter ? "Yes" : "No");
             lvi.Tag = keyword;
+        }
+
+        private void UpdateExtToolListItem(ExternalToolConfig extTool, ref ListViewItem lvi)
+        {
+            lvi.SubItems.Clear();
+            lvi.Text = extTool.Name;
+            lvi.UseItemStyleForSubItems = false;
+            lvi.SubItems.Add(extTool.ShortcutKey);
+            lvi.Tag = extTool;
         }
 
         private void TailConfigForm_Load(object sender, EventArgs e)
@@ -86,11 +96,21 @@ namespace SnakeTail
                         UpdateKeywordListItem(keyword, ref lvi);
                     }
                 }
+
+                if (TailFileConfig.ExternalTools != null)
+                {
+                    foreach (ExternalToolConfig extTool in TailFileConfig.ExternalTools)
+                    {
+                        ListViewItem lvi = _extToolsListView.Items.Add(new ListViewItem());
+                        UpdateExtToolListItem(extTool, ref lvi);
+                    }
+                }
             }
             else
             {
                 _tabControl.TabPages.Remove(_tabPageFile);
                 _tabControl.TabPages.Remove(_tabPageKeyWords);
+                _tabControl.TabPages.Remove(_tabPageExtTools);
             }
         }
 
@@ -125,6 +145,15 @@ namespace SnakeTail
                 foreach (ListViewItem lvi in _keywordListView.Items)
                 {
                     TailFileConfig.KeywordHighlight.Add(lvi.Tag as TailKeywordConfig);
+                }
+
+                if (TailFileConfig.ExternalTools == null)
+                    TailFileConfig.ExternalTools = new List<ExternalToolConfig>();
+                else
+                    TailFileConfig.ExternalTools.Clear();
+                foreach (ListViewItem lvi in _extToolsListView.Items)
+                {
+                    TailFileConfig.ExternalTools.Add(lvi.Tag as ExternalToolConfig);
                 }
             }
         }
@@ -204,6 +233,66 @@ namespace SnakeTail
         private void _fileCheckPatternChk_CheckedChanged(object sender, EventArgs e)
         {
             _titleMatchFilenameChk.Enabled = _fileCheckPatternChk.Checked;
+        }
+
+        private void _addToolBtn_Click(object sender, EventArgs e)
+        {
+            ExternalToolConfigForm dlg = new ExternalToolConfigForm(null);
+            if (dlg.ShowDialog() == DialogResult.OK && !String.IsNullOrEmpty(dlg.ExternalToolConfig.Name))
+            {
+                ListViewItem lvi = _extToolsListView.Items.Add(new ListViewItem());
+                UpdateExtToolListItem(dlg.ExternalToolConfig, ref lvi);
+            }
+        }
+
+        private void _editToolBtn_Click(object sender, EventArgs e)
+        {
+            if (_extToolsListView.SelectedItems.Count == 0)
+                return;
+
+            ExternalToolConfigForm dlg = new ExternalToolConfigForm(_extToolsListView.SelectedItems[0].Tag as ExternalToolConfig);
+            if (dlg.ShowDialog() == DialogResult.OK && !String.IsNullOrEmpty(dlg.ExternalToolConfig.Name))
+            {
+                ListViewItem lvi = _extToolsListView.SelectedItems[0];
+                UpdateExtToolListItem(dlg.ExternalToolConfig, ref lvi);
+                _extToolsListView.Update();
+            }
+        }
+
+        private void _delToolBtn_Click(object sender, EventArgs e)
+        {
+            if (_extToolsListView.SelectedItems.Count == 0)
+                return;
+
+            _extToolsListView.Items.Remove(_extToolsListView.SelectedItems[0]);
+        }
+
+        private void _moveUpToolBtn_Click(object sender, EventArgs e)
+        {
+            if (_extToolsListView.SelectedItems.Count == 0)
+                return;
+
+            int selectedIndex = _extToolsListView.SelectedItems[0].Index;
+            if (selectedIndex == 0)
+                return;
+
+            ListViewItem selectedItem = _extToolsListView.SelectedItems[0];
+            _extToolsListView.Items.Remove(selectedItem);
+            _extToolsListView.Items.Insert(selectedIndex - 1, selectedItem);
+        }
+
+        private void _moveDownToolBtn_Click(object sender, EventArgs e)
+        {
+            if (_extToolsListView.SelectedItems.Count == 0)
+                return;
+
+            int selectedIndex = _extToolsListView.SelectedItems[0].Index;
+            if (selectedIndex == _extToolsListView.Items.Count-1)
+                return;
+
+            ListViewItem selectedItem = _extToolsListView.SelectedItems[0];
+            _extToolsListView.Items.Remove(selectedItem);
+            _extToolsListView.Items.Insert(selectedIndex + 1, selectedItem);
         }
     }
 }
