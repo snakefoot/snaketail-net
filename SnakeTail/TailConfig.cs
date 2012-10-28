@@ -81,6 +81,86 @@ namespace SnakeTail
         internal System.Text.RegularExpressions.Regex KeywordRegex { get; set; }
     }
 
+    public class ExternalToolConfig
+    {
+        public string Name { get; set; }
+        public string Command { get; set; }
+        public string Arguments { get; set; }
+        public string InitialDirectory { get; set; }
+        public string ShortcutKey { get; set; }
+        public bool RunAsAdmin { get; set; }
+        public bool HideWindow { get; set; }
+
+        // Consider to use  System.Windows.Input.KeyConverter (.NET 3.0+)
+        internal System.Windows.Forms.Keys? ShortcutKeyEnum
+        {
+            get
+            {
+                if (ShortcutKey != null)
+                {
+                    System.Windows.Forms.Keys keyPress = 0;
+                    string keyCode = ShortcutKey;
+                    if (keyCode.Contains("Ctrl+"))
+                    {
+                        keyCode = keyCode.Replace("Ctrl+", "");
+                        keyPress |= System.Windows.Forms.Keys.Control;
+                    }
+                    if (keyCode.Contains("Shift+"))
+                    {
+                        keyCode = keyCode.Replace("Shift+", "");
+                        keyPress |= System.Windows.Forms.Keys.Shift;
+                    }
+                    if (keyCode.Contains("Alt+"))
+                    {
+                        keyCode = keyCode.Replace("Alt+", "");
+                        keyPress |= System.Windows.Forms.Keys.Alt;
+                    }
+                    try
+                    {
+                        keyPress |= (System.Windows.Forms.Keys)Enum.Parse(typeof(System.Windows.Forms.Keys), keyCode);
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+                    return keyPress;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                if (value.HasValue)
+                {
+                    System.Windows.Forms.Keys keyPress = value.Value;
+                    ShortcutKey = "";
+                    if ((keyPress & System.Windows.Forms.Keys.Control) != 0)
+                    {
+                        keyPress -= System.Windows.Forms.Keys.Control;
+                        ShortcutKey += "Ctrl+";
+                    }
+                    if ((keyPress & System.Windows.Forms.Keys.Alt) != 0)
+                    {
+                        keyPress -= System.Windows.Forms.Keys.Alt;
+                        ShortcutKey += "Alt+";
+                    }
+                    if ((keyPress & System.Windows.Forms.Keys.Shift) != 0)
+                    {
+                        keyPress -= System.Windows.Forms.Keys.Shift;
+                        ShortcutKey += "Shift+";
+                    }
+                    ShortcutKey += keyPress.ToString();
+                }
+                else
+                {
+                    ShortcutKey = null;
+                }
+            }
+        }
+    }
+
     public class TailFileConfig
     {
         public string FilePath { get; set; }
@@ -109,6 +189,8 @@ namespace SnakeTail
         [XmlArray("KeywordHighlight")]
         [XmlArrayItem("Keyword")]
         public List<TailKeywordConfig> KeywordHighlight { get; set; }
+        [XmlArrayItem("ExternalTools")]
+        public List<ExternalToolConfig> ExternalTools { get; set; }
 
         internal Font FormFont
         {

@@ -97,6 +97,7 @@ namespace SnakeTail
         List<TailKeywordConfig> _keywordHighlight;
         int _loghitCounter = -1;
         bool _displayTabIcon = false;
+        List<ExternalToolConfig> _externalTools;
 
         public TailForm()
         {
@@ -165,6 +166,25 @@ namespace SnakeTail
 
                     if (keyword.LogHitCounter)
                         _loghitCounter = 0;
+                }
+            }
+
+            _externalTools = tailConfig.ExternalTools;
+            externalToolsToolStripMenuItem.DropDownItems.Clear();
+            externalToolsToolStripMenuItem.Enabled = false;
+            if (_externalTools != null)
+            {
+                foreach (ExternalToolConfig externalTool in _externalTools)
+                {
+                    ToolStripMenuItem toolItem = externalToolsToolStripMenuItem.DropDownItems.Add(externalTool.Name) as ToolStripMenuItem;
+                    if (toolItem != null)
+                    {
+                        toolItem.Tag = externalTool;
+                        toolItem.Click += new EventHandler(externalToolMenuItem_Click);
+                        if (externalTool.ShortcutKeyEnum.HasValue)
+                            toolItem.ShortcutKeys = externalTool.ShortcutKeyEnum.Value;
+                    }
+                    externalToolsToolStripMenuItem.Enabled = true;
                 }
             }
 
@@ -375,6 +395,8 @@ namespace SnakeTail
             tailConfig.FormTextColor = _tailListView.ForeColor;
 
             tailConfig.KeywordHighlight = _keywordHighlight;
+
+            tailConfig.ExternalTools = _externalTools;
 
             tailConfig.FormFont = _tailListView.Font;
             tailConfig.FileCacheSize = _logFileCache.Items.Count;
@@ -1032,6 +1054,49 @@ namespace SnakeTail
             {
                 SetStatusBar(null);
                 MessageBox.Show("Stop service failed: " + ex.Message);
+            }
+        }
+
+        void externalToolMenuItem_Click(object sender, EventArgs e)
+        {
+            ToolStripItem toolItem = sender as ToolStripItem;
+            if (toolItem != null)
+            {
+                ExternalToolConfig externalTool = toolItem.Tag as ExternalToolConfig;
+                if (externalTool != null)
+                {
+                    try
+                    {
+                        Dictionary<string, string> fileParameters = new Dictionary<string, string>();
+                        fileParameters["$(FilePath)"] = _logTailStream != null ? _logTailStream.Name : "";
+                        fileParameters["$(FileDirectory)"] = Path.GetDirectoryName(fileParameters["$(FilePath)"]);
+                        fileParameters["$(FileName)"] = Path.GetFileName(fileParameters["$(FilePath)"]);
+                        fileParameters["$(ServiceName)"] = _taskMonitor != null ? _taskMonitor.ServiceName : "";
+                        fileParameters["$(SessionDirectory)"] = _configPath;
+                        fileParameters["$(SessionPath)"] = MainForm.Instance.CurrenTailConfig;
+                        fileParameters["$(SessionFileName)"] = Path.GetFileName(fileParameters["$(SessionPath)"]);
+                        fileParameters["$(SessionName)"] = Path.GetFileNameWithoutExtension(fileParameters["$(SessionPath)"]);
+                        fileParameters["$(ViewName)"] = _formTitle;
+                        fileParameters["$(ProgramDirectory)"] = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                        if (_tailListView.FocusedItem != null)
+                        {
+                            fileParameters["$(LineNumber)"] = _tailListView.FocusedItem.Index.ToString();
+                            fileParameters["$(LineText)"] = _tailListView.FocusedItem.Text;
+                        }
+                        else
+                        {
+                            fileParameters["$(LineNumber)"] = "";
+                            fileParameters["$(LineText)"] = "";
+                        }
+
+                        ExternalTool tool = new ExternalTool(externalTool, fileParameters);
+                        tool.Execute();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("External Tool '" + externalTool.Name + "' failed: " + ex.Message);
+                    }
+                }
             }
         }
 

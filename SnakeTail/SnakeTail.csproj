@@ -82,6 +82,13 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="ExternalTool.cs" />
+    <Compile Include="ExternalToolConfigForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ExternalToolConfigForm.Designer.cs">
+      <DependentUpon>ExternalToolConfigForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ListViewUtil.cs" />
     <Compile Include="MruStripMenu.cs" />
     <Compile Include="StopwatchProfiler.cs" />
@@ -122,6 +129,9 @@
     <EmbeddedResource Include="EventLogForm.resx">
       <DependentUpon>EventLogForm.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExternalToolConfigForm.resx">
+      <DependentUpon>ExternalToolConfigForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="KeywordConfigForm.resx">
       <DependentUpon>KeywordConfigForm.cs</DependentUpon>

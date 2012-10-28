@@ -49,9 +49,16 @@ namespace SnakeTail
             System.Windows.Forms.Label label4;
             System.Windows.Forms.Label label5;
             System.Windows.Forms.Label label7;
-            System.Windows.Forms.ColumnHeader _keywordColumn;
+            System.Windows.Forms.ColumnHeader keywordColumnHeader;
             System.Windows.Forms.Label label6;
             System.Windows.Forms.Label label8;
+            System.Windows.Forms.ColumnHeader toolNameColumnHeader;
+            System.Windows.Forms.Label label10;
+            System.Windows.Forms.Label label9;
+            System.Windows.Forms.ColumnHeader keywordCaseColumnHeader;
+            System.Windows.Forms.ColumnHeader keywordRegexColumnHeader;
+            System.Windows.Forms.ColumnHeader keywordLogHitColumnHeader;
+            System.Windows.Forms.ColumnHeader toolShortcutColumnHeader;
             this._tabControl = new System.Windows.Forms.TabControl();
             this._tabPageView = new System.Windows.Forms.TabPage();
             this._displayIconChk = new System.Windows.Forms.CheckBox();
@@ -60,9 +67,8 @@ namespace SnakeTail
             this._backColorBtn = new System.Windows.Forms.Button();
             this._textColorBtn = new System.Windows.Forms.Button();
             this._tabPageFile = new System.Windows.Forms.TabPage();
+            this._titleMatchFilenameChk = new System.Windows.Forms.CheckBox();
             this._browseBtn = new System.Windows.Forms.Button();
-            this.label10 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
             this._fileChangeCheckIntervalEdt = new System.Windows.Forms.TextBox();
             this._fileCheckPatternChk = new System.Windows.Forms.CheckBox();
             this._fileReopenCheckIntervalEdt = new System.Windows.Forms.TextBox();
@@ -75,25 +81,36 @@ namespace SnakeTail
             this._edtWordBtn = new System.Windows.Forms.Button();
             this._addWordBtn = new System.Windows.Forms.Button();
             this._keywordListView = new System.Windows.Forms.ListView();
-            this._caseColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this._regexColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this._loghitColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this._tabPageExtTools = new System.Windows.Forms.TabPage();
+            this._delToolBtn = new System.Windows.Forms.Button();
+            this._editToolBtn = new System.Windows.Forms.Button();
+            this._addToolBtn = new System.Windows.Forms.Button();
+            this._extToolsListView = new System.Windows.Forms.ListView();
             this._acceptBtn = new System.Windows.Forms.Button();
             this._cancelBtn = new System.Windows.Forms.Button();
-            this._titleMatchFilenameChk = new System.Windows.Forms.CheckBox();
+            this._moveUpToolBtn = new System.Windows.Forms.Button();
+            this._moveDownToolBtn = new System.Windows.Forms.Button();
             label2 = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
             label4 = new System.Windows.Forms.Label();
             label5 = new System.Windows.Forms.Label();
             label7 = new System.Windows.Forms.Label();
-            _keywordColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            keywordColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             label6 = new System.Windows.Forms.Label();
             label8 = new System.Windows.Forms.Label();
+            toolNameColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            label10 = new System.Windows.Forms.Label();
+            label9 = new System.Windows.Forms.Label();
+            keywordCaseColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            keywordRegexColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            keywordLogHitColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            toolShortcutColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this._tabControl.SuspendLayout();
             this._tabPageView.SuspendLayout();
             this._tabPageFile.SuspendLayout();
             this._tabPageKeyWords.SuspendLayout();
+            this._tabPageExtTools.SuspendLayout();
             this.SuspendLayout();
             // 
             // label2
@@ -150,10 +167,10 @@ namespace SnakeTail
             label7.TabIndex = 9;
             label7.Text = "Windows Service";
             // 
-            // _keywordColumn
+            // keywordColumnHeader
             // 
-            _keywordColumn.Text = "Keyword";
-            _keywordColumn.Width = 83;
+            keywordColumnHeader.Text = "Keyword";
+            keywordColumnHeader.Width = 83;
             // 
             // label6
             // 
@@ -173,11 +190,35 @@ namespace SnakeTail
             label8.TabIndex = 11;
             label8.Text = "File Change Check Interval";
             // 
+            // toolNameColumnHeader
+            // 
+            toolNameColumnHeader.Text = "Name";
+            toolNameColumnHeader.Width = 146;
+            // 
+            // label10
+            // 
+            label10.AutoSize = true;
+            label10.Location = new System.Drawing.Point(209, 113);
+            label10.Name = "label10";
+            label10.Size = new System.Drawing.Size(29, 13);
+            label10.TabIndex = 14;
+            label10.Text = "secs";
+            // 
+            // label9
+            // 
+            label9.AutoSize = true;
+            label9.Location = new System.Drawing.Point(209, 139);
+            label9.Name = "label9";
+            label9.Size = new System.Drawing.Size(37, 13);
+            label9.TabIndex = 13;
+            label9.Text = "msecs";
+            // 
             // _tabControl
             // 
             this._tabControl.Controls.Add(this._tabPageView);
             this._tabControl.Controls.Add(this._tabPageFile);
             this._tabControl.Controls.Add(this._tabPageKeyWords);
+            this._tabControl.Controls.Add(this._tabPageExtTools);
             this._tabControl.Location = new System.Drawing.Point(6, 6);
             this._tabControl.Name = "_tabControl";
             this._tabControl.SelectedIndex = 0;
@@ -249,8 +290,8 @@ namespace SnakeTail
             // 
             this._tabPageFile.Controls.Add(this._titleMatchFilenameChk);
             this._tabPageFile.Controls.Add(this._browseBtn);
-            this._tabPageFile.Controls.Add(this.label10);
-            this._tabPageFile.Controls.Add(this.label9);
+            this._tabPageFile.Controls.Add(label10);
+            this._tabPageFile.Controls.Add(label9);
             this._tabPageFile.Controls.Add(this._fileChangeCheckIntervalEdt);
             this._tabPageFile.Controls.Add(label8);
             this._tabPageFile.Controls.Add(this._fileCheckPatternChk);
@@ -272,6 +313,16 @@ namespace SnakeTail
             this._tabPageFile.Text = "Log File";
             this._tabPageFile.UseVisualStyleBackColor = true;
             // 
+            // _titleMatchFilenameChk
+            // 
+            this._titleMatchFilenameChk.AutoSize = true;
+            this._titleMatchFilenameChk.Location = new System.Drawing.Point(221, 30);
+            this._titleMatchFilenameChk.Name = "_titleMatchFilenameChk";
+            this._titleMatchFilenameChk.Size = new System.Drawing.Size(120, 17);
+            this._titleMatchFilenameChk.TabIndex = 16;
+            this._titleMatchFilenameChk.Text = "Title match filename";
+            this._titleMatchFilenameChk.UseVisualStyleBackColor = true;
+            // 
             // _browseBtn
             // 
             this._browseBtn.Location = new System.Drawing.Point(323, 6);
@@ -281,24 +332,6 @@ namespace SnakeTail
             this._browseBtn.Text = "...";
             this._browseBtn.UseVisualStyleBackColor = true;
             this._browseBtn.Click += new System.EventHandler(this._browseBtn_Click);
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(209, 113);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(29, 13);
-            this.label10.TabIndex = 14;
-            this.label10.Text = "secs";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(209, 139);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(37, 13);
-            this.label9.TabIndex = 13;
-            this.label9.Text = "msecs";
             // 
             // _fileChangeCheckIntervalEdt
             // 
@@ -405,10 +438,10 @@ namespace SnakeTail
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this._keywordListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            _keywordColumn,
-            this._caseColumn,
-            this._regexColumn,
-            this._loghitColumn});
+            keywordColumnHeader,
+            keywordCaseColumnHeader,
+            keywordRegexColumnHeader,
+            keywordLogHitColumnHeader});
             this._keywordListView.FullRowSelect = true;
             this._keywordListView.HideSelection = false;
             this._keywordListView.Location = new System.Drawing.Point(6, 6);
@@ -420,20 +453,90 @@ namespace SnakeTail
             this._keywordListView.View = System.Windows.Forms.View.Details;
             this._keywordListView.DoubleClick += new System.EventHandler(this._edtWordBtn_Click);
             // 
-            // _caseColumn
+            // keywordCaseColumnHeader
             // 
-            this._caseColumn.Text = "Case Sensitive";
-            this._caseColumn.Width = 59;
+            keywordCaseColumnHeader.Text = "Case Sensitive";
+            keywordCaseColumnHeader.Width = 59;
             // 
-            // _regexColumn
+            // keywordRegexColumnHeader
             // 
-            this._regexColumn.Text = "RegEx Match";
-            this._regexColumn.Width = 59;
+            keywordRegexColumnHeader.Text = "RegEx Match";
+            keywordRegexColumnHeader.Width = 59;
             // 
-            // _loghitColumn
+            // keywordLogHitColumnHeader
             // 
-            this._loghitColumn.Text = "Log Hit";
-            this._loghitColumn.Width = 59;
+            keywordLogHitColumnHeader.Text = "Log Hit";
+            keywordLogHitColumnHeader.Width = 59;
+            // 
+            // _tabPageExtTools
+            // 
+            this._tabPageExtTools.Controls.Add(this._moveDownToolBtn);
+            this._tabPageExtTools.Controls.Add(this._moveUpToolBtn);
+            this._tabPageExtTools.Controls.Add(this._delToolBtn);
+            this._tabPageExtTools.Controls.Add(this._editToolBtn);
+            this._tabPageExtTools.Controls.Add(this._addToolBtn);
+            this._tabPageExtTools.Controls.Add(this._extToolsListView);
+            this._tabPageExtTools.Location = new System.Drawing.Point(4, 22);
+            this._tabPageExtTools.Name = "_tabPageExtTools";
+            this._tabPageExtTools.Padding = new System.Windows.Forms.Padding(3);
+            this._tabPageExtTools.Size = new System.Drawing.Size(359, 207);
+            this._tabPageExtTools.TabIndex = 3;
+            this._tabPageExtTools.Text = "External Tools";
+            this._tabPageExtTools.UseVisualStyleBackColor = true;
+            // 
+            // _delToolBtn
+            // 
+            this._delToolBtn.Location = new System.Drawing.Point(276, 64);
+            this._delToolBtn.Name = "_delToolBtn";
+            this._delToolBtn.Size = new System.Drawing.Size(75, 23);
+            this._delToolBtn.TabIndex = 8;
+            this._delToolBtn.Text = "Remove";
+            this._delToolBtn.UseVisualStyleBackColor = true;
+            this._delToolBtn.Click += new System.EventHandler(this._delToolBtn_Click);
+            // 
+            // _editToolBtn
+            // 
+            this._editToolBtn.Location = new System.Drawing.Point(276, 35);
+            this._editToolBtn.Name = "_editToolBtn";
+            this._editToolBtn.Size = new System.Drawing.Size(75, 23);
+            this._editToolBtn.TabIndex = 7;
+            this._editToolBtn.Text = "Edit...";
+            this._editToolBtn.UseVisualStyleBackColor = true;
+            this._editToolBtn.Click += new System.EventHandler(this._editToolBtn_Click);
+            // 
+            // _addToolBtn
+            // 
+            this._addToolBtn.Location = new System.Drawing.Point(276, 6);
+            this._addToolBtn.Name = "_addToolBtn";
+            this._addToolBtn.Size = new System.Drawing.Size(75, 23);
+            this._addToolBtn.TabIndex = 6;
+            this._addToolBtn.Text = "Add...";
+            this._addToolBtn.UseVisualStyleBackColor = true;
+            this._addToolBtn.Click += new System.EventHandler(this._addToolBtn_Click);
+            // 
+            // _extToolsListView
+            // 
+            this._extToolsListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this._extToolsListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            toolNameColumnHeader,
+            toolShortcutColumnHeader});
+            this._extToolsListView.FullRowSelect = true;
+            this._extToolsListView.HideSelection = false;
+            this._extToolsListView.Location = new System.Drawing.Point(6, 6);
+            this._extToolsListView.MultiSelect = false;
+            this._extToolsListView.Name = "_extToolsListView";
+            this._extToolsListView.Size = new System.Drawing.Size(264, 195);
+            this._extToolsListView.TabIndex = 5;
+            this._extToolsListView.UseCompatibleStateImageBehavior = false;
+            this._extToolsListView.View = System.Windows.Forms.View.Details;
+            this._extToolsListView.DoubleClick += new System.EventHandler(this._editToolBtn_Click);
+            // 
+            // toolShortcutColumnHeader
+            // 
+            toolShortcutColumnHeader.Text = "Shortcut Key";
+            toolShortcutColumnHeader.Width = 89;
             // 
             // _acceptBtn
             // 
@@ -458,15 +561,25 @@ namespace SnakeTail
             this._cancelBtn.Text = "Cancel";
             this._cancelBtn.UseVisualStyleBackColor = true;
             // 
-            // _titleMatchFilenameChk
+            // _moveUpToolBtn
             // 
-            this._titleMatchFilenameChk.AutoSize = true;
-            this._titleMatchFilenameChk.Location = new System.Drawing.Point(221, 30);
-            this._titleMatchFilenameChk.Name = "_titleMatchFilenameChk";
-            this._titleMatchFilenameChk.Size = new System.Drawing.Size(120, 17);
-            this._titleMatchFilenameChk.TabIndex = 16;
-            this._titleMatchFilenameChk.Text = "Title match filename";
-            this._titleMatchFilenameChk.UseVisualStyleBackColor = true;
+            this._moveUpToolBtn.Location = new System.Drawing.Point(276, 118);
+            this._moveUpToolBtn.Name = "_moveUpToolBtn";
+            this._moveUpToolBtn.Size = new System.Drawing.Size(75, 23);
+            this._moveUpToolBtn.TabIndex = 9;
+            this._moveUpToolBtn.Text = "Move Up";
+            this._moveUpToolBtn.UseVisualStyleBackColor = true;
+            this._moveUpToolBtn.Click += new System.EventHandler(this._moveUpToolBtn_Click);
+            // 
+            // _moveDownToolBtn
+            // 
+            this._moveDownToolBtn.Location = new System.Drawing.Point(276, 147);
+            this._moveDownToolBtn.Name = "_moveDownToolBtn";
+            this._moveDownToolBtn.Size = new System.Drawing.Size(75, 23);
+            this._moveDownToolBtn.TabIndex = 10;
+            this._moveDownToolBtn.Text = "Move Down";
+            this._moveDownToolBtn.UseVisualStyleBackColor = true;
+            this._moveDownToolBtn.Click += new System.EventHandler(this._moveDownToolBtn_Click);
             // 
             // TailConfigForm
             // 
@@ -479,9 +592,12 @@ namespace SnakeTail
             this.Controls.Add(this._acceptBtn);
             this.Controls.Add(this._tabControl);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "TailConfigForm";
+            this.ShowIcon = false;
             this.ShowInTaskbar = false;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Configure View";
             this.Load += new System.EventHandler(this.TailConfigForm_Load);
             this._tabControl.ResumeLayout(false);
@@ -490,6 +606,7 @@ namespace SnakeTail
             this._tabPageFile.ResumeLayout(false);
             this._tabPageFile.PerformLayout();
             this._tabPageKeyWords.ResumeLayout(false);
+            this._tabPageExtTools.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -514,17 +631,19 @@ namespace SnakeTail
         private System.Windows.Forms.Button _edtWordBtn;
         private System.Windows.Forms.Button _addWordBtn;
         private System.Windows.Forms.Button _delWordBtn;
-        private System.Windows.Forms.ColumnHeader _caseColumn;
-        private System.Windows.Forms.ColumnHeader _regexColumn;
-        private System.Windows.Forms.ColumnHeader _loghitColumn;
         private System.Windows.Forms.CheckBox _fileCheckPatternChk;
         private System.Windows.Forms.TextBox _fileReopenCheckIntervalEdt;
         private System.Windows.Forms.TextBox _fileChangeCheckIntervalEdt;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Button _browseBtn;
         private System.Windows.Forms.CheckBox _displayIconChk;
         private System.Windows.Forms.CheckBox _titleMatchFilenameChk;
+        private System.Windows.Forms.TabPage _tabPageExtTools;
+        private System.Windows.Forms.Button _delToolBtn;
+        private System.Windows.Forms.Button _editToolBtn;
+        private System.Windows.Forms.Button _addToolBtn;
+        private System.Windows.Forms.ListView _extToolsListView;
+        private System.Windows.Forms.Button _moveDownToolBtn;
+        private System.Windows.Forms.Button _moveUpToolBtn;
 
 
 
