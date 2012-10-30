@@ -82,14 +82,16 @@ namespace SnakeTail
             this._addWordBtn = new System.Windows.Forms.Button();
             this._keywordListView = new System.Windows.Forms.ListView();
             this._tabPageExtTools = new System.Windows.Forms.TabPage();
+            this._moveDownToolBtn = new System.Windows.Forms.Button();
+            this._moveUpToolBtn = new System.Windows.Forms.Button();
             this._delToolBtn = new System.Windows.Forms.Button();
             this._editToolBtn = new System.Windows.Forms.Button();
             this._addToolBtn = new System.Windows.Forms.Button();
             this._extToolsListView = new System.Windows.Forms.ListView();
             this._acceptBtn = new System.Windows.Forms.Button();
             this._cancelBtn = new System.Windows.Forms.Button();
-            this._moveUpToolBtn = new System.Windows.Forms.Button();
-            this._moveDownToolBtn = new System.Windows.Forms.Button();
+            this._moveUpKeywordBtn = new System.Windows.Forms.Button();
+            this._moveDownKeywordBtn = new System.Windows.Forms.Button();
             label2 = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -212,6 +214,26 @@ namespace SnakeTail
             label9.Size = new System.Drawing.Size(37, 13);
             label9.TabIndex = 13;
             label9.Text = "msecs";
+            // 
+            // keywordCaseColumnHeader
+            // 
+            keywordCaseColumnHeader.Text = "Case Sensitive";
+            keywordCaseColumnHeader.Width = 59;
+            // 
+            // keywordRegexColumnHeader
+            // 
+            keywordRegexColumnHeader.Text = "RegEx Match";
+            keywordRegexColumnHeader.Width = 59;
+            // 
+            // keywordLogHitColumnHeader
+            // 
+            keywordLogHitColumnHeader.Text = "Log Hit";
+            keywordLogHitColumnHeader.Width = 59;
+            // 
+            // toolShortcutColumnHeader
+            // 
+            toolShortcutColumnHeader.Text = "Shortcut Key";
+            toolShortcutColumnHeader.Width = 89;
             // 
             // _tabControl
             // 
@@ -390,6 +412,8 @@ namespace SnakeTail
             // 
             // _tabPageKeyWords
             // 
+            this._tabPageKeyWords.Controls.Add(this._moveDownKeywordBtn);
+            this._tabPageKeyWords.Controls.Add(this._moveUpKeywordBtn);
             this._tabPageKeyWords.Controls.Add(this._delWordBtn);
             this._tabPageKeyWords.Controls.Add(this._edtWordBtn);
             this._tabPageKeyWords.Controls.Add(this._addWordBtn);
@@ -453,21 +477,6 @@ namespace SnakeTail
             this._keywordListView.View = System.Windows.Forms.View.Details;
             this._keywordListView.DoubleClick += new System.EventHandler(this._edtWordBtn_Click);
             // 
-            // keywordCaseColumnHeader
-            // 
-            keywordCaseColumnHeader.Text = "Case Sensitive";
-            keywordCaseColumnHeader.Width = 59;
-            // 
-            // keywordRegexColumnHeader
-            // 
-            keywordRegexColumnHeader.Text = "RegEx Match";
-            keywordRegexColumnHeader.Width = 59;
-            // 
-            // keywordLogHitColumnHeader
-            // 
-            keywordLogHitColumnHeader.Text = "Log Hit";
-            keywordLogHitColumnHeader.Width = 59;
-            // 
             // _tabPageExtTools
             // 
             this._tabPageExtTools.Controls.Add(this._moveDownToolBtn);
@@ -483,6 +492,26 @@ namespace SnakeTail
             this._tabPageExtTools.TabIndex = 3;
             this._tabPageExtTools.Text = "External Tools";
             this._tabPageExtTools.UseVisualStyleBackColor = true;
+            // 
+            // _moveDownToolBtn
+            // 
+            this._moveDownToolBtn.Location = new System.Drawing.Point(276, 147);
+            this._moveDownToolBtn.Name = "_moveDownToolBtn";
+            this._moveDownToolBtn.Size = new System.Drawing.Size(75, 23);
+            this._moveDownToolBtn.TabIndex = 10;
+            this._moveDownToolBtn.Text = "Move Down";
+            this._moveDownToolBtn.UseVisualStyleBackColor = true;
+            this._moveDownToolBtn.Click += new System.EventHandler(this._moveDownToolBtn_Click);
+            // 
+            // _moveUpToolBtn
+            // 
+            this._moveUpToolBtn.Location = new System.Drawing.Point(276, 118);
+            this._moveUpToolBtn.Name = "_moveUpToolBtn";
+            this._moveUpToolBtn.Size = new System.Drawing.Size(75, 23);
+            this._moveUpToolBtn.TabIndex = 9;
+            this._moveUpToolBtn.Text = "Move Up";
+            this._moveUpToolBtn.UseVisualStyleBackColor = true;
+            this._moveUpToolBtn.Click += new System.EventHandler(this._moveUpToolBtn_Click);
             // 
             // _delToolBtn
             // 
@@ -533,11 +562,6 @@ namespace SnakeTail
             this._extToolsListView.View = System.Windows.Forms.View.Details;
             this._extToolsListView.DoubleClick += new System.EventHandler(this._editToolBtn_Click);
             // 
-            // toolShortcutColumnHeader
-            // 
-            toolShortcutColumnHeader.Text = "Shortcut Key";
-            toolShortcutColumnHeader.Width = 89;
-            // 
             // _acceptBtn
             // 
             this._acceptBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -561,25 +585,25 @@ namespace SnakeTail
             this._cancelBtn.Text = "Cancel";
             this._cancelBtn.UseVisualStyleBackColor = true;
             // 
-            // _moveUpToolBtn
+            // _moveUpKeywordBtn
             // 
-            this._moveUpToolBtn.Location = new System.Drawing.Point(276, 118);
-            this._moveUpToolBtn.Name = "_moveUpToolBtn";
-            this._moveUpToolBtn.Size = new System.Drawing.Size(75, 23);
-            this._moveUpToolBtn.TabIndex = 9;
-            this._moveUpToolBtn.Text = "Move Up";
-            this._moveUpToolBtn.UseVisualStyleBackColor = true;
-            this._moveUpToolBtn.Click += new System.EventHandler(this._moveUpToolBtn_Click);
+            this._moveUpKeywordBtn.Location = new System.Drawing.Point(276, 118);
+            this._moveUpKeywordBtn.Name = "_moveUpKeywordBtn";
+            this._moveUpKeywordBtn.Size = new System.Drawing.Size(75, 23);
+            this._moveUpKeywordBtn.TabIndex = 10;
+            this._moveUpKeywordBtn.Text = "Move Up";
+            this._moveUpKeywordBtn.UseVisualStyleBackColor = true;
+            this._moveUpKeywordBtn.Click += new System.EventHandler(this._moveUpKeywordBtn_Click);
             // 
-            // _moveDownToolBtn
+            // _moveDownKeywordBtn
             // 
-            this._moveDownToolBtn.Location = new System.Drawing.Point(276, 147);
-            this._moveDownToolBtn.Name = "_moveDownToolBtn";
-            this._moveDownToolBtn.Size = new System.Drawing.Size(75, 23);
-            this._moveDownToolBtn.TabIndex = 10;
-            this._moveDownToolBtn.Text = "Move Down";
-            this._moveDownToolBtn.UseVisualStyleBackColor = true;
-            this._moveDownToolBtn.Click += new System.EventHandler(this._moveDownToolBtn_Click);
+            this._moveDownKeywordBtn.Location = new System.Drawing.Point(276, 147);
+            this._moveDownKeywordBtn.Name = "_moveDownKeywordBtn";
+            this._moveDownKeywordBtn.Size = new System.Drawing.Size(75, 23);
+            this._moveDownKeywordBtn.TabIndex = 11;
+            this._moveDownKeywordBtn.Text = "Move Down";
+            this._moveDownKeywordBtn.UseVisualStyleBackColor = true;
+            this._moveDownKeywordBtn.Click += new System.EventHandler(this._moveDownKeywordBtn_Click);
             // 
             // TailConfigForm
             // 
@@ -644,6 +668,8 @@ namespace SnakeTail
         private System.Windows.Forms.ListView _extToolsListView;
         private System.Windows.Forms.Button _moveDownToolBtn;
         private System.Windows.Forms.Button _moveUpToolBtn;
+        private System.Windows.Forms.Button _moveDownKeywordBtn;
+        private System.Windows.Forms.Button _moveUpKeywordBtn;
 
 
 

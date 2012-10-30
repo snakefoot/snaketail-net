@@ -216,6 +216,34 @@ namespace SnakeTail
             _keywordListView.Items.Remove(_keywordListView.SelectedItems[0]);
         }
 
+        private void _moveUpKeywordBtn_Click(object sender, EventArgs e)
+        {
+            if (_keywordListView.SelectedItems.Count == 0)
+                return;
+
+            int selectedIndex = _keywordListView.SelectedItems[0].Index;
+            if (selectedIndex == 0)
+                return;
+
+            ListViewItem selectedItem = _keywordListView.SelectedItems[0];
+            _keywordListView.Items.Remove(selectedItem);
+            _keywordListView.Items.Insert(selectedIndex - 1, selectedItem);
+        }
+
+        private void _moveDownKeywordBtn_Click(object sender, EventArgs e)
+        {
+            if (_keywordListView.SelectedItems.Count == 0)
+                return;
+
+            int selectedIndex = _keywordListView.SelectedItems[0].Index;
+            if (selectedIndex == _keywordListView.Items.Count - 1)
+                return;
+
+            ListViewItem selectedItem = _keywordListView.SelectedItems[0];
+            _keywordListView.Items.Remove(selectedItem);
+            _keywordListView.Items.Insert(selectedIndex + 1, selectedItem);
+        }
+
         private void _browseBtn_Click(object sender, EventArgs e)
         {
             OpenFileDialog fileDialog = new OpenFileDialog();
