@@ -120,7 +120,7 @@ namespace SnakeTail
             this.Name = "TailConfigApplyAllForm";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Apply View Options to All";
             this.ResumeLayout(false);
             this.PerformLayout();

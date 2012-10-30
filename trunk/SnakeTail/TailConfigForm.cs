@@ -111,6 +111,7 @@ namespace SnakeTail
                 _tabControl.TabPages.Remove(_tabPageFile);
                 _tabControl.TabPages.Remove(_tabPageKeyWords);
                 _tabControl.TabPages.Remove(_tabPageExtTools);
+                _applyAllBtn.Visible = false;
             }
         }
 
