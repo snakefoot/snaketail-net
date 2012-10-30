@@ -1226,8 +1226,45 @@ namespace SnakeTail
             TailFileConfig configFile = new TailFileConfig();
             SaveConfig(configFile);
             TailConfigForm configForm = new TailConfigForm(configFile, true);
-            if (configForm.ShowDialog() == DialogResult.OK)
-                LoadConfig(configForm.TailFileConfig, _configPath);
+            switch (configForm.ShowDialog())
+            {
+                case DialogResult.OK:
+                {
+                    LoadConfig(configForm.TailFileConfig, _configPath);
+                    break;
+                }
+
+                case DialogResult.Retry:
+                {
+                    configFile = new TailFileConfig();
+                    SaveConfig(configFile);
+                    TailConfigApplyAllForm configFormApply = new TailConfigApplyAllForm();
+                    if (configFormApply.ShowDialog() == DialogResult.OK)
+                    {
+                        // Then we loop through all forms (includes free floating)
+                        foreach (Form childForm in Application.OpenForms)
+                        {
+                            TailForm tailForm = childForm as TailForm;
+                            if (tailForm != null && tailForm != this)
+                            {
+                                TailFileConfig configFileOther = new TailFileConfig();
+                                tailForm.SaveConfig(configFileOther);
+                                if (configFormApply._checkBoxColors.Checked)
+                                {
+                                    configFileOther.FormBackColor = configFile.FormBackColor;
+                                    configFileOther.FormTextColor = configFile.FormTextColor;
+                                }
+                                if (configFormApply._checkBoxFont.Checked)
+                                    configFileOther.FontInvariant = configFile.FontInvariant;
+                                if (configFormApply._checkboxKeywords.Checked)
+                                    configFileOther.KeywordHighlight = configFile.KeywordHighlight;
+                                tailForm.LoadConfig(configFileOther, _configPath);
+                            }
+                        }
+                    }
+                    break;
+                } 
+            }
         }
 
         private void gotoPreviousHighlightToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1254,35 +1291,6 @@ namespace SnakeTail
             }
         }
 
-        private void applyViewOptionsToAllToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            TailFileConfig configFile = new TailFileConfig();
-            SaveConfig(configFile);
-            TailConfigApplyAllForm configForm = new TailConfigApplyAllForm();
-            if (configForm.ShowDialog() == DialogResult.OK)
-            {
-                // Then we loop through all forms (includes free floating)
-                foreach (Form childForm in Application.OpenForms)
-                {
-                    TailForm tailForm = childForm as TailForm;
-                    if (tailForm != null && tailForm != this)
-                    {
-                        TailFileConfig configFileOther = new TailFileConfig();
-                        tailForm.SaveConfig(configFileOther);
-                        if (configForm._checkBoxColors.Checked)
-                        {
-                            configFileOther.FormBackColor = configFile.FormBackColor;
-                            configFileOther.FormTextColor = configFile.FormTextColor;
-                        }
-                        if (configForm._checkBoxFont.Checked)
-                            configFileOther.FontInvariant = configFile.FontInvariant;
-                        if (configForm._checkboxKeywords.Checked)
-                            configFileOther.KeywordHighlight = configFile.KeywordHighlight;
-                        tailForm.LoadConfig(configFileOther, _configPath);
-                    }
-                }
-            }
-        }
     }
 
     class LogFileListView : ListView

@@ -77,6 +77,8 @@ namespace SnakeTail
             this._fileEncodingCmb = new System.Windows.Forms.ComboBox();
             this._filePathEdt = new System.Windows.Forms.TextBox();
             this._tabPageKeyWords = new System.Windows.Forms.TabPage();
+            this._moveDownKeywordBtn = new System.Windows.Forms.Button();
+            this._moveUpKeywordBtn = new System.Windows.Forms.Button();
             this._delWordBtn = new System.Windows.Forms.Button();
             this._edtWordBtn = new System.Windows.Forms.Button();
             this._addWordBtn = new System.Windows.Forms.Button();
@@ -90,8 +92,7 @@ namespace SnakeTail
             this._extToolsListView = new System.Windows.Forms.ListView();
             this._acceptBtn = new System.Windows.Forms.Button();
             this._cancelBtn = new System.Windows.Forms.Button();
-            this._moveUpKeywordBtn = new System.Windows.Forms.Button();
-            this._moveDownKeywordBtn = new System.Windows.Forms.Button();
+            this._applyAllBtn = new System.Windows.Forms.Button();
             label2 = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -426,6 +427,26 @@ namespace SnakeTail
             this._tabPageKeyWords.Text = "Keyword Highlight";
             this._tabPageKeyWords.UseVisualStyleBackColor = true;
             // 
+            // _moveDownKeywordBtn
+            // 
+            this._moveDownKeywordBtn.Location = new System.Drawing.Point(276, 147);
+            this._moveDownKeywordBtn.Name = "_moveDownKeywordBtn";
+            this._moveDownKeywordBtn.Size = new System.Drawing.Size(75, 23);
+            this._moveDownKeywordBtn.TabIndex = 11;
+            this._moveDownKeywordBtn.Text = "Move Down";
+            this._moveDownKeywordBtn.UseVisualStyleBackColor = true;
+            this._moveDownKeywordBtn.Click += new System.EventHandler(this._moveDownKeywordBtn_Click);
+            // 
+            // _moveUpKeywordBtn
+            // 
+            this._moveUpKeywordBtn.Location = new System.Drawing.Point(276, 118);
+            this._moveUpKeywordBtn.Name = "_moveUpKeywordBtn";
+            this._moveUpKeywordBtn.Size = new System.Drawing.Size(75, 23);
+            this._moveUpKeywordBtn.TabIndex = 10;
+            this._moveUpKeywordBtn.Text = "Move Up";
+            this._moveUpKeywordBtn.UseVisualStyleBackColor = true;
+            this._moveUpKeywordBtn.Click += new System.EventHandler(this._moveUpKeywordBtn_Click);
+            // 
             // _delWordBtn
             // 
             this._delWordBtn.Location = new System.Drawing.Point(276, 64);
@@ -585,25 +606,15 @@ namespace SnakeTail
             this._cancelBtn.Text = "Cancel";
             this._cancelBtn.UseVisualStyleBackColor = true;
             // 
-            // _moveUpKeywordBtn
+            // _applyAllBtn
             // 
-            this._moveUpKeywordBtn.Location = new System.Drawing.Point(276, 118);
-            this._moveUpKeywordBtn.Name = "_moveUpKeywordBtn";
-            this._moveUpKeywordBtn.Size = new System.Drawing.Size(75, 23);
-            this._moveUpKeywordBtn.TabIndex = 10;
-            this._moveUpKeywordBtn.Text = "Move Up";
-            this._moveUpKeywordBtn.UseVisualStyleBackColor = true;
-            this._moveUpKeywordBtn.Click += new System.EventHandler(this._moveUpKeywordBtn_Click);
-            // 
-            // _moveDownKeywordBtn
-            // 
-            this._moveDownKeywordBtn.Location = new System.Drawing.Point(276, 147);
-            this._moveDownKeywordBtn.Name = "_moveDownKeywordBtn";
-            this._moveDownKeywordBtn.Size = new System.Drawing.Size(75, 23);
-            this._moveDownKeywordBtn.TabIndex = 11;
-            this._moveDownKeywordBtn.Text = "Move Down";
-            this._moveDownKeywordBtn.UseVisualStyleBackColor = true;
-            this._moveDownKeywordBtn.Click += new System.EventHandler(this._moveDownKeywordBtn_Click);
+            this._applyAllBtn.DialogResult = System.Windows.Forms.DialogResult.Retry;
+            this._applyAllBtn.Location = new System.Drawing.Point(10, 245);
+            this._applyAllBtn.Name = "_applyAllBtn";
+            this._applyAllBtn.Size = new System.Drawing.Size(81, 23);
+            this._applyAllBtn.TabIndex = 16;
+            this._applyAllBtn.Text = "Apply to All";
+            this._applyAllBtn.UseVisualStyleBackColor = true;
             // 
             // TailConfigForm
             // 
@@ -612,6 +623,7 @@ namespace SnakeTail
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this._cancelBtn;
             this.ClientSize = new System.Drawing.Size(377, 271);
+            this.Controls.Add(this._applyAllBtn);
             this.Controls.Add(this._cancelBtn);
             this.Controls.Add(this._acceptBtn);
             this.Controls.Add(this._tabControl);
@@ -670,6 +682,7 @@ namespace SnakeTail
         private System.Windows.Forms.Button _moveUpToolBtn;
         private System.Windows.Forms.Button _moveDownKeywordBtn;
         private System.Windows.Forms.Button _moveUpKeywordBtn;
+        private System.Windows.Forms.Button _applyAllBtn;
 
 
 

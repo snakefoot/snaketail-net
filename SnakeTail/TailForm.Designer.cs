@@ -75,7 +75,6 @@ namespace SnakeTail
             this.gotoNextHighlightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pauseWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configureStatisticsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.applyViewOptionsToAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.switchModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.externalToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.startServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -102,7 +101,7 @@ namespace SnakeTail
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+            toolStripSeparator1.Size = new System.Drawing.Size(57, 6);
             // 
             // toolStripSeparator2
             // 
@@ -119,7 +118,7 @@ namespace SnakeTail
             this._contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             toolStripSeparator1});
             this._contextMenuStrip.Name = "contextMenuStrip1";
-            this._contextMenuStrip.Size = new System.Drawing.Size(153, 32);
+            this._contextMenuStrip.Size = new System.Drawing.Size(61, 10);
             this._contextMenuStrip.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this._contextMenuStrip_Closed);
             this._contextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this._contextMenuStrip_Opening);
             // 
@@ -174,7 +173,6 @@ namespace SnakeTail
             this.pauseWindowToolStripMenuItem,
             toolStripSeparator2,
             this.configureStatisticsToolStripMenuItem,
-            this.applyViewOptionsToAllToolStripMenuItem,
             this.switchModeToolStripMenuItem,
             toolStripSeparator3,
             this.externalToolsToolStripMenuItem,
@@ -245,13 +243,6 @@ namespace SnakeTail
             this.configureStatisticsToolStripMenuItem.Text = "View Options...";
             this.configureStatisticsToolStripMenuItem.Click += new System.EventHandler(this.configureStatisticsToolStripMenuItem_Click);
             // 
-            // applyViewOptionsToAllToolStripMenuItem
-            // 
-            this.applyViewOptionsToAllToolStripMenuItem.Name = "applyViewOptionsToAllToolStripMenuItem";
-            this.applyViewOptionsToAllToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
-            this.applyViewOptionsToAllToolStripMenuItem.Text = "Apply View Options to All";
-            this.applyViewOptionsToAllToolStripMenuItem.Click += new System.EventHandler(this.applyViewOptionsToAllToolStripMenuItem_Click);
-            // 
             // switchModeToolStripMenuItem
             // 
             this.switchModeToolStripMenuItem.Name = "switchModeToolStripMenuItem";
@@ -268,6 +259,7 @@ namespace SnakeTail
             // startServiceToolStripMenuItem
             // 
             this.startServiceToolStripMenuItem.Name = "startServiceToolStripMenuItem";
+            this.startServiceToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F8;
             this.startServiceToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
             this.startServiceToolStripMenuItem.Text = "Start Service...";
             this.startServiceToolStripMenuItem.Click += new System.EventHandler(this.startServiceToolStripMenuItem_Click);
@@ -275,6 +267,7 @@ namespace SnakeTail
             // stopServiceToolStripMenuItem
             // 
             this.stopServiceToolStripMenuItem.Name = "stopServiceToolStripMenuItem";
+            this.stopServiceToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.F8)));
             this.stopServiceToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
             this.stopServiceToolStripMenuItem.Text = "Stop Service...";
             this.stopServiceToolStripMenuItem.Click += new System.EventHandler(this.stopServiceToolStripMenuItem_Click);
@@ -282,6 +275,7 @@ namespace SnakeTail
             // pauseServiceToolStripMenuItem
             // 
             this.pauseServiceToolStripMenuItem.Name = "pauseServiceToolStripMenuItem";
+            this.pauseServiceToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F9;
             this.pauseServiceToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
             this.pauseServiceToolStripMenuItem.Text = "Pause Service...";
             this.pauseServiceToolStripMenuItem.Click += new System.EventHandler(this.pauseServiceToolStripMenuItem_Click);
@@ -289,6 +283,7 @@ namespace SnakeTail
             // resumeServiceToolStripMenuItem
             // 
             this.resumeServiceToolStripMenuItem.Name = "resumeServiceToolStripMenuItem";
+            this.resumeServiceToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.F9)));
             this.resumeServiceToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
             this.resumeServiceToolStripMenuItem.Text = "Resume Service...";
             this.resumeServiceToolStripMenuItem.Click += new System.EventHandler(this.resumeServiceToolStripMenuItem_Click);
@@ -373,7 +368,6 @@ namespace SnakeTail
         private System.Windows.Forms.ToolStripMenuItem gotoNextHighlightToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem gotoPreviousHighlightToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pauseWindowToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem applyViewOptionsToAllToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem externalToolsToolStripMenuItem;
     }
 }
