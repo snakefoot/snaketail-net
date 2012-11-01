@@ -34,6 +34,8 @@ namespace SnakeTail
         TimeSpan _fileCheckFrequency = TimeSpan.FromSeconds(10);
         bool _fileCheckPattern = false;
 
+        public event EventHandler FileReloadedEvent;
+
         public LogFileStream(string configPath, string filePath, Encoding fileEncoding, int fileCheckFrequency, bool fileCheckPattern)
         {
             _fileEncoding = fileEncoding;
@@ -45,6 +47,11 @@ namespace SnakeTail
             LoadFile(_filePathAbsolute, _fileEncoding, _fileCheckPattern);
         }
 
+        public void Reset()
+        {
+            FileReloadedEvent = null;
+        }
+
         public void CheckLogFile(bool forceReload)
         {
             _lastFileCheck = DateTime.Now;
@@ -52,6 +59,11 @@ namespace SnakeTail
             if (_fileStream == null || forceReload)
             {
                 LoadFile(_filePathAbsolute, _fileEncoding, _fileCheckPattern);
+                if (_fileStream != null || forceReload)
+                {
+                    if (FileReloadedEvent != null)
+                        FileReloadedEvent(this, null);
+                }
             }
             else
             {
@@ -65,6 +77,8 @@ namespace SnakeTail
                 {
                     // The file have been renamed / deleted (reload new file)
                     LoadFile(_filePathAbsolute, _fileEncoding, _fileCheckPattern);
+                    if (FileReloadedEvent != null)
+                        FileReloadedEvent(this, null);
                 }
                 _lastFileCheckLength = fileCheckLength;
             }

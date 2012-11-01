@@ -61,6 +61,7 @@ namespace SnakeTail
             System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+            System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
             this._contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this._tailTimer = new System.Windows.Forms.Timer(this.components);
             this._statusStrip = new System.Windows.Forms.StatusStrip();
@@ -81,6 +82,11 @@ namespace SnakeTail
             this.stopServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pauseServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resumeServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.bookmarksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toggleBookmarkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.nextBookmarkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.previousBookmarkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearBookmarksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._tailListView = new SnakeTail.LogFileListView();
             this.hiddenItem = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.lineItem = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -88,6 +94,7 @@ namespace SnakeTail
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this._contextMenuStrip.SuspendLayout();
             this._statusStrip.SuspendLayout();
             this._menuStrip.SuspendLayout();
@@ -112,6 +119,11 @@ namespace SnakeTail
             // 
             toolStripSeparator3.Name = "toolStripSeparator3";
             toolStripSeparator3.Size = new System.Drawing.Size(247, 6);
+            // 
+            // toolStripSeparator5
+            // 
+            toolStripSeparator5.Name = "toolStripSeparator5";
+            toolStripSeparator5.Size = new System.Drawing.Size(247, 6);
             // 
             // _contextMenuStrip
             // 
@@ -176,11 +188,13 @@ namespace SnakeTail
             this.switchModeToolStripMenuItem,
             toolStripSeparator3,
             this.externalToolsToolStripMenuItem,
-            toolStripSeparator4,
+            toolStripSeparator5,
             this.startServiceToolStripMenuItem,
             this.stopServiceToolStripMenuItem,
             this.pauseServiceToolStripMenuItem,
-            this.resumeServiceToolStripMenuItem});
+            this.resumeServiceToolStripMenuItem,
+            toolStripSeparator4,
+            this.bookmarksToolStripMenuItem});
             this._activeWindowMenuItem.MergeAction = System.Windows.Forms.MergeAction.Replace;
             this._activeWindowMenuItem.MergeIndex = 1;
             this._activeWindowMenuItem.Name = "_activeWindowMenuItem";
@@ -288,6 +302,48 @@ namespace SnakeTail
             this.resumeServiceToolStripMenuItem.Text = "Resume Service...";
             this.resumeServiceToolStripMenuItem.Click += new System.EventHandler(this.resumeServiceToolStripMenuItem_Click);
             // 
+            // bookmarksToolStripMenuItem
+            // 
+            this.bookmarksToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toggleBookmarkToolStripMenuItem,
+            this.nextBookmarkToolStripMenuItem,
+            this.previousBookmarkToolStripMenuItem,
+            this.clearBookmarksToolStripMenuItem});
+            this.bookmarksToolStripMenuItem.Name = "bookmarksToolStripMenuItem";
+            this.bookmarksToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
+            this.bookmarksToolStripMenuItem.Text = "Bookmarks";
+            // 
+            // toggleBookmarkToolStripMenuItem
+            // 
+            this.toggleBookmarkToolStripMenuItem.Name = "toggleBookmarkToolStripMenuItem";
+            this.toggleBookmarkToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F2)));
+            this.toggleBookmarkToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
+            this.toggleBookmarkToolStripMenuItem.Text = "Toggle Bookmark";
+            this.toggleBookmarkToolStripMenuItem.Click += new System.EventHandler(this.toggleBookmarkToolStripMenuItem_Click);
+            // 
+            // nextBookmarkToolStripMenuItem
+            // 
+            this.nextBookmarkToolStripMenuItem.Name = "nextBookmarkToolStripMenuItem";
+            this.nextBookmarkToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F2;
+            this.nextBookmarkToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
+            this.nextBookmarkToolStripMenuItem.Text = "Next Bookmark";
+            this.nextBookmarkToolStripMenuItem.Click += new System.EventHandler(this.nextBookmarkToolStripMenuItem_Click);
+            // 
+            // previousBookmarkToolStripMenuItem
+            // 
+            this.previousBookmarkToolStripMenuItem.Name = "previousBookmarkToolStripMenuItem";
+            this.previousBookmarkToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.F2)));
+            this.previousBookmarkToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
+            this.previousBookmarkToolStripMenuItem.Text = "Previous Bookmark";
+            this.previousBookmarkToolStripMenuItem.Click += new System.EventHandler(this.previousBookmarkToolStripMenuItem_Click);
+            // 
+            // clearBookmarksToolStripMenuItem
+            // 
+            this.clearBookmarksToolStripMenuItem.Name = "clearBookmarksToolStripMenuItem";
+            this.clearBookmarksToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
+            this.clearBookmarksToolStripMenuItem.Text = "Clear Bookmarks";
+            this.clearBookmarksToolStripMenuItem.Click += new System.EventHandler(this.clearBookmarksToolStripMenuItem_Click);
+            // 
             // _tailListView
             // 
             this._tailListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
@@ -369,5 +425,10 @@ namespace SnakeTail
         private System.Windows.Forms.ToolStripMenuItem gotoPreviousHighlightToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pauseWindowToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem externalToolsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem bookmarksToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toggleBookmarkToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem nextBookmarkToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem previousBookmarkToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem clearBookmarksToolStripMenuItem;
     }
 }
