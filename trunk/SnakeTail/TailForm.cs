@@ -98,6 +98,9 @@ namespace SnakeTail
         int _loghitCounter = -1;
         bool _displayTabIcon = false;
         List<ExternalToolConfig> _externalTools;
+        Color _bookmarkTextColor = Color.Yellow;    // Default bookmark text color
+        Color _bookmarkBackColor = Color.DarkGreen; // Default bookmark background color
+        List<int> _bookmarks = new List<int>();
 
         public TailForm()
         {
@@ -145,6 +148,11 @@ namespace SnakeTail
             if (tailConfig.FormFont != null)
                 _tailListView.Font = tailConfig.FormFont;
 
+            if (tailConfig.FormBookmarkBackColor != null)
+                _bookmarkBackColor = tailConfig.FormBookmarkBackColor.Value;
+            if (tailConfig.FormBookmarkTextColor != null)
+                _bookmarkTextColor = tailConfig.FormBookmarkTextColor.Value;
+
             if (tailConfig.FileChangeCheckInterval > 0)
                 _tailTimer.Interval = tailConfig.FileChangeCheckInterval;
 
@@ -190,6 +198,9 @@ namespace SnakeTail
 
             Encoding fileEncoding = tailConfig.EnumFileEncoding;
 
+            if (_logTailStream != null)
+                _logTailStream.Reset();
+
             if (_logFileStream == null || _logFileStream.FilePath != tailConfig.FilePath || _logFileStream.FileEncoding != fileEncoding || _logFileStream.FileCheckInterval != tailConfig.FileCheckInterval || _logFileStream.FileCheckPattern != tailConfig.FileCheckPattern)
                 _logFileStream = new LogFileStream(configPath, tailConfig.FilePath, fileEncoding, tailConfig.FileCheckInterval, tailConfig.FileCheckPattern);
             if (_logTailStream == null || _logTailStream.FilePath != tailConfig.FilePath || _logTailStream.FileEncoding != fileEncoding || _logTailStream.FileCheckInterval != tailConfig.FileCheckInterval || _logTailStream.FileCheckPattern != tailConfig.FileCheckPattern)
@@ -204,6 +215,8 @@ namespace SnakeTail
                     }
                 }
             }
+
+            _logTailStream.FileReloadedEvent += new EventHandler(_logTailStream_FileReloadedEvent);
 
             if (_logFileCache != null)
                 _logFileCache.Reset();
@@ -270,6 +283,25 @@ namespace SnakeTail
             }
         }
 
+        void _logTailStream_FileReloadedEvent(object sender, EventArgs e)
+        {
+            // If new file has arrived, then update form-title to display this
+            if (_formTitleMatchFilename)
+            {
+                string fileName = Path.GetFileName(_logTailStream.Name);
+                if (!String.IsNullOrEmpty(fileName))
+                    _formTitle = fileName;
+                UpdateFormTitle(true);
+            }
+
+            // Reset bookmarks
+            if (_bookmarks.Count > 0)
+            {
+                _bookmarks.Clear();
+                _tailListView.Invalidate();
+            }
+        }
+
         void UpdateFormTitle(bool force)
         {
             if (!force && DateTime.Now.Subtract(_lastFormTitleUpdate) < TimeSpan.FromSeconds(1))
@@ -284,7 +316,7 @@ namespace SnakeTail
                     parentTab.Text = title;
 
                 string fileStreamPath = _logTailStream.Name;
-                if (fileStreamPath != null)
+                if (!String.IsNullOrEmpty(fileStreamPath))
                     parentTab.ToolTipText = fileStreamPath;
                 else
                     parentTab.ToolTipText = "";
@@ -391,14 +423,17 @@ namespace SnakeTail
 
         public void SaveConfig(TailFileConfig tailConfig)
         {
+            tailConfig.FormFont = _tailListView.Font;
             tailConfig.FormBackColor = _tailListView.BackColor;
             tailConfig.FormTextColor = _tailListView.ForeColor;
+
+            tailConfig.FormBookmarkBackColor = _bookmarkBackColor;
+            tailConfig.FormBookmarkTextColor = _bookmarkTextColor;
 
             tailConfig.KeywordHighlight = _keywordHighlight;
 
             tailConfig.ExternalTools = _externalTools;
 
-            tailConfig.FormFont = _tailListView.Font;
             tailConfig.FileCacheSize = _logFileCache.Items.Count;
             tailConfig.EnumFileEncoding = _logTailStream.FileEncoding;
             tailConfig.FilePath = _logTailStream.FilePath;
@@ -442,11 +477,17 @@ namespace SnakeTail
             Clipboard.SetText(selection.ToString());
         }
 
-        private bool MatchTextSearch(string lineText, string searchText, bool matchCase, bool keywordHighlights)
+        private bool MatchTextSearch(int lineNumber, string lineText, string searchText, bool matchCase, bool lineHighlights)
         {
-            if (keywordHighlights)
+            if (lineHighlights)
             {
-                return MatchesKeyword(lineText, false) != null;
+                if (MatchesBookmark(lineNumber))
+                    return true;
+
+                if (MatchesKeyword(lineText, false) != null)
+                    return true;
+
+                return false;
             }
             else
             if (matchCase)
@@ -466,7 +507,7 @@ namespace SnakeTail
             return false;
         }
 
-        private int SearchForTextForward(string searchText, bool matchCase, bool keywordHighlights, int startIndex, int endIndex, ref LogFileCache searchFileCache)
+        private int SearchForTextForward(string searchText, bool matchCase, bool lineHighlights, int startIndex, int endIndex, ref LogFileCache searchFileCache)
         {
             for (int i = startIndex; i < endIndex; ++i)
             {
@@ -499,18 +540,18 @@ namespace SnakeTail
                     lineText = lvi.Text;
                 }
 
-                if (MatchTextSearch(lineText, searchText, matchCase, keywordHighlights))
+                if (MatchTextSearch(i, lineText, searchText, matchCase, lineHighlights))
                     return i;
             }
             return -1;
         }
 
-        public bool SearchForText(string searchText, bool matchCase, bool searchForward, bool keywordHighlights)
+        public bool SearchForText(string searchText, bool matchCase, bool searchForward, bool lineHighlights)
         {
             if (_tailListView.VirtualListSize == 0)
                 return false;
 
-            if (keywordHighlights && (_keywordHighlight == null || _keywordHighlight.Count == 0))
+            if (lineHighlights && (_keywordHighlight == null || _keywordHighlight.Count == 0) && _bookmarks.Count==0)
                 return false;
 
             // Use selection if it is below top-index
@@ -544,7 +585,7 @@ namespace SnakeTail
                         int endIndex = i + 1;
                         do
                         {
-                            matchFound = SearchForTextForward(searchText, matchCase, keywordHighlights, startIndex, endIndex, ref searchFileCache);
+                            matchFound = SearchForTextForward(searchText, matchCase, lineHighlights, startIndex, endIndex, ref searchFileCache);
                             if (matchFound != -1)
                             {
                                 lastMatchFound = matchFound;
@@ -576,7 +617,7 @@ namespace SnakeTail
                         }
                     }
 
-                    if (MatchTextSearch(lineText, searchText, matchCase, keywordHighlights))
+                    if (MatchTextSearch(i, lineText, searchText, matchCase, lineHighlights))
                     {
                         SetStatusBar(null);
                         _tailListView.SelectedIndices.Clear();
@@ -596,7 +637,7 @@ namespace SnakeTail
                 startIndex += 1;
                 int endIndex = _tailListView.VirtualListSize;
 
-                int matchFound = SearchForTextForward(searchText, matchCase, keywordHighlights, startIndex, endIndex, ref searchFileCache);
+                int matchFound = SearchForTextForward(searchText, matchCase, lineHighlights, startIndex, endIndex, ref searchFileCache);
                 if (matchFound != -1)
                 {
                     SetStatusBar(null);
@@ -717,15 +758,27 @@ namespace SnakeTail
             }
             else
             {
-                TailKeywordConfig keyword = MatchesKeyword(e.Item.Text, false);
-                if (keyword != null)
+                // Bookmark coloring has higher priority, than keyword highlight
+                if (MatchesBookmark(e.ItemIndex))
                 {
-                    if (keyword.FormBackColor.HasValue && keyword.FormTextColor.HasValue)
+                    using (Brush backBrush = new SolidBrush(_bookmarkBackColor))
                     {
-                        using (Brush backBrush = new SolidBrush(keyword.FormBackColor.Value))
+                        e.Graphics.FillRectangle(backBrush, e.Bounds);
+                        textColor = _bookmarkTextColor;
+                    }
+                }
+                else
+                {
+                    TailKeywordConfig keyword = MatchesKeyword(e.Item.Text, false);
+                    if (keyword != null)
+                    {
+                        if (keyword.FormBackColor.HasValue && keyword.FormTextColor.HasValue)
                         {
-                            e.Graphics.FillRectangle(backBrush, e.Bounds);
-                            textColor = keyword.FormTextColor.Value;
+                            using (Brush backBrush = new SolidBrush(keyword.FormBackColor.Value))
+                            {
+                                e.Graphics.FillRectangle(backBrush, e.Bounds);
+                                textColor = keyword.FormTextColor.Value;
+                            }
                         }
                     }
                 }
@@ -744,6 +797,17 @@ namespace SnakeTail
                 else
                     e.Graphics.DrawString(e.Item.Text, _tailListView.Font, textBrush != null ? textBrush : SystemBrushes.HighlightText, e.Bounds);
             }
+        }
+
+        private bool MatchesBookmark(int lineNumber)
+        {
+            if (_bookmarkBackColor == null || _bookmarkTextColor == null)
+                return false;
+
+            if (_bookmarks.Count==0)
+                return false;
+
+            return _bookmarks.Contains(lineNumber);
         }
 
         private TailKeywordConfig MatchesKeyword(string line, bool logHitCounter)
@@ -867,8 +931,6 @@ namespace SnakeTail
             else
                 warningIcon = true;
 
-            string oldFilename = _logTailStream.Name;
-
             string line = _logTailStream.ReadLine(lineCount + 1);
             while(line != null)
             {
@@ -879,16 +941,6 @@ namespace SnakeTail
                 if (!warningIcon && MatchesKeyword(line, false) != null)
                     warningIcon = true;
                 line = _logTailStream.ReadLine(lineCount + 1);
-            }
-
-            // If new file has arrived, then update form-title to display this
-            if (_formTitleMatchFilename)
-            {
-                if (oldFilename != _logTailStream.Name)
-                {
-                    _formTitle = Path.GetFileName(_logTailStream.Name);
-                    UpdateFormTitle(true);
-                }
             }
 
             if (lineCount == _tailListView.VirtualListSize)
@@ -1236,6 +1288,8 @@ namespace SnakeTail
 
                 case DialogResult.Retry:
                 {
+                    // Apply Config To All
+                    LoadConfig(configForm.TailFileConfig, _configPath);
                     configFile = new TailFileConfig();
                     SaveConfig(configFile);
                     TailConfigApplyAllForm configFormApply = new TailConfigApplyAllForm();
@@ -1291,6 +1345,108 @@ namespace SnakeTail
             }
         }
 
+        private void toggleBookmarkToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_tailListView.VirtualListSize == 0)
+                return;
+
+            ListViewItem focusedItem = _tailListView.FocusedItem;
+            if (focusedItem==null)
+                return;
+
+            if (!_bookmarks.Contains(focusedItem.Index))
+                _bookmarks.Add(focusedItem.Index);
+            else
+                _bookmarks.Remove(focusedItem.Index);
+            _tailListView.Invalidate();
+            _tailListView.Update();
+        }
+
+        private void clearBookmarksToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_bookmarks.Count > 0)
+            {
+                _bookmarks.Clear();
+                _tailListView.Invalidate();
+                _tailListView.Update();
+            }
+        }
+
+        private void nextBookmarkToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_tailListView.VirtualListSize == 0)
+                return;
+
+            if (_bookmarks.Count == 0)
+                return;
+
+            int startIndex = _tailListView.VirtualListSize - 1;
+
+            ListViewItem focusedItem = _tailListView.FocusedItem;
+            if (focusedItem != null)
+                startIndex = focusedItem.Index;
+
+            // Search for the bookmark that is larger but closest to the index
+            int matchFound = int.MaxValue;
+            foreach (int lineNumber in _bookmarks)
+            {
+                if (lineNumber > startIndex && lineNumber - startIndex < matchFound)
+                    matchFound = lineNumber;
+            }
+            if (matchFound != int.MaxValue)
+            {
+                if (matchFound >= _tailListView.VirtualListSize)
+                {
+                    _bookmarks.Remove(matchFound);
+                    _tailListView.Invalidate();
+                    _tailListView.Update();
+                    return; // something very weird has happened
+                }
+
+                _tailListView.SelectedIndices.Clear();
+                _tailListView.EnsureVisible(matchFound);
+                _tailListView.SelectedIndices.Add(matchFound);   // Set selection after having scrolled to avoid top-index cache miss
+                _tailListView.Items[matchFound].Focused = true;
+            }
+        }
+
+        private void previousBookmarkToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_tailListView.VirtualListSize == 0)
+                return;
+
+            if (_bookmarks.Count == 0)
+                return;
+
+            int startIndex = _tailListView.VirtualListSize - 1;
+
+            ListViewItem focusedItem = _tailListView.FocusedItem;
+            if (focusedItem != null)
+                startIndex = focusedItem.Index;
+
+            // Search for the bookmark that is larger but closest to the index
+            int matchFound = int.MaxValue;
+            foreach (int lineNumber in _bookmarks)
+            {
+                if (lineNumber < startIndex && startIndex - lineNumber < matchFound)
+                    matchFound = lineNumber;
+            }
+            if (matchFound != int.MaxValue)
+            {
+                if (matchFound >= _tailListView.VirtualListSize)
+                {
+                    _bookmarks.Remove(matchFound);
+                    _tailListView.Invalidate();
+                    _tailListView.Update();
+                    return; // something very weird has happened
+                }
+
+                _tailListView.SelectedIndices.Clear();
+                _tailListView.EnsureVisible(matchFound);
+                _tailListView.SelectedIndices.Add(matchFound);   // Set selection after having scrolled to avoid top-index cache miss
+                _tailListView.Items[matchFound].Focused = true;
+            }
+        }
     }
 
     class LogFileListView : ListView

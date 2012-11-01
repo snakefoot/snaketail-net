@@ -174,6 +174,8 @@ namespace SnakeTail
         public string BackColor { get; set; }   // ColorTranslator
         public string Font { get; set; }        // TypeConverter
         public string FontInvariant { get; set; }        // TypeConverter
+        public string BookmarkTextColor { get; set; } // ColorTranslator
+        public string BookmarkBackColor { get; set; } // ColorTranslator
         public bool Modeless { get; set; }
         public string Title { get; set; }
         public System.Windows.Forms.FormWindowState WindowState { get; set; }
@@ -275,6 +277,42 @@ namespace SnakeTail
                     BackColor = ColorTranslator.ToHtml(value.Value);
                 else
                     BackColor = null;
+            }
+        }
+
+        internal Color? FormBookmarkTextColor
+        {
+            get
+            {
+                if (BookmarkTextColor != null)
+                    return ColorTranslator.FromHtml(BookmarkTextColor);
+                else
+                    return null;
+            }
+            set
+            {
+                if (value.HasValue)
+                    BookmarkTextColor = ColorTranslator.ToHtml(value.Value);
+                else
+                    BookmarkTextColor = null;
+            }
+        }
+
+        internal Color? FormBookmarkBackColor
+        {
+            get
+            {
+                if (BookmarkBackColor != null)
+                    return ColorTranslator.FromHtml(BookmarkBackColor);
+                else
+                    return null;
+            }
+            set
+            {
+                if (value.HasValue)
+                    BookmarkBackColor = ColorTranslator.ToHtml(value.Value);
+                else
+                    BookmarkBackColor = null;
             }
         }
    }

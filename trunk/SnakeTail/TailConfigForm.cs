@@ -112,6 +112,8 @@ namespace SnakeTail
                 _tabControl.TabPages.Remove(_tabPageKeyWords);
                 _tabControl.TabPages.Remove(_tabPageExtTools);
                 _applyAllBtn.Visible = false;
+                _bookmarkTextColorBtn.Visible = false;
+                _bookmarkBackColorBtn.Visible = false;
             }
         }
 
@@ -182,6 +184,29 @@ namespace SnakeTail
             if (colorDlg.ShowDialog() == DialogResult.OK)
             {
                 TailFileConfig.FormBackColor = colorDlg.Color;
+            }
+        }
+
+        private void _bookmarkTextColorBtn_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDlg = new ColorDialog();
+            if (TailFileConfig.FormBookmarkTextColor != null)
+                colorDlg.Color = TailFileConfig.FormBookmarkTextColor.Value;
+            if (colorDlg.ShowDialog() == DialogResult.OK)
+            {
+                TailFileConfig.FormBookmarkTextColor = colorDlg.Color;
+            }
+        }
+
+
+        private void _bookmarkBackColorBtn_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDlg = new ColorDialog();
+            if (TailFileConfig.FormBookmarkBackColor != null)
+                colorDlg.Color = TailFileConfig.FormBookmarkBackColor.Value;
+            if (colorDlg.ShowDialog() == DialogResult.OK)
+            {
+                TailFileConfig.FormBookmarkBackColor = colorDlg.Color;
             }
         }
 

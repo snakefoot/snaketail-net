@@ -93,7 +93,7 @@ namespace SnakeTail
                 if (!found)
                 {
                     if (keywordHighlights)
-                        MessageBox.Show("Cannot find any keyword highlights", "Search Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("Cannot find any highlighted lines", "Search Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     else
                         MessageBox.Show("Cannot find \"" + _searchTextBox.Text + "\"", "Search Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
