@@ -16,6 +16,7 @@
     <FileAlignment>512</FileAlignment>
     <ApplicationIcon>Icons\Snake.ico</ApplicationIcon>
     <TargetFrameworkProfile />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -32,7 +33,6 @@
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -90,6 +90,7 @@
       <DependentUpon>ExternalToolConfigForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ListViewUtil.cs" />
+    <Compile Include="MiniDumper.cs" />
     <Compile Include="MruStripMenu.cs" />
     <Compile Include="StopwatchProfiler.cs" />
     <Compile Include="CPUMeter.cs" />
@@ -122,6 +123,7 @@
     <Compile Include="Program.cs">
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ZipStorer.cs" />
     <EmbeddedResource Include="AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
       <SubType>Designer</SubType>

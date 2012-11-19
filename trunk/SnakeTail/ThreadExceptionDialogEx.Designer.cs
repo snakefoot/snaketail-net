@@ -151,6 +151,7 @@ namespace SnakeTail
             this.Name = "ThreadExceptionDialogEx";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ThreadExceptionDialogEx";
+            this.Load += new System.EventHandler(this.ThreadExceptionDialogEx_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ThreadExceptionDialogEx_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this._pictureBox)).EndInit();
             this.ResumeLayout(false);
