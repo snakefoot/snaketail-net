@@ -30,9 +30,9 @@
 	</Company_Info>
 	<Program_Info>
 		<Program_Name>SnakeTail</Program_Name>
-		<Program_Version>1.7.1</Program_Version>
-		<Program_Release_Month>09</Program_Release_Month>
-		<Program_Release_Day>27</Program_Release_Day>
+		<Program_Version>1.8</Program_Version>
+		<Program_Release_Month>11</Program_Release_Month>
+		<Program_Release_Day>19</Program_Release_Day>
 		<Program_Release_Year>2012</Program_Release_Year>
 		<Program_Type>Freeware</Program_Type>
 		<Program_Release_Status>New Release</Program_Release_Status>
@@ -48,8 +48,8 @@
 			<Has_Expire_Info>N</Has_Expire_Info>
 		</Expire_Info>
 		<File_Info>
-			<File_Size_Bytes>200000</File_Size_Bytes>
-			<File_Size_K>200.0</File_Size_K>
+			<File_Size_Bytes>225000</File_Size_Bytes>
+			<File_Size_K>225.0</File_Size_K>
 			<File_Size_MB>0.2</File_Size_MB>
 		</File_Info>
 	</Program_Info>
@@ -72,7 +72,7 @@
 			<Application_XML_File_URL>http://snakenest.com/snaketail.pad.xml</Application_XML_File_URL>
 		</Application_URLs>
 		<Download_URLs>
-			<Primary_Download_URL>http://snaketail-net.googlecode.com/files/SnakeTail_v1.7.1.zip</Primary_Download_URL>
+			<Primary_Download_URL>http://snaketail-net.googlecode.com/files/SnakeTail_v1.8.zip</Primary_Download_URL>
 			<Secondary_Download_URL />
 			<Additional_Download_URL_1 />
 			<Additional_Download_URL_2 />
