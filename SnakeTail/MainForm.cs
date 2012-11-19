@@ -642,7 +642,13 @@ namespace SnakeTail
         {
             try
             {
-                ThreadExceptionDialogEx.CheckForUpdates(this, "http://snakenest.com/snaketail.pad.xml", true);
+                using(new HourGlass(this))
+                {
+                    CheckForUpdates updateChecker = new CheckForUpdates();
+                    updateChecker.PadUrl = Program.PadUrl;
+                    updateChecker.PromptAlways = true;
+                    updateChecker.SendReport(null);
+                }
             }
             catch (Exception ex)
             {

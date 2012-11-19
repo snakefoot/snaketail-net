@@ -29,14 +29,9 @@ namespace SnakeTail
 {
     public partial class ThreadExceptionDialogEx : Form
     {
-        string _emailHost;
-        int _emailPort;
-        string _emailUsername;
-        string _emailPassword;
-        string _emailToAddress;
-        string _emailFromAddress;
-        string _emailSubject;
-        bool _emailSSL;
+        public List<object> ReportItems { get; set; }
+
+        public Action< List<object> > SendReportEvent;
 
         public ThreadExceptionDialogEx(Exception exception)
         {
@@ -54,44 +49,186 @@ namespace SnakeTail
             _reportText.Text += Environment.NewLine;
             _reportText.Text += Environment.NewLine + "Please press 'Send Report' to notify " + Application.CompanyName;
 
-            _reportListBox.Items.Add(new ExceptionReport(exception));
-            _reportListBox.Items.Add(new ApplicationReport());
-            _reportListBox.Items.Add(new SystemReport());
+            ReportItems = new List<object>();
+            ReportItems.Add(new ExceptionReport(exception));
+            ReportItems.Add(new ApplicationReport());
+            ReportItems.Add(new SystemReport());
         }
 
-        public virtual string PadUrl { get; set; }
-        public virtual string EmailHost { get { return _emailHost; } set { _emailHost = value; } }
-        public virtual int EmailPort { get { return _emailPort; } set { _emailPort = value; } }
-        public virtual string EmailUsername { get { return _emailUsername; } set { _emailUsername = value; } }
-        public virtual string EmailPassword { get { return _emailPassword; } set { _emailPassword = value; } }
-        public virtual string EmailToAddress { get { return _emailToAddress; } set { _emailToAddress = value; } }
-        public virtual string EmailFromAddress { get { return _emailFromAddress; } set { _emailFromAddress = value; } }
-        public virtual string EmailSubject { get { return _emailSubject; } set { _emailSubject = value; } }
-        public virtual bool EmailSSL { get { return _emailSSL; } set { _emailSSL = value; } }
-        public virtual string EmailBody
+        private void ThreadExceptionDialogEx_Load(object sender, EventArgs e)
         {
-            get
+            foreach (object reportItem in ReportItems)
             {
-                StringBuilder body = new StringBuilder();
-                foreach (object item in _reportListBox.Items)
-                {
-                    ReportItem reportItem = item as ReportItem;
-                    if (reportItem != null)
-                        body.AppendLine(reportItem.Details);
-                }
-                return body.ToString();
+                _reportListBox.Items.Add(reportItem);
             }
         }
 
-        public static void CheckForUpdates(Form parentForm, string padUrl, bool promptAlways)
+        private void _detailsBtn_Click(object sender, EventArgs e)
         {
-            if (String.IsNullOrEmpty(padUrl) || parentForm==null)
+            _reportListBox.Visible = !_reportListBox.Visible;
+            if (_reportListBox.Visible)
+                this.Height += 150;
+            else
+                this.Height -= 150;
+        }
+
+        private void _abortBtn_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void _sendReportBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (new HourGlass(this))
+                {
+                    Action< List<object> > handler = SendReportEvent;
+                    if (handler != null)
+                        handler(ReportItems);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Failed to send report");
+            }
+            DialogResult = DialogResult.Ignore;
+            Close();
+        }
+
+        private void ThreadExceptionDialogEx_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData == (Keys.Control | Keys.C))
+            {
+                Clipboard.SetText(_reportText.Text);
+            }
+        }
+
+        private void _reportListBox_DoubleClick(object sender, EventArgs e)
+        {
+            object reportItem = _reportListBox.SelectedItem;
+            if (reportItem != null)
+            {
+                using (System.IO.StringWriter stringWriter = new System.IO.StringWriter())
+                {
+                    //Create our own namespaces for the output
+                    System.Xml.Serialization.XmlSerializerNamespaces ns = new System.Xml.Serialization.XmlSerializerNamespaces();
+                    ns.Add("", "");
+                    System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(reportItem.GetType());
+                    x.Serialize(stringWriter, reportItem, ns);
+                    MessageBox.Show(stringWriter.ToString(), reportItem.GetType().ToString());
+                }
+            }
+        }
+
+        private void _reportListBox_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            if (e.KeyData == Keys.Return)
+                e.IsInputKey = true;    // Steal the key-event from parent from
+        }
+
+        private void _reportListBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Return)
+            {
+                _reportListBox_DoubleClick(sender, e);
+                e.Handled = true;
+            }
+        }
+    }
+
+
+    public class ExceptionReport
+    {
+        public string ExceptionDetails { get; set; }
+        public string StackTrace { get; set; }
+
+        public ExceptionReport()
+        {
+        }
+
+        public ExceptionReport(Exception exception)
+        {
+            StringBuilder exceptionReport = new StringBuilder();
+            Exception innerException = exception;
+            while (innerException != null)
+            {
+                exceptionReport.Append("  ");
+                exceptionReport.Append(innerException.Message);
+                exceptionReport.Append(" (");
+                exceptionReport.Append(innerException.GetType().ToString());
+                exceptionReport.AppendLine(")");
+                innerException = innerException.InnerException;
+            }
+            ExceptionDetails = exceptionReport.ToString();
+
+            StackTrace = exception.StackTrace;
+        }
+    }
+
+    public class ApplicationReport
+    {
+        public string ApplicationTitle { get; set; }
+        public string ApplicationVersion { get; set; }
+        public string ProductName { get; set; }
+        public string CompanyName { get; set; }
+
+        public ApplicationReport()
+        {
+            ApplicationTitle = GetAssemblyTitle();
+            ApplicationVersion = Application.ProductVersion;
+            ProductName = Application.ProductName;
+            CompanyName = Application.CompanyName;
+        }
+
+        static string GetAssemblyTitle()
+        {
+            object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
+            if (attributes.Length > 0)
+            {
+                AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute)attributes[0];
+                if (titleAttribute.Title != "")
+                {
+                    return titleAttribute.Title;
+                }
+            }
+            return System.IO.Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().CodeBase);
+        }
+    }
+
+    public class SystemReport
+    {
+        public string OperatingSystem { get; set; }
+        public string Platform { get; set; }
+        public string FrameworkVersion { get; set; }
+        public string Language { get; set; }
+
+        public SystemReport()
+        {
+            OperatingSystem os = Environment.OSVersion;
+            OperatingSystem = os.VersionString;
+            if (IntPtr.Size == 4)
+                Platform = "x86";
+            else
+                Platform = "x64";
+            FrameworkVersion = System.Environment.Version.ToString();
+            Language = Application.CurrentCulture.EnglishName;
+        }
+    }
+
+    public class CheckForUpdates
+    {
+        public string PadUrl { get; set; }
+        public bool PromptAlways { get; set; }
+
+        public void SendReport(List<object> reportItems)
+        {
+            if (String.IsNullOrEmpty(PadUrl))
                 return;
 
-            using (new HourGlass(parentForm))
             using (WebClient client = new WebClient())
             {
-                string value = client.DownloadString(padUrl);
+                string value = client.DownloadString(PadUrl);
                 XmlDocument xmlDoc = new XmlDocument();
                 xmlDoc.LoadXml(value);
                 XmlNode appVerNode = xmlDoc.SelectSingleNode("/XML_DIZ_INFO/Program_Info/Program_Version");
@@ -116,221 +253,189 @@ namespace SnakeTail
                     }
                 }
             }
-            if (promptAlways)
+            if (PromptAlways)
                 MessageBox.Show("Using the latest version", "Check for updates", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
+    }
 
-        private void _detailsBtn_Click(object sender, EventArgs e)
+    public class MailCrashReport
+    {
+        public string EmailHost { get; set; }
+        public int EmailPort { get; set; }
+        public string EmailUsername { get; set; }
+        public string EmailPassword { get; set; }
+        public string EmailToAddress { get; set; }
+        public string EmailFromAddress { get; set; }
+        public string EmailSubject { get; set; }
+        public bool EmailSSL { get; set; }
+
+        public void SendReport(List<object> reportItems)
         {
-            _reportListBox.Visible = !_reportListBox.Visible;
-            if (_reportListBox.Visible)
-                this.Height += 150;
-            else
-                this.Height -= 150;
+            // Convert ReportItems to EmailBody
+            string emailBody = "";
+
+            using (System.IO.StringWriter stringWriter = new System.IO.StringWriter())
+            {
+                foreach (object reportItem in reportItems)
+                {
+                    System.Xml.Serialization.XmlSerializerNamespaces ns = new System.Xml.Serialization.XmlSerializerNamespaces();
+                    ns.Add("", "");
+                    System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(reportItem.GetType());
+                    x.Serialize(stringWriter, reportItem, ns);
+                }
+                emailBody = stringWriter.ToString();
+            }
+
+            using (MailMessage msg = new MailMessage())
+            {
+                msg.From = new MailAddress(EmailFromAddress);
+                foreach (string s in EmailToAddress.Split(";".ToCharArray()))
+                {
+                    msg.To.Add(s);
+                }
+                if (String.IsNullOrEmpty(EmailSubject))
+                    msg.Subject = Application.ProductName + " - Error Report";
+                else
+                    msg.Subject = EmailSubject;
+
+                msg.Body = emailBody;
+
+                SmtpClient smtp = null;
+                if (String.IsNullOrEmpty(EmailHost))
+                {
+                    smtp = new SmtpClient();
+                }
+                else
+                {
+                    if (EmailPort == 0)
+                        smtp = new SmtpClient(EmailHost);
+                    else
+                        smtp = new SmtpClient(EmailHost, EmailPort);
+                }
+                if (String.IsNullOrEmpty(EmailUsername) && String.IsNullOrEmpty(EmailPassword))
+                    smtp.UseDefaultCredentials = true;
+                else
+                    smtp.Credentials = new System.Net.NetworkCredential(EmailUsername, EmailPassword);
+                smtp.EnableSsl = EmailSSL;
+                smtp.Send(msg);
+            }
+        }
+    }
+
+    public class UploadCrashReport : IDisposable
+    {
+        public string HttpUrl { get; set; }
+        public string FileName { get; set; }
+        public string FileParamName { get; set; }
+        public System.Collections.Specialized.NameValueCollection HttpParams { get; set; }
+
+        System.IO.MemoryStream ZipStream = null;
+        System.IO.Compression.ZipStorer ZipStore = null;
+
+        public UploadCrashReport()
+        {
+            HttpParams = new System.Collections.Specialized.NameValueCollection();
+            HttpParams.Add("AppName", Application.ProductName);
+            HttpParams.Add("AppVersion", Application.ProductVersion);
+            HttpParams.Add("CrashGuid", Guid.NewGuid().ToString());
+
+            FileName = "crashrpt.zip";
+            FileParamName = "crashrpt";
+
+            string tmpFileName = System.IO.Path.GetTempFileName();
+            MiniDumper.Write(tmpFileName, MiniDumper.Typ.MiniDumpNormal);
+
+            ZipStream = new System.IO.MemoryStream();
+            ZipStore = System.IO.Compression.ZipStorer.Create(ZipStream, "Generated by ZipStorer class");
+            ZipStore.AddFile(System.IO.Compression.ZipStorer.Compression.Deflate, tmpFileName, "crashdump.dmp", "");
         }
 
-        private void _abortBtn_Click(object sender, EventArgs e)
+        public void SendReport(List<object> reportItems)
         {
-            Application.Exit();
+            // Create xml file containing reportItems
+            string prettyXml = "";
+            using (System.IO.StringWriter stringWriter = new System.IO.StringWriter())
+            {
+                foreach (object reportItem in reportItems)
+                {
+                    System.Xml.Serialization.XmlSerializerNamespaces ns = new System.Xml.Serialization.XmlSerializerNamespaces();
+                    ns.Add("", "");
+                    System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(reportItem.GetType());
+                    x.Serialize(stringWriter, reportItem, ns);
+                }
+                prettyXml = stringWriter.ToString();
+            }
+
+            using (System.IO.MemoryStream memoryStream = new System.IO.MemoryStream())
+            using (System.IO.StreamWriter streamWriter = new System.IO.StreamWriter(memoryStream))
+            {
+                streamWriter.WriteLine(prettyXml);
+                streamWriter.Flush();
+                memoryStream.Position = 0;
+                ZipStore.AddStream(System.IO.Compression.ZipStorer.Compression.Deflate, "crashrpt.xml", memoryStream, DateTime.Now, "");
+            }
+
+            ZipStore.Close();
+
+            // Upload File
+            HttpUploadFile(HttpUrl, ZipStream.ToArray(), FileParamName, FileName, "application/x-zip-compressed", HttpParams);
         }
 
-        private void _sendReportBtn_Click(object sender, EventArgs e)
+        public void Dispose()
         {
+            if (ZipStore != null)
+                ZipStore.Dispose();
+            if (ZipStream != null)
+                ZipStream.Dispose();
+        }
+
+        // Credits Cristian Romanescu @ http://stackoverflow.com/questions/566462/upload-files-with-httpwebrequest-multipart-form-data
+        static void HttpUploadFile(string url, byte[] fileContents, string fileParam, string fileName, string contentType, System.Collections.Specialized.NameValueCollection nvc)
+        {
+            string boundary = "---------------------------" + DateTime.Now.Ticks.ToString("x");
+            byte[] boundarybytes = System.Text.Encoding.ASCII.GetBytes("\r\n--" + boundary + "\r\n");
+
+            System.Net.HttpWebRequest wr = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(url);
+            wr.ContentType = "multipart/form-data; boundary=" + boundary;
+            wr.Method = "POST";
+            wr.KeepAlive = true;
+            wr.Credentials = System.Net.CredentialCache.DefaultCredentials;
+
+            System.IO.Stream rs = wr.GetRequestStream();
+
+            string formdataTemplate = "Content-Disposition: form-data; name=\"{0}\"\r\n\r\n{1}";
+            foreach (string key in nvc.Keys)
+            {
+                rs.Write(boundarybytes, 0, boundarybytes.Length);
+                string formitem = string.Format(formdataTemplate, key, nvc[key]);
+                byte[] formitembytes = System.Text.Encoding.UTF8.GetBytes(formitem);
+                rs.Write(formitembytes, 0, formitembytes.Length);
+            }
+            rs.Write(boundarybytes, 0, boundarybytes.Length);
+
+            string headerTemplate = "Content-Disposition: form-data; name=\"{0}\"; filename=\"{1}\"\r\nContent-Type: {2}\r\n\r\n";
+            string header = string.Format(headerTemplate, fileParam, fileName, contentType);
+            byte[] headerbytes = System.Text.Encoding.UTF8.GetBytes(header);
+            rs.Write(headerbytes, 0, headerbytes.Length);
+            rs.Write(fileContents, 0, fileContents.Length);
+
+            byte[] trailer = System.Text.Encoding.ASCII.GetBytes("\r\n--" + boundary + "--\r\n");
+            rs.Write(trailer, 0, trailer.Length);
+            rs.Close();
+
             try
             {
-                using (new HourGlass(this))
-                using (MailMessage msg = new MailMessage())
+                using (System.Net.WebResponse wresp = wr.GetResponse())
                 {
-                    msg.From = new MailAddress(EmailFromAddress);
-                    foreach (string s in EmailToAddress.Split(";".ToCharArray()))
-                    {
-                        msg.To.Add(s);
-                    }
-                    if (String.IsNullOrEmpty(EmailSubject))
-                        msg.Subject = Text;
-                    else
-                        msg.Subject = EmailSubject;
-
-                    msg.Body = EmailBody;
-
-                    SmtpClient smtp = null;
-                    if (String.IsNullOrEmpty(EmailHost))
-                    {
-                        smtp = new SmtpClient();
-                    }
-                    else
-                    {
-                        if (EmailPort == 0)
-                            smtp = new SmtpClient(EmailHost);
-                        else
-                            smtp = new SmtpClient(EmailHost, EmailPort);
-                    }
-                    if (String.IsNullOrEmpty(EmailUsername) && String.IsNullOrEmpty(EmailPassword))
-                        smtp.UseDefaultCredentials = true;
-                    else
-                        smtp.Credentials = new System.Net.NetworkCredential(EmailUsername, EmailPassword);
-                    smtp.EnableSsl = EmailSSL;
-                    smtp.Send(msg);
-
-                    CheckForUpdates(this, PadUrl, false);
+                    System.IO.StreamReader respReader = new System.IO.StreamReader(wresp.GetResponseStream());
+                    //MessageBox.Show(respReader.ReadToEnd());
                 }
             }
-            catch (Exception ex)
+            catch (System.Net.WebException ex)
             {
-                MessageBox.Show(ex.Message, "Failed to send report");
+                System.IO.StreamReader reader = new System.IO.StreamReader(ex.Response.GetResponseStream());
+                MessageBox.Show(ex.Message + " " + reader.ReadToEnd());
             }
-            DialogResult = DialogResult.Ignore;
-            Close();
-        }
-
-        private void ThreadExceptionDialogEx_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyData == (Keys.Control | Keys.C))
-            {
-                Clipboard.SetText(_reportText.Text);
-            }
-        }
-
-        private void _reportListBox_DoubleClick(object sender, EventArgs e)
-        {
-            ReportItem reportItem = _reportListBox.SelectedItem as ReportItem;
-            if (reportItem != null)
-                MessageBox.Show(reportItem.Details, reportItem.Title);
-        }
-
-        private void _reportListBox_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-        {
-            if (e.KeyData == Keys.Return)
-                e.IsInputKey = true;    // Steal the key-event from parent from
-        }
-
-        private void _reportListBox_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (e.KeyChar == (char)Keys.Return)
-            {
-                _reportListBox_DoubleClick(sender, e);
-                e.Handled = true;
-            }
-        }
-    }
-
-    class ReportItem
-    {
-        string _title;
-        string _details;
-
-        public ReportItem(string title, string details)
-        {
-            _title = title;
-            _details = details;
-        }
-
-        public override string ToString()
-        {
-            return _title;
-        }
-
-        public string Details
-        {
-            get { return _details; }
-        }
-
-        public string Title
-        {
-            get { return _title; }
-        }
-    }
-
-    class ExceptionReport : ReportItem
-    {
-        public ExceptionReport(Exception exception)
-            : base("Exception Details", GetExceptionReport(exception))
-        {
-        }
-
-        static string GetExceptionReport(Exception exception)
-        {
-            StringBuilder exceptionReport = new StringBuilder();
-            exceptionReport.AppendLine("Message Stack:");
-            Exception innerException = exception;
-            while (innerException != null)
-            {
-                exceptionReport.Append("  ");
-                exceptionReport.Append(innerException.Message);
-                exceptionReport.Append(" (");
-                exceptionReport.Append(innerException.GetType().ToString());
-                exceptionReport.AppendLine(")");
-                innerException = innerException.InnerException;
-            }
-
-            exceptionReport.AppendLine();
-            exceptionReport.AppendLine("Stack Trace:");
-            exceptionReport.Append(exception.StackTrace);
-            return exceptionReport.ToString();
-        }
-    }
-
-    class ApplicationReport : ReportItem
-    {
-        public ApplicationReport()
-            : base("Application Details", GetApplicationDetails())
-        {
-        }
-
-        static string GetApplicationDetails()
-        {
-            StringBuilder appReport = new StringBuilder();
-            appReport.Append("Title: ");
-            appReport.AppendLine(AssemblyTitle);
-            appReport.Append("Version: ");
-            appReport.AppendLine(Application.ProductVersion);
-            appReport.Append("Product: ");
-            appReport.AppendLine(Application.ProductName);
-            appReport.Append("Company: ");
-            appReport.AppendLine(Application.CompanyName);
-            return appReport.ToString();
-        }
-
-        static string AssemblyTitle
-        {
-            get
-            {
-                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
-                if (attributes.Length > 0)
-                {
-                    AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute)attributes[0];
-                    if (titleAttribute.Title != "")
-                    {
-                        return titleAttribute.Title;
-                    }
-                }
-                return System.IO.Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().CodeBase);
-            }
-        }
-    }
-
-    class SystemReport : ReportItem
-    {
-        public SystemReport()
-            :base("System Details", GetSystemDetails())
-        {
-        }
-
-        static string GetSystemDetails()
-        {
-            StringBuilder systemReport = new StringBuilder();
-            OperatingSystem os = Environment.OSVersion;
-            systemReport.Append("Operating System: ");
-            systemReport.AppendLine(os.VersionString);
-            if (IntPtr.Size == 4)
-                systemReport.AppendLine("Platform: 32 bit");
-            else
-                systemReport.AppendLine("Platform: 64 bit");
-            systemReport.Append(".NET: ");
-            systemReport.AppendLine(System.Environment.Version.ToString());
-            systemReport.Append("Language: ");
-            systemReport.AppendLine(Application.CurrentCulture.EnglishName);
-            return systemReport.ToString();
         }
     }
 }
