@@ -48,6 +48,7 @@ namespace SnakeTail
             this._checkboxKeywords = new System.Windows.Forms.CheckBox();
             this._buttonOk = new System.Windows.Forms.Button();
             this._buttonCancel = new System.Windows.Forms.Button();
+            this._checkboxTools = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // _checkBoxColors
@@ -84,10 +85,10 @@ namespace SnakeTail
             // 
             this._buttonOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this._buttonOk.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this._buttonOk.Location = new System.Drawing.Point(75, 83);
+            this._buttonOk.Location = new System.Drawing.Point(75, 107);
             this._buttonOk.Name = "_buttonOk";
             this._buttonOk.Size = new System.Drawing.Size(75, 23);
-            this._buttonOk.TabIndex = 3;
+            this._buttonOk.TabIndex = 4;
             this._buttonOk.Text = "OK";
             this._buttonOk.UseVisualStyleBackColor = true;
             // 
@@ -95,12 +96,22 @@ namespace SnakeTail
             // 
             this._buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this._buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this._buttonCancel.Location = new System.Drawing.Point(165, 83);
+            this._buttonCancel.Location = new System.Drawing.Point(165, 107);
             this._buttonCancel.Name = "_buttonCancel";
             this._buttonCancel.Size = new System.Drawing.Size(75, 23);
-            this._buttonCancel.TabIndex = 4;
+            this._buttonCancel.TabIndex = 5;
             this._buttonCancel.Text = "Cancel";
             this._buttonCancel.UseVisualStyleBackColor = true;
+            // 
+            // _checkboxTools
+            // 
+            this._checkboxTools.AutoSize = true;
+            this._checkboxTools.Location = new System.Drawing.Point(12, 81);
+            this._checkboxTools.Name = "_checkboxTools";
+            this._checkboxTools.Size = new System.Drawing.Size(93, 17);
+            this._checkboxTools.TabIndex = 3;
+            this._checkboxTools.Text = "External Tools";
+            this._checkboxTools.UseVisualStyleBackColor = true;
             // 
             // TailConfigApplyAllForm
             // 
@@ -108,7 +119,8 @@ namespace SnakeTail
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this._buttonCancel;
-            this.ClientSize = new System.Drawing.Size(252, 118);
+            this.ClientSize = new System.Drawing.Size(252, 142);
+            this.Controls.Add(this._checkboxTools);
             this.Controls.Add(this._buttonCancel);
             this.Controls.Add(this._buttonOk);
             this.Controls.Add(this._checkboxKeywords);
@@ -121,7 +133,7 @@ namespace SnakeTail
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Apply View Options to All";
+            this.Text = "Apply Options to All Views";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -134,5 +146,6 @@ namespace SnakeTail
         public System.Windows.Forms.CheckBox _checkboxKeywords;
         private System.Windows.Forms.Button _buttonOk;
         private System.Windows.Forms.Button _buttonCancel;
+        public System.Windows.Forms.CheckBox _checkboxTools;
     }
 }

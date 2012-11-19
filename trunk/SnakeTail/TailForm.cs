@@ -1307,11 +1307,15 @@ namespace SnakeTail
                                 {
                                     configFileOther.FormBackColor = configFile.FormBackColor;
                                     configFileOther.FormTextColor = configFile.FormTextColor;
+                                    configFileOther.FormBookmarkBackColor = configFile.FormBookmarkBackColor;
+                                    configFileOther.FormBookmarkTextColor = configFile.FormBookmarkTextColor;
                                 }
                                 if (configFormApply._checkBoxFont.Checked)
                                     configFileOther.FontInvariant = configFile.FontInvariant;
                                 if (configFormApply._checkboxKeywords.Checked)
                                     configFileOther.KeywordHighlight = configFile.KeywordHighlight;
+                                if (configFormApply._checkboxTools.Checked)
+                                    configFileOther.ExternalTools = configFile.ExternalTools;
                                 tailForm.LoadConfig(configFileOther, _configPath);
                             }
                         }
