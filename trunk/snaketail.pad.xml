@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XML_DIZ_INFO>
+	<MASTER_PAD_VERSION_INFO>
+		<MASTER_PAD_VERSION>3.10</MASTER_PAD_VERSION>
+		<MASTER_PAD_EDITOR>Online PAD Generator 1.33 - http://www.padbuilder.com</MASTER_PAD_EDITOR>
+		<MASTER_PAD_INFO>Portable Application Description, or PAD for short, is a data set that is used by shareware authors to disseminate information to anyone interested in their software products. To find out more go to http://www.asp-shareware.org/pad</MASTER_PAD_INFO>
+	</MASTER_PAD_VERSION_INFO>
+	<Company_Info>
+		<Company_Name>SnakeNest</Company_Name>
+		<Address_1>Mariendalsvej 13 3TH</Address_1>
+		<Address_2 />
+		<City_Town>Copenhagen</City_Town>
+		<State_Province />
+		<Zip_Postal_Code>2000</Zip_Postal_Code>
+		<Country>Denmark</Country>
+		<Company_WebSite_URL>http://snakenest.com/</Company_WebSite_URL>
+		<Contact_Info>
+			<Author_First_Name>Rolf</Author_First_Name>
+			<Author_Last_Name>Kristensen</Author_Last_Name>
+			<Author_Email>sweaty1@hotmail.com</Author_Email>
+			<Contact_First_Name>Rolf</Contact_First_Name>
+			<Contact_Last_Name>Kristensen</Contact_Last_Name>
+			<Contact_Email>sweaty1@hotmail.com</Contact_Email>
+		</Contact_Info>
+		<Support_Info>
+			<General_Email>sweaty1@hotmail.com</General_Email>
+			<Support_Email>sweaty1@hotmail.com</Support_Email>
+			<Sales_Email>sweaty1@hotmail.com</Sales_Email>
+		</Support_Info>
+	</Company_Info>
+	<Program_Info>
+		<Program_Name>SnakeTail</Program_Name>
+		<Program_Version>1.7.1</Program_Version>
+		<Program_Release_Month>09</Program_Release_Month>
+		<Program_Release_Day>27</Program_Release_Day>
+		<Program_Release_Year>2012</Program_Release_Year>
+		<Program_Type>Freeware</Program_Type>
+		<Program_Release_Status>New Release</Program_Release_Status>
+		<Program_Install_Support>No Install Support</Program_Install_Support>
+		<Program_OS_Support>Win2000,Win7 x32,Win7 x64,WinVista,WinVista x64,WinXP</Program_OS_Support>
+		<Program_Language>English</Program_Language>
+		<Program_Change_Info />
+		<Program_Specific_Category>Utilities</Program_Specific_Category>
+		<Program_Category_Class>System Utilities::File &amp; Disk Management</Program_Category_Class>
+		<Program_Categories>Log Monitor</Program_Categories>
+		<Program_System_Requirements>.NET Framework 2.0</Program_System_Requirements>
+		<Expire_Info>
+			<Has_Expire_Info>N</Has_Expire_Info>
+		</Expire_Info>
+		<File_Info>
+			<File_Size_Bytes>200000</File_Size_Bytes>
+			<File_Size_K>200.0</File_Size_K>
+			<File_Size_MB>0.2</File_Size_MB>
+		</File_Info>
+	</Program_Info>
+	<Program_Descriptions>
+		<English>
+			<Keywords>tail,log monitor,log viewer,eventlog,monitor,log,trace,utility,windows</Keywords>
+			<Char_Desc_45>Windows tail utility for monitoring log files</Char_Desc_45>
+			<Char_Desc_80>Windows tail utility for monitoring Text files and Windows EVentLog</Char_Desc_80>
+			<Char_Desc_250>SnakeTail is a Windows tail utility. Monitor text log files. Monitor Windows Event Logs. Save and load entire window session. Sentence color highlight based on keywords.</Char_Desc_250>
+			<Char_Desc_450>SnakeTail is a Windows tail utility. Monitor text log files. Monitor Windows Event Logs. Multiple Window Modes supported (MDI, Tabbed, Floating). Save and load entire window session. Sentence color highlight based on keywords. Search in log files both forward and backward. Display simple process statistics in window title bar (RAM + CPU usage + TRX/Sec). Customize tail window color and font</Char_Desc_450>
+			<Char_Desc_2000>SnakeTail is a Windows tail utility. Monitor text log files. Monitor Windows Event Logs. Multiple Window Modes supported (MDI, Tabbed, Floating). Save and load entire window session. Sentence color highlight based on keywords. Search in log files both forward and backward. Customize tail window color and font. Filtering of Windows Event Logs using regular expressions. Display simple process statistics in window title bar (RAM + CPU usage + TRX/Sec). Stop and start Windows service by right clicking in the tail window. Tails log directory where the latest log file is displayed.</Char_Desc_2000>
+		</English>
+	</Program_Descriptions>
+	<Web_Info>
+		<Application_URLs>
+			<Application_Info_URL>http://snakenest.com/snaketail</Application_Info_URL>
+			<Application_Order_URL />
+			<Application_Screenshot_URL>http://snakenest.com/wp-content/uploads/2011/02/snaketail_mdi.png</Application_Screenshot_URL>
+			<Application_Icon_URL>http://snakenest.com/snaketail.icon.png</Application_Icon_URL>
+			<Application_XML_File_URL>http://snakenest.com/snaketail.pad.xml</Application_XML_File_URL>
+		</Application_URLs>
+		<Download_URLs>
+			<Primary_Download_URL>http://snaketail-net.googlecode.com/files/SnakeTail_v1.7.1.zip</Primary_Download_URL>
+			<Secondary_Download_URL />
+			<Additional_Download_URL_1 />
+			<Additional_Download_URL_2 />
+		</Download_URLs>
+	</Web_Info>
+	<Permissions>
+		<Distribution_Permissions>SnakeTail is completely free. It is licensed under the GPLv3 see: http://www.gnu.org/licenses/.</Distribution_Permissions>
+		<EULA />
+	</Permissions>
+</XML_DIZ_INFO>
