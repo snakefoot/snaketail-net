@@ -29,9 +29,9 @@ namespace SnakeTail
 {
     public partial class ThreadExceptionDialogEx : Form
     {
-        public List<object> ReportItems { get; set; }
+        public CrashReportDetails CrashReport { get; set; }
 
-        public Action< List<object> > SendReportEvent;
+        public Action<CrashReportDetails> SendReportEvent;
 
         public ThreadExceptionDialogEx(Exception exception)
         {
@@ -49,15 +49,15 @@ namespace SnakeTail
             _reportText.Text += Environment.NewLine;
             _reportText.Text += Environment.NewLine + "Please press 'Send Report' to notify " + Application.CompanyName;
 
-            ReportItems = new List<object>();
-            ReportItems.Add(new ExceptionReport(exception));
-            ReportItems.Add(new ApplicationReport());
-            ReportItems.Add(new SystemReport());
+            CrashReport = new CrashReportDetails();
+            CrashReport.Items.Add(new ExceptionReport(exception));
+            CrashReport.Items.Add(new ApplicationReport());
+            CrashReport.Items.Add(new SystemReport());
         }
 
         private void ThreadExceptionDialogEx_Load(object sender, EventArgs e)
         {
-            foreach (object reportItem in ReportItems)
+            foreach (object reportItem in CrashReport.Items)
             {
                 _reportListBox.Items.Add(reportItem);
             }
@@ -83,9 +83,9 @@ namespace SnakeTail
             {
                 using (new HourGlass(this))
                 {
-                    Action< List<object> > handler = SendReportEvent;
+                    Action<CrashReportDetails> handler = SendReportEvent;
                     if (handler != null)
-                        handler(ReportItems);
+                        handler(CrashReport);
                 }
             }
             catch (Exception ex)
@@ -137,6 +137,25 @@ namespace SnakeTail
         }
     }
 
+    public class CrashReportDetails
+    {
+        [System.Xml.Serialization.XmlArray("ReportItems")]
+        [System.Xml.Serialization.XmlArrayItem("Item")]
+        public List<object> Items { get; set; }
+
+        public CrashReportDetails()
+        {
+            Items = new List<object>();
+        }
+
+        public Type[] GetItemTypes()
+        {
+            List<Type> typesList = new List<Type>();
+            foreach (object reportItem in Items)
+                typesList.Add(reportItem.GetType());
+            return typesList.ToArray();
+        }
+    }
 
     public class ExceptionReport
     {
@@ -221,7 +240,7 @@ namespace SnakeTail
         public string PadUrl { get; set; }
         public bool PromptAlways { get; set; }
 
-        public void SendReport(List<object> reportItems)
+        public void SendReport(CrashReportDetails crashReport)
         {
             if (String.IsNullOrEmpty(PadUrl))
                 return;
@@ -269,20 +288,17 @@ namespace SnakeTail
         public string EmailSubject { get; set; }
         public bool EmailSSL { get; set; }
 
-        public void SendReport(List<object> reportItems)
+        public void SendReport(CrashReportDetails crashReport)
         {
             // Convert ReportItems to EmailBody
             string emailBody = "";
 
             using (System.IO.StringWriter stringWriter = new System.IO.StringWriter())
             {
-                foreach (object reportItem in reportItems)
-                {
-                    System.Xml.Serialization.XmlSerializerNamespaces ns = new System.Xml.Serialization.XmlSerializerNamespaces();
-                    ns.Add("", "");
-                    System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(reportItem.GetType());
-                    x.Serialize(stringWriter, reportItem, ns);
-                }
+                System.Xml.Serialization.XmlSerializerNamespaces ns = new System.Xml.Serialization.XmlSerializerNamespaces();
+                ns.Add("", "");
+                System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(crashReport.GetType(), crashReport.GetItemTypes());
+                x.Serialize(stringWriter, crashReport, ns);
                 emailBody = stringWriter.ToString();
             }
 
@@ -350,19 +366,16 @@ namespace SnakeTail
             ZipStore.AddFile(System.IO.Compression.ZipStorer.Compression.Deflate, tmpFileName, "crashdump.dmp", "");
         }
 
-        public void SendReport(List<object> reportItems)
+        public void SendReport(CrashReportDetails crashReport)
         {
             // Create xml file containing reportItems
             string prettyXml = "";
             using (System.IO.StringWriter stringWriter = new System.IO.StringWriter())
             {
-                foreach (object reportItem in reportItems)
-                {
-                    System.Xml.Serialization.XmlSerializerNamespaces ns = new System.Xml.Serialization.XmlSerializerNamespaces();
-                    ns.Add("", "");
-                    System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(reportItem.GetType());
-                    x.Serialize(stringWriter, reportItem, ns);
-                }
+                System.Xml.Serialization.XmlSerializerNamespaces ns = new System.Xml.Serialization.XmlSerializerNamespaces();
+                ns.Add("", "");
+                System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(crashReport.GetType(), crashReport.GetItemTypes());
+                x.Serialize(stringWriter, crashReport, ns);
                 prettyXml = stringWriter.ToString();
             }
 
