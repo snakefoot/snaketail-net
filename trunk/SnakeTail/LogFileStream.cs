@@ -68,12 +68,24 @@ namespace SnakeTail
             else
             {
                 string configPath = Path.GetDirectoryName(_filePathAbsolute);
-                LogFileStream testLogFile = new LogFileStream(configPath, _filePathAbsolute, _fileEncoding, _fileCheckFrequency.Seconds, _fileCheckPattern);
-                long fileCheckLength = testLogFile.Length;
-                string name = testLogFile._fileStream!=null ? testLogFile._fileStream.Name : null;
-                testLogFile.LoadFile(null, _fileEncoding, _fileCheckPattern);  // Release the file handle
+                bool fileChanged = false;
+                long fileCheckLength = 0;
+                using (LogFileStream testLogFile = new LogFileStream(configPath, _filePathAbsolute, _fileEncoding, _fileCheckFrequency.Seconds, _fileCheckPattern))
+                {
+                    fileCheckLength = testLogFile.Length;
+                    string name = testLogFile._fileStream != null ? testLogFile._fileStream.Name : null;
 
-                if (fileCheckLength < Length || Position > fileCheckLength || _fileStream.Name != name || (_lastFileCheckLength <= fileCheckLength && _lastFileCheckLength > Length))
+                    if (fileCheckLength < Length)
+                        fileChanged = true;
+                    else if (Position > fileCheckLength)
+                        fileChanged = true;
+                    else if (_fileStream.Name != name)
+                        fileChanged = true;
+                    else if (_lastFileCheckLength <= fileCheckLength && _lastFileCheckLength > Length)
+                        fileChanged = true;
+                }
+
+                if (fileChanged)
                 {
                     // The file have been renamed / deleted (reload new file)
                     LoadFile(_filePathAbsolute, _fileEncoding, _fileCheckPattern);
@@ -158,6 +170,8 @@ namespace SnakeTail
 
         public void Dispose()
         {
+            FileReloadedEvent = null;
+
             if (_fileReader != null)
                 _fileReader.Dispose();
             if (_fileStream != null)
