@@ -21,7 +21,7 @@ namespace SnakeTail
 {
     static class Program
     {
-        static bool applicationCrashed = false;
+        static volatile bool applicationCrashed = false;
         public static string PadUrl = "http://snakenest.com/snaketail.pad.xml";
 
         /// <summary>
