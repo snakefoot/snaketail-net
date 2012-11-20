@@ -244,34 +244,43 @@ namespace SnakeTail
         {
             if (String.IsNullOrEmpty(PadUrl))
                 return;
+           
+            System.Net.HttpWebRequest req = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(PadUrl);
+            //HACK: add proxy
+            IWebProxy proxy = WebRequest.GetSystemWebProxy();
+            proxy.Credentials = System.Net.CredentialCache.DefaultCredentials;
+            req.Proxy = proxy;
+            req.PreAuthenticate = true;
+            //HACK: end add proxy
 
-            using (WebClient client = new WebClient())
+            XmlDocument xmlDoc = new XmlDocument();
+            using (WebResponse response = req.GetResponse())
             {
-                string value = client.DownloadString(PadUrl);
-                XmlDocument xmlDoc = new XmlDocument();
-                xmlDoc.LoadXml(value);
-                XmlNode appVerNode = xmlDoc.SelectSingleNode("/XML_DIZ_INFO/Program_Info/Program_Version");
-                if (appVerNode != null)
+                xmlDoc.Load(response.GetResponseStream());
+            }
+
+            XmlNode appVerNode = xmlDoc.SelectSingleNode("/XML_DIZ_INFO/Program_Info/Program_Version");
+            if (appVerNode != null)
+            {
+                Version appVer = new Version(appVerNode.InnerText);
+                if (appVer > System.Reflection.Assembly.GetExecutingAssembly().GetName().Version)
                 {
-                    Version appVer = new Version(appVerNode.InnerText);
-                    if (appVer > System.Reflection.Assembly.GetExecutingAssembly().GetName().Version)
+                    string message = "New version " + appVer.ToString() + " is available at application homepage.";
+                    XmlNode appInfoURL = xmlDoc.SelectSingleNode("/XML_DIZ_INFO/Web_Info/Application_URLs/Application_Info_URL");
+                    if (appInfoURL != null && !String.IsNullOrEmpty(appInfoURL.InnerText))
                     {
-                        string message = "New version " + appVer.ToString() + " is available at application homepage.";
-                        XmlNode appInfoURL = xmlDoc.SelectSingleNode("/XML_DIZ_INFO/Web_Info/Application_URLs/Application_Info_URL");
-                        if (appInfoURL != null && !String.IsNullOrEmpty(appInfoURL.InnerText))
-                        {
-                            DialogResult res = MessageBox.Show(message + "\n\nCheck homepage for changelog and download?", "New update available", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
-                            if (res == DialogResult.OK)
-                                System.Diagnostics.Process.Start(appInfoURL.InnerText);
-                        }
-                        else
-                        {
-                            DialogResult res = MessageBox.Show(message, "New update available", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        }
-                        return;
+                        DialogResult res = MessageBox.Show(message + "\n\nCheck homepage for changelog and download?", "New update available", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+                        if (res == DialogResult.OK)
+                            System.Diagnostics.Process.Start(appInfoURL.InnerText);
                     }
+                    else
+                    {
+                        DialogResult res = MessageBox.Show(message, "New update available", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    return;
                 }
             }
+
             if (PromptAlways)
                 MessageBox.Show("Using the latest version", "Check for updates", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
@@ -409,10 +418,14 @@ namespace SnakeTail
             byte[] boundarybytes = System.Text.Encoding.ASCII.GetBytes("\r\n--" + boundary + "\r\n");
 
             System.Net.HttpWebRequest wr = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(url);
+            //HACK: add proxy
+            IWebProxy proxy = WebRequest.GetSystemWebProxy();
+            proxy.Credentials = System.Net.CredentialCache.DefaultCredentials;
+            wr.Proxy = proxy;
+            wr.PreAuthenticate = true;
+            //HACK: end add proxy
             wr.ContentType = "multipart/form-data; boundary=" + boundary;
             wr.Method = "POST";
-            wr.KeepAlive = true;
-            wr.Credentials = System.Net.CredentialCache.DefaultCredentials;
 
             System.IO.Stream rs = wr.GetRequestStream();
 
