@@ -172,27 +172,38 @@ namespace SnakeTail
         {
             FileReloadedEvent = null;
 
-            if (_fileReader != null)
-                _fileReader.Dispose();
-            if (_fileStream != null)
-                _fileStream.Dispose();
+            CloseFile();
         }
 
-        bool LoadFile(string filepath, Encoding fileEncoding, bool fileCheckPattern)
+        void CloseFile()
         {
             _lastFileCheckError = "";
             _lastLineNumber = 0;
 
+            bool closedFile = false;
             if (_fileReader != null)
             {
                 _fileReader.Dispose();
                 _fileReader = null;
-            } 
+                closedFile = true;
+            }
             if (_fileStream != null)
             {
                 _fileStream.Dispose();
                 _fileStream = null;
+                closedFile = true;
             }
+
+            if (closedFile)
+            {
+                if (FileReloadedEvent != null)
+                    FileReloadedEvent(this, null);
+            }
+        }
+
+        bool LoadFile(string filepath, Encoding fileEncoding, bool fileCheckPattern)
+        {
+            CloseFile();
 
             if (String.IsNullOrEmpty(filepath))
             {
@@ -249,10 +260,7 @@ namespace SnakeTail
             }
             catch (System.IO.IOException ex)
             {
-                _fileReader.Dispose();
-                _fileReader = null;
-                _fileStream.Dispose();
-                _fileStream = null;
+                CloseFile();
                 _lastFileCheckError = ex.Message;
                 return false;
             }
@@ -278,10 +286,7 @@ namespace SnakeTail
             }
             catch (System.IO.IOException)
             {
-                _fileReader.Dispose();
-                _fileReader = null;
-                _fileStream.Dispose();
-                _fileStream = null;
+                CloseFile();
                 return true;    // File is non-existing (empty)
             }
         }
@@ -336,8 +341,7 @@ namespace SnakeTail
             }
             catch (IOException ex)
             {
-                _lastLineNumber = 0;
-                LoadFile(null, _fileEncoding, _fileCheckPattern);  // Release the file handle
+                CloseFile();
                 if (lineNumber == 1)
                     return "Cannot read file: " + _filePathAbsolute + " (" + ex.Message + ")";
                 return null;
