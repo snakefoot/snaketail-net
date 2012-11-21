@@ -123,9 +123,9 @@ namespace SnakeTail
             this._eventListView.Dock = System.Windows.Forms.DockStyle.Fill;
             this._eventListView.FullRowSelect = true;
             this._eventListView.HideSelection = false;
-            this._eventListView.Location = new System.Drawing.Point(0, 0);
+            this._eventListView.Location = new System.Drawing.Point(0, 24);
             this._eventListView.Name = "_eventListView";
-            this._eventListView.Size = new System.Drawing.Size(602, 239);
+            this._eventListView.Size = new System.Drawing.Size(602, 215);
             this._eventListView.SmallImageList = this._eventImageList;
             this._eventListView.TabIndex = 1;
             this._eventListView.UseCompatibleStateImageBehavior = false;
@@ -169,8 +169,8 @@ namespace SnakeTail
             this.findToolStripMenuItem,
             this.findNextToolStripMenuItem,
             toolStripSeparator2,
-            this._switchModeToolStripMenuItem,
             this._configTextToolStripMenuItem,
+            this._switchModeToolStripMenuItem,
             toolStripSeparator4,
             this._addFilterToolStripMenuItem,
             this._resetFilterToolStripMenuItem,
