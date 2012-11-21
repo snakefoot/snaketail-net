@@ -893,11 +893,24 @@ namespace SnakeTail
             if (Paused)
                 return false;
 
-            if (WindowState == FormWindowState.Minimized)
-                return false;
-
             if (_tailListView.VirtualListSize <= 5)
                 return true;
+
+            if (WindowState == FormWindowState.Minimized)
+            {
+                ListViewItem topItem = _tailListView.TopItem;
+                if (topItem != null)
+                {
+                    int heightOfFirstItem = topItem.Bounds.Height;
+                    if (heightOfFirstItem > 0)
+                    {
+                        int nVisibleLines = RestoreBounds.Height / heightOfFirstItem;
+                        if (topItem.Index + nVisibleLines > _tailListView.VirtualListSize - 5)
+                            return true;
+                    }
+                }
+                return false;
+            }
 
             return IsItemVisible(_tailListView.VirtualListSize - 5);
         }
@@ -1047,18 +1060,12 @@ namespace SnakeTail
         protected override void OnResize(EventArgs e)
         {
             bool listAtBottom = ListAtBottom();
-
-            bool maximized = WindowState == FormWindowState.Maximized;
             base.OnResize(e);
             _tailListView.Invalidate();
-            if (WindowState != FormWindowState.Minimized)
+            if (listAtBottom)
             {
-                if (Paused || listAtBottom)
-                {
-                    Paused = false;
-                    if (_tailListView.VirtualListSize > 0)
-                        _tailListView.EnsureVisible(_tailListView.VirtualListSize - 1);
-                }
+                if (_tailListView.VirtualListSize > 0)
+                    _tailListView.EnsureVisible(_tailListView.VirtualListSize - 1);
             }
             _tailListView.Update();
         }
