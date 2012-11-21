@@ -475,6 +475,8 @@ namespace SnakeTail
             TabPage parentTab = this.Tag as TabPage;
             if (parentTab != null)
                 parentTab.ImageIndex = -1;
+            _eventListView.Invalidate();
+            _eventListView.Update();
         }
 
         protected override void OnResize(EventArgs e)
