@@ -469,6 +469,8 @@ namespace SnakeTail
 
         private void EventLogForm_Activated(object sender, EventArgs e)
         {
+            if (this.MdiParent != null)
+                MainForm.Instance.SetStatusBar(null, 0, 0);
             SearchForm.Instance.ActiveTailForm = this;
             TabPage parentTab = this.Tag as TabPage;
             if (parentTab != null)
@@ -482,29 +484,53 @@ namespace SnakeTail
             _eventListView.Invalidate();
             if (listAtBottom)
             {
-                if (_eventListView.VirtualListSize > 0)
-                    _eventListView.EnsureVisible(_eventListView.VirtualListSize - 1);
+                int listViewCount = 0;
+                if (_eventListView.VirtualMode)
+                    listViewCount = _eventListView.VirtualListSize;
+                else
+                    listViewCount = _eventListView.Items.Count;
+                if (listViewCount > 0)
+                    _eventListView.EnsureVisible(listViewCount - 1);
             }
             _eventListView.Update();
         }
 
         private bool ListAtBottom()
         {
+            int listViewCount = 0;
             if (_eventListView.VirtualMode)
-            {
-                if (_eventListView.VirtualListSize <= 5)
-                    return true;
-            }
+                listViewCount = _eventListView.VirtualListSize;
             else
+                listViewCount = _eventListView.Items.Count;
+
+            if (listViewCount <= 5)
+                return true;
+
+            if (WindowState == FormWindowState.Minimized)
             {
-                if (_eventListView.Items.Count <= 5)
-                    return true;
+                try
+                {
+                    _topItemIndexHack = true;
+                    ListViewItem topItem = _eventListView.TopItem;
+                    if (topItem != null)
+                    {
+                        int heightOfFirstItem = topItem.Bounds.Height;
+                        if (heightOfFirstItem > 0)
+                        {
+                            int nVisibleLines = RestoreBounds.Height / heightOfFirstItem;
+                            if (topItem.Index + nVisibleLines > listViewCount - 5)
+                                return true;
+                        }
+                    }
+                }
+                finally
+                {
+                    _topItemIndexHack = false;
+                }
+                return false;
             }
 
-            if (_eventListView.VirtualMode)
-                return IsItemVisible(_eventListView.VirtualListSize - 5);
-            else
-                return IsItemVisible(_eventListView.Items.Count - 5);
+            return IsItemVisible(listViewCount - 5);
         }
 
         private bool IsItemVisible(int index)
