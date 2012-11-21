@@ -1240,6 +1240,8 @@ namespace SnakeTail
             TabPage parentTab = this.Tag as TabPage;
             if (parentTab != null)
                 parentTab.ImageIndex = -1;
+            _tailListView.Invalidate();
+            _tailListView.Update();
         }
 
         private void TailForm_Resize(object sender, EventArgs e)
