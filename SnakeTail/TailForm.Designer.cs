@@ -351,7 +351,7 @@ namespace SnakeTail
             this.lineItem});
             this._tailListView.ContextMenuStrip = this._contextMenuStrip;
             this._tailListView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._tailListView.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._tailListView.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._tailListView.FullRowSelect = true;
             this._tailListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this._tailListView.HideSelection = false;
