@@ -756,47 +756,56 @@ namespace SnakeTail
                 return;
 
             Color? textColor = null;;
+            Color? backColor = null;
             
+            // Bookmark coloring has higher priority, than keyword highlight
+            if (MatchesBookmark(e.ItemIndex))
+            {
+                using (Brush backBrush = new SolidBrush(_bookmarkBackColor))
+                {
+                    backColor = _bookmarkBackColor;
+                    textColor = _bookmarkTextColor;
+                }
+            }
+            else
+            {
+                TailKeywordConfig keyword = MatchesKeyword(e.Item.Text, false);
+                if (keyword != null)
+                {
+                    if (keyword.FormBackColor.HasValue && keyword.FormTextColor.HasValue)
+                    {
+                        backColor = keyword.FormBackColor.Value;
+                        textColor = keyword.FormTextColor.Value;
+                    }
+                }
+            }
+
             if (e.Item.Selected)
             {
                 e.DrawFocusRectangle(e.Item.Bounds);
                 e.Graphics.FillRectangle(SystemBrushes.Highlight, e.Bounds);
+
+                // Calculate the inverted color for highlighted lines
+                if (textColor.HasValue)
+                    textColor = Color.FromArgb(SystemColors.Highlight.A, (SystemColors.Highlight.R + 128) % 256, (SystemColors.Highlight.G + 128) % 256, (SystemColors.Highlight.B + 128) % 256);
             }
             else
             {
-                // Bookmark coloring has higher priority, than keyword highlight
-                if (MatchesBookmark(e.ItemIndex))
+                if (backColor.HasValue)
                 {
-                    using (Brush backBrush = new SolidBrush(_bookmarkBackColor))
+                    using (Brush backBrush = new SolidBrush(backColor.Value))
                     {
                         e.Graphics.FillRectangle(backBrush, e.Bounds);
-                        textColor = _bookmarkTextColor;
                     }
                 }
                 else
-                {
-                    TailKeywordConfig keyword = MatchesKeyword(e.Item.Text, false);
-                    if (keyword != null)
-                    {
-                        if (keyword.FormBackColor.HasValue && keyword.FormTextColor.HasValue)
-                        {
-                            using (Brush backBrush = new SolidBrush(keyword.FormBackColor.Value))
-                            {
-                                e.Graphics.FillRectangle(backBrush, e.Bounds);
-                                textColor = keyword.FormTextColor.Value;
-                            }
-                        }
-                    }
-                }
+                    e.DrawBackground();
 
                 if (!textColor.HasValue)
-                    e.DrawBackground();
+                    textColor = _tailListView.ForeColor;
             }
 
-            if (!textColor.HasValue)
-                textColor = _tailListView.ForeColor;
-
-            using (Brush textBrush = e.Item.Selected ? null : new SolidBrush(textColor.Value))
+            using (Brush textBrush = textColor.HasValue ? new SolidBrush(textColor.Value) : null)
             {
                 if (e.Item.Text.Length > 1000)
                     e.Graphics.DrawString(e.Item.Text.Substring(0, 1000), _tailListView.Font, textBrush != null ? textBrush : SystemBrushes.HighlightText, e.Bounds);
