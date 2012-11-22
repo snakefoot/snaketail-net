@@ -761,11 +761,8 @@ namespace SnakeTail
             // Bookmark coloring has higher priority, than keyword highlight
             if (MatchesBookmark(e.ItemIndex))
             {
-                using (Brush backBrush = new SolidBrush(_bookmarkBackColor))
-                {
-                    backColor = _bookmarkBackColor;
-                    textColor = _bookmarkTextColor;
-                }
+                backColor = _bookmarkBackColor;
+                textColor = _bookmarkTextColor;
             }
             else
             {
@@ -780,38 +777,40 @@ namespace SnakeTail
                 }
             }
 
+            //toggle colors if the item is highlighted 
             if (e.Item.Selected)
             {
-                e.DrawFocusRectangle(e.Item.Bounds);
-                e.Graphics.FillRectangle(SystemBrushes.Highlight, e.Bounds);
-
-                // Calculate the inverted color for highlighted lines
-                if (textColor.HasValue)
-                    textColor = Color.FromArgb(SystemColors.Highlight.A, (SystemColors.Highlight.R + 128) % 256, (SystemColors.Highlight.G + 128) % 256, (SystemColors.Highlight.B + 128) % 256);
+                if (backColor.HasValue || textColor.HasValue)
+                {
+                    e.SubItem.BackColor = SystemColors.Highlight;
+                    e.SubItem.ForeColor = Color.FromArgb(SystemColors.Highlight.A, (SystemColors.Highlight.R + 128) % 256, (SystemColors.Highlight.G + 128) % 256, (SystemColors.Highlight.B + 128) % 256);
+                }
+                else
+                {
+                    e.SubItem.BackColor = SystemColors.Highlight;
+                    e.SubItem.ForeColor = SystemColors.HighlightText;
+                }
             }
             else
             {
                 if (backColor.HasValue)
-                {
-                    using (Brush backBrush = new SolidBrush(backColor.Value))
-                    {
-                        e.Graphics.FillRectangle(backBrush, e.Bounds);
-                    }
-                }
+                    e.SubItem.BackColor = backColor.Value;
                 else
-                    e.DrawBackground();
-
-                if (!textColor.HasValue)
-                    textColor = _tailListView.ForeColor;
+                    e.SubItem.BackColor = e.Item.ListView.BackColor;
+                if (textColor.HasValue)
+                    e.SubItem.ForeColor = textColor.Value;
+                else
+                    e.SubItem.ForeColor = e.Item.ListView.ForeColor;
             }
 
-            using (Brush textBrush = textColor.HasValue ? new SolidBrush(textColor.Value) : null)
-            {
-                if (e.Item.Text.Length > 1000)
-                    e.Graphics.DrawString(e.Item.Text.Substring(0, 1000), _tailListView.Font, textBrush != null ? textBrush : SystemBrushes.HighlightText, e.Bounds);
-                else
-                    e.Graphics.DrawString(e.Item.Text, _tailListView.Font, textBrush != null ? textBrush : SystemBrushes.HighlightText, e.Bounds);
-            }
+            // Draw the standard header background.
+            e.DrawBackground();
+
+            TextFormatFlags flags = TextFormatFlags.Left | TextFormatFlags.ExpandTabs | TextFormatFlags.SingleLine;
+            if (e.Item.Text.Length > 1000)
+                TextRenderer.DrawText(e.Graphics, e.Item.Text.Substring(0, 1000), e.Item.ListView.Font, e.Bounds, e.SubItem.ForeColor, flags);
+            else
+                TextRenderer.DrawText(e.Graphics, e.Item.Text, e.Item.ListView.Font, e.Bounds, e.SubItem.ForeColor, flags);
         }
 
         private bool MatchesBookmark(int lineNumber)
