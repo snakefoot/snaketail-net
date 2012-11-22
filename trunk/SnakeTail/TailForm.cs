@@ -1418,7 +1418,7 @@ namespace SnakeTail
             int matchFound = int.MaxValue;
             foreach (int lineNumber in _bookmarks)
             {
-                if (lineNumber > startIndex && lineNumber - startIndex < matchFound)
+                if (lineNumber > startIndex && lineNumber - startIndex < matchFound - startIndex)
                     matchFound = lineNumber;
             }
             if (matchFound != int.MaxValue)
@@ -1452,14 +1452,17 @@ namespace SnakeTail
             if (focusedItem != null)
                 startIndex = focusedItem.Index;
 
+            if (startIndex == 0)
+                return;
+
             // Search for the bookmark that is larger but closest to the index
-            int matchFound = int.MaxValue;
+            int matchFound = -1;
             foreach (int lineNumber in _bookmarks)
             {
-                if (lineNumber < startIndex && startIndex - lineNumber < matchFound)
+                if (lineNumber < startIndex && startIndex - lineNumber < startIndex - matchFound)
                     matchFound = lineNumber;
             }
-            if (matchFound != int.MaxValue)
+            if (matchFound != -1)
             {
                 if (matchFound >= _tailListView.VirtualListSize)
                 {
