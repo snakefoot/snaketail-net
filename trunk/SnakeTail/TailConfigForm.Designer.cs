@@ -394,7 +394,7 @@ namespace SnakeTail
             this._fileCheckPatternChk.Name = "_fileCheckPatternChk";
             this._fileCheckPatternChk.Size = new System.Drawing.Size(112, 17);
             this._fileCheckPatternChk.TabIndex = 8;
-            this._fileCheckPatternChk.Text = "Regex in File Path";
+            this._fileCheckPatternChk.Text = "Path with wildcard";
             this._fileCheckPatternChk.UseVisualStyleBackColor = true;
             this._fileCheckPatternChk.CheckedChanged += new System.EventHandler(this._fileCheckPatternChk_CheckedChanged);
             // 
