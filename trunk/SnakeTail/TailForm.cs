@@ -1417,7 +1417,7 @@ namespace SnakeTail
             int matchFound = int.MaxValue;
             foreach (int lineNumber in _bookmarks)
             {
-                if (lineNumber > startIndex && lineNumber - startIndex < matchFound - startIndex)
+                if (lineNumber > startIndex && lineNumber < matchFound)
                     matchFound = lineNumber;
             }
             if (matchFound != int.MaxValue)
@@ -1458,7 +1458,7 @@ namespace SnakeTail
             int matchFound = -1;
             foreach (int lineNumber in _bookmarks)
             {
-                if (lineNumber < startIndex && startIndex - lineNumber < startIndex - matchFound)
+                if (lineNumber < startIndex && lineNumber > matchFound)
                     matchFound = lineNumber;
             }
             if (matchFound != -1)
