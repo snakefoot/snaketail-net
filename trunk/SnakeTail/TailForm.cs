@@ -91,6 +91,7 @@ namespace SnakeTail
         string _formTitle = "";
         string _formIconFile = "";
         DateTime _lastFormTitleUpdate = DateTime.Now;
+        bool _formMinimizedAtBottom = false;
         Icon _formCustomIcon = null;
         Icon _formMaximizedIcon = null;
         string _configPath = "";
@@ -904,22 +905,6 @@ namespace SnakeTail
             if (_tailListView.VirtualListSize <= 5)
                 return true;
 
-            if (WindowState == FormWindowState.Minimized)
-            {
-                ListViewItem topItem = _tailListView.TopItem;
-                if (topItem != null)
-                {
-                    int heightOfFirstItem = topItem.Bounds.Height;
-                    if (heightOfFirstItem > 0)
-                    {
-                        int nVisibleLines = RestoreBounds.Height / heightOfFirstItem;
-                        if (topItem.Index + nVisibleLines > _tailListView.VirtualListSize - 5)
-                            return true;
-                    }
-                }
-                return false;
-            }
-
             return IsItemVisible(_tailListView.VirtualListSize - 5);
         }
 
@@ -1070,6 +1055,18 @@ namespace SnakeTail
             bool listAtBottom = ListAtBottom();
             base.OnResize(e);
             _tailListView.Invalidate();
+            if (WindowState == FormWindowState.Minimized)
+            {
+                if (listAtBottom)
+                    _formMinimizedAtBottom = listAtBottom;
+            }
+            else
+            {
+                if (_formMinimizedAtBottom)
+                    listAtBottom = true;
+                _formMinimizedAtBottom = false;
+            }
+
             if (listAtBottom)
             {
                 if (_tailListView.VirtualListSize > 0)
