@@ -38,6 +38,7 @@ namespace SnakeTail
         string _formTitle;
         bool _displayTabIcon;
         bool _topItemIndexHack = false;
+        bool _formMinimizedAtBottom = false;
 
         public EventLogForm()
         {
@@ -484,6 +485,18 @@ namespace SnakeTail
             bool listAtBottom = ListAtBottom();
             base.OnResize(e);
             _eventListView.Invalidate();
+            if (WindowState == FormWindowState.Minimized)
+            {
+                if (listAtBottom)
+                    _formMinimizedAtBottom = listAtBottom;
+            }
+            else
+            {
+                if (_formMinimizedAtBottom)
+                    listAtBottom = true;
+                _formMinimizedAtBottom = false;
+            }
+
             if (listAtBottom)
             {
                 int listViewCount = 0;
@@ -507,30 +520,6 @@ namespace SnakeTail
 
             if (listViewCount <= 5)
                 return true;
-
-            if (WindowState == FormWindowState.Minimized)
-            {
-                try
-                {
-                    _topItemIndexHack = true;
-                    ListViewItem topItem = _eventListView.TopItem;
-                    if (topItem != null)
-                    {
-                        int heightOfFirstItem = topItem.Bounds.Height;
-                        if (heightOfFirstItem > 0)
-                        {
-                            int nVisibleLines = RestoreBounds.Height / heightOfFirstItem;
-                            if (topItem.Index + nVisibleLines > listViewCount - 5)
-                                return true;
-                        }
-                    }
-                }
-                finally
-                {
-                    _topItemIndexHack = false;
-                }
-                return false;
-            }
 
             return IsItemVisible(listViewCount - 5);
         }
