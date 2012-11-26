@@ -678,8 +678,8 @@ namespace SnakeTail
                 // If returned EventLogEntry.Index == 0, then _eventLog-object is broken, and we should just refresh
                 if (entry.Index == 0)
                 {
-                    _eventListView.Invoke(new UpdateAction(_eventListView.Update));
-					this.Invoke(new EntryWrittenEventHandler(_eventLog_EntryWritten), new object[] { sender, null });
+                    _eventListView.Invalidate();
+                    this.BeginInvoke(new EntryWrittenEventHandler(_eventLog_EntryWritten), new object[] { sender, null });
                     return;
                 }
 
@@ -832,7 +832,8 @@ namespace SnakeTail
                 }
                 else
                 {
-                    this.Invoke(new EntryWrittenEventHandler(_eventLog_EntryWritten), new object[] { sender, null });
+                    _eventListView.Invalidate();
+                    this.BeginInvoke(new EntryWrittenEventHandler(_eventLog_EntryWritten), new object[] { sender, null });
                 }
             }
             else
@@ -840,7 +841,7 @@ namespace SnakeTail
             {
                 // The EventLog object sometimes get "broken" when pruned, and returns invalid entries
                 _eventListView.Invalidate();
-                _eventListView.Invoke(new UpdateAction(_eventListView.Update));
+                this.BeginInvoke(new EntryWrittenEventHandler(_eventLog_EntryWritten), new object[] { sender, null });
             }
 
             ListViewItem lvi = CreateListViewItem(entry);
