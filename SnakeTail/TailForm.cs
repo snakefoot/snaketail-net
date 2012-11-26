@@ -199,48 +199,68 @@ namespace SnakeTail
 
             Encoding fileEncoding = tailConfig.EnumFileEncoding;
 
-            if (_logTailStream != null)
-                _logTailStream.Reset();
+            try
+            {
+                _tailTimer.Enabled = false;
+                _tailListView.BeginUpdate();
 
-            if (_logFileStream == null || _logFileStream.FilePath != tailConfig.FilePath || _logFileStream.FileEncoding != fileEncoding || _logFileStream.FileCheckInterval != tailConfig.FileCheckInterval || _logFileStream.FileCheckPattern != tailConfig.FileCheckPattern)
-            {
-                if (_logFileStream != null)
-                    _logFileStream.Dispose();
-                _logFileStream = new LogFileStream(configPath, tailConfig.FilePath, fileEncoding, tailConfig.FileCheckInterval, tailConfig.FileCheckPattern);
-            }
-            if (_logTailStream == null || _logTailStream.FilePath != tailConfig.FilePath || _logTailStream.FileEncoding != fileEncoding || _logTailStream.FileCheckInterval != tailConfig.FileCheckInterval || _logTailStream.FileCheckPattern != tailConfig.FileCheckPattern)
-            {
                 if (_logTailStream != null)
-                    _logTailStream.Dispose();
-                _logTailStream = new LogFileStream(configPath, tailConfig.FilePath, fileEncoding, tailConfig.FileCheckInterval, tailConfig.FileCheckPattern);
-                if (_logTailStream.Length > 500 * 1024 * 1024)
+                    _logTailStream.Reset();
+
+                if (_logFileStream == null || _logFileStream.FilePath != tailConfig.FilePath || _logFileStream.FileEncoding != fileEncoding || _logFileStream.FileCheckInterval != tailConfig.FileCheckInterval || _logFileStream.FileCheckPattern != tailConfig.FileCheckPattern)
                 {
-                    if (MessageBox.Show(String.Format("The file is very large, sure you want to open it?\n\nFile Name: {0}\nFile Size: {1} Megabytes", _logTailStream.FilePath, _logTailStream.Length / 1024 / 1024), "Large file detected", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                    if (_logFileStream != null)
+                        _logFileStream.Dispose();
+                    _logFileStream = new LogFileStream(configPath, tailConfig.FilePath, fileEncoding, tailConfig.FileCheckInterval, tailConfig.FileCheckPattern);
+                }
+                if (_logTailStream == null || _logTailStream.FilePath != tailConfig.FilePath || _logTailStream.FileEncoding != fileEncoding || _logTailStream.FileCheckInterval != tailConfig.FileCheckInterval || _logTailStream.FileCheckPattern != tailConfig.FileCheckPattern)
+                {
+                    if (_logTailStream != null)
+                        _logTailStream.Dispose();
+                    _logTailStream = new LogFileStream(configPath, tailConfig.FilePath, fileEncoding, tailConfig.FileCheckInterval, tailConfig.FileCheckPattern);
+                    if (_logTailStream.Length > 500 * 1024 * 1024)
                     {
-                        Close();
-                        return;
+                        if (MessageBox.Show(String.Format("The file is very large, sure you want to open it?\n\nFile Name: {0}\nFile Size: {1} Megabytes", _logTailStream.FilePath, _logTailStream.Length / 1024 / 1024), "Large file detected", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                        {
+                            Close();
+                            return;
+                        }
+                    }
+                    if (_logFileCache != null)
+                    {
+                        _logFileCache.Reset();
+                        _logFileCache = null;   // Reset Cache, as the file contents can have changed
                     }
                 }
+
+                _logTailStream.FileReloadedEvent += new EventHandler(_logTailStream_FileReloadedEvent);
+
+                if (_logFileCache != null)
+                    _logFileCache.Reset();
+
+                if (_logFileCache == null || _logFileCache.Items.Count != tailConfig.FileCacheSize)
+                {
+                    _logFileCache = new LogFileCache(tailConfig.FileCacheSize);
+                    _logFileCache.LoadingFileEvent += new EventHandler(_logFileCache_LoadingFileEvent);
+                    _logFileCache.FillCacheEvent += new EventHandler(_logFileCache_FillCacheEvent);
+                    // Add loading of cache while counting lines in file
+                    int lineCount = _logFileCache.FillTailCache(_logTailStream);
+                    _tailListView.VirtualListSize = lineCount;
+                }
+                else
+                {
+                    _logFileCache.LoadingFileEvent += new EventHandler(_logFileCache_LoadingFileEvent);
+                    _logFileCache.FillCacheEvent += new EventHandler(_logFileCache_FillCacheEvent);
+                }
             }
-
-            _logTailStream.FileReloadedEvent += new EventHandler(_logTailStream_FileReloadedEvent);
-
-            if (_logFileCache != null)
-                _logFileCache.Reset();
-
-            if (_logFileCache == null || _logFileCache.Items.Count != tailConfig.FileCacheSize)
+            finally
             {
-                _logFileCache = new LogFileCache(tailConfig.FileCacheSize);
-                _logFileCache.LoadingFileEvent += new EventHandler(_logFileCache_LoadingFileEvent);
-                _logFileCache.FillCacheEvent += new EventHandler(_logFileCache_FillCacheEvent);
-                // Add loading of cache while counting lines in file
-                int lineCount = _logFileCache.FillTailCache(_logTailStream);
-                _tailListView.VirtualListSize = lineCount;
-            }
-            else
-            {
-                _logFileCache.LoadingFileEvent += new EventHandler(_logFileCache_LoadingFileEvent);
-                _logFileCache.FillCacheEvent += new EventHandler(_logFileCache_FillCacheEvent);
+                if (!IsDisposed)
+                {
+                    _tailListView.EndUpdate();
+                    _tailListView.Invalidate();
+                    _tailTimer.Enabled = true;
+                }
             }
 
             if (!string.IsNullOrEmpty(tailConfig.ServiceName))
