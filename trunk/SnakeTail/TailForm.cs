@@ -205,6 +205,7 @@ namespace SnakeTail
                 {
                     _tailTimer.Enabled = false;
                     _tailListView.BeginUpdate();
+                    _tailListView.SelectedIndices.Clear();
                 }
 
                 if (_logTailStream != null)
@@ -307,7 +308,6 @@ namespace SnakeTail
             {
                 if (_tailListView.VirtualListSize > 0)
                 {
-                    _tailListView.SelectedIndices.Clear();
                     _tailListView.EnsureVisible(_tailListView.VirtualListSize - 1);
                     _tailListView.FocusedItem = _tailListView.Items[_tailListView.VirtualListSize - 1];
                     _tailListView.SelectedIndices.Add(_tailListView.VirtualListSize - 1);
