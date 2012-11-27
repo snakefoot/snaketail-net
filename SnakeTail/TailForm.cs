@@ -201,8 +201,11 @@ namespace SnakeTail
 
             try
             {
-                _tailTimer.Enabled = false;
-                _tailListView.BeginUpdate();
+                if (Visible)
+                {
+                    _tailTimer.Enabled = false;
+                    _tailListView.BeginUpdate();
+                }
 
                 if (_logTailStream != null)
                     _logTailStream.Reset();
@@ -257,9 +260,12 @@ namespace SnakeTail
             {
                 if (!IsDisposed)
                 {
-                    _tailListView.EndUpdate();
-                    _tailListView.Invalidate();
-                    _tailTimer.Enabled = true;
+                    if (Visible)
+                    {
+                        _tailListView.EndUpdate();
+                        _tailListView.Invalidate();
+                        _tailTimer.Enabled = true;
+                    }
                 }
             }
 
@@ -301,6 +307,7 @@ namespace SnakeTail
             {
                 if (_tailListView.VirtualListSize > 0)
                 {
+                    _tailListView.SelectedIndices.Clear();
                     _tailListView.EnsureVisible(_tailListView.VirtualListSize - 1);
                     _tailListView.FocusedItem = _tailListView.Items[_tailListView.VirtualListSize - 1];
                     _tailListView.SelectedIndices.Add(_tailListView.VirtualListSize - 1);
