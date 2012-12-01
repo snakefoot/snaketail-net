@@ -145,7 +145,6 @@ namespace SnakeTail
             // 
             // _okBtn
             // 
-            this._okBtn.DialogResult = System.Windows.Forms.DialogResult.OK;
             this._okBtn.Location = new System.Drawing.Point(167, 174);
             this._okBtn.Name = "_okBtn";
             this._okBtn.Size = new System.Drawing.Size(75, 23);

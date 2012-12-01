@@ -77,6 +77,22 @@ namespace SnakeTail
             TailKeywordConfig.Keyword = _keywordEdt.Text;
             TailKeywordConfig.MatchCaseSensitive = _matchCaseChk.Checked;
             TailKeywordConfig.MatchRegularExpression = _matchRegExChk.Checked;
+            if (TailKeywordConfig.MatchRegularExpression)
+            {
+                try
+                {
+                    System.Text.RegularExpressions.Regex testParsing = null;
+                    if (TailKeywordConfig.MatchCaseSensitive)
+                        testParsing = new System.Text.RegularExpressions.Regex(TailKeywordConfig.Keyword);
+                    else
+                        testParsing = new System.Text.RegularExpressions.Regex(TailKeywordConfig.Keyword, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                }
+                catch (System.ArgumentException exception)
+                {
+                    MessageBox.Show(String.Format("Failed to parse regular expression:\n\n{0} ({1})", exception.Message, exception.GetType().ToString()), "Invalid regular expression", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
             TailKeywordConfig.LogHitCounter = _logHitChk.Checked;
 			if (TailKeywordConfig.LogHitCounter)
 			{
@@ -88,6 +104,8 @@ namespace SnakeTail
 	            TailKeywordConfig.FormBackColor = _keywordEdt.BackColor;
     	        TailKeywordConfig.FormTextColor = _keywordEdt.ForeColor;
 			}
+
+            DialogResult = DialogResult.OK;
         }
     }
 }
