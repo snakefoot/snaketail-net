@@ -1298,7 +1298,7 @@ namespace SnakeTail
             }
         }
 
-        private void configureStatisticsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void configureViewToolStripMenuItem_Click(object sender, EventArgs e)
         {
             TailFileConfig configFile = new TailFileConfig();
             SaveConfig(configFile);

@@ -75,7 +75,7 @@ namespace SnakeTail
             this.gotoPreviousHighlightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gotoNextHighlightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pauseWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.configureStatisticsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.configureViewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.switchModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.externalToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.startServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -184,7 +184,7 @@ namespace SnakeTail
             this.gotoNextHighlightToolStripMenuItem,
             this.pauseWindowToolStripMenuItem,
             toolStripSeparator2,
-            this.configureStatisticsToolStripMenuItem,
+            this.configureViewToolStripMenuItem,
             this.switchModeToolStripMenuItem,
             toolStripSeparator3,
             this.externalToolsToolStripMenuItem,
@@ -250,12 +250,12 @@ namespace SnakeTail
             this.pauseWindowToolStripMenuItem.Text = "Pause Window";
             this.pauseWindowToolStripMenuItem.Click += new System.EventHandler(this.pauseWindowToolStripMenuItem_Click);
             // 
-            // configureStatisticsToolStripMenuItem
+            // configureViewToolStripMenuItem
             // 
-            this.configureStatisticsToolStripMenuItem.Name = "configureStatisticsToolStripMenuItem";
-            this.configureStatisticsToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
-            this.configureStatisticsToolStripMenuItem.Text = "View Options...";
-            this.configureStatisticsToolStripMenuItem.Click += new System.EventHandler(this.configureStatisticsToolStripMenuItem_Click);
+            this.configureViewToolStripMenuItem.Name = "configureViewToolStripMenuItem";
+            this.configureViewToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
+            this.configureViewToolStripMenuItem.Text = "View Options...";
+            this.configureViewToolStripMenuItem.Click += new System.EventHandler(this.configureViewToolStripMenuItem_Click);
             // 
             // switchModeToolStripMenuItem
             // 
@@ -420,7 +420,7 @@ namespace SnakeTail
         private System.Windows.Forms.ToolStripMenuItem stopServiceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pauseServiceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem resumeServiceToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem configureStatisticsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem configureViewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem gotoNextHighlightToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem gotoPreviousHighlightToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pauseWindowToolStripMenuItem;
