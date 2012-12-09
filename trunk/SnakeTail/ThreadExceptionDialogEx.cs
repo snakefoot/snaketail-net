@@ -53,6 +53,7 @@ namespace SnakeTail
             CrashReport.Items.Add(new ExceptionReport(exception));
             CrashReport.Items.Add(new ApplicationReport());
             CrashReport.Items.Add(new SystemReport());
+            CrashReport.Items.Add(new MemoryPerformanceReport());
         }
 
         private void ThreadExceptionDialogEx_Load(object sender, EventArgs e)
@@ -232,6 +233,37 @@ namespace SnakeTail
                 Platform = "x64";
             FrameworkVersion = System.Environment.Version.ToString();
             Language = Application.CurrentCulture.EnglishName;
+        }
+    }
+
+    public class MemoryPerformanceReport
+    {
+        public long PrivateMemorySize;
+        public long VirtualMemorySize;
+        public long WorkingSet;
+        public long PagedMemorySize;
+        public long PeakWorkingSet;
+        public long PeakVirtualMemorySize;
+        public long PeakPagedMemorySize;
+
+        public MemoryPerformanceReport()
+        {
+            try
+            {
+                using (System.Diagnostics.Process process = System.Diagnostics.Process.GetCurrentProcess())
+                {
+                    PrivateMemorySize = process.PrivateMemorySize64;
+                    VirtualMemorySize = process.VirtualMemorySize64;
+                    WorkingSet = process.WorkingSet64;
+                    PagedMemorySize = process.PagedMemorySize64;
+                    PeakWorkingSet = process.PeakWorkingSet64;
+                    PeakVirtualMemorySize = process.PeakVirtualMemorySize64;
+                    PeakPagedMemorySize = process.PeakPagedMemorySize64;
+                }
+            }
+            catch
+            {
+            }
         }
     }
 
