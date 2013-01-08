@@ -339,7 +339,14 @@ namespace SnakeTail
                 _lastFileCheck = DateTime.Now;
                 return line;
             }
-            catch (IOException ex)
+            catch (System.UnauthorizedAccessException ex)
+            {
+                CloseFile(true);
+                if (lineNumber == 1)
+                    return "Cannot read file: " + _filePathAbsolute + " (" + ex.Message + ")";
+                return null;
+            }
+            catch (System.IO.IOException ex)
             {
                 CloseFile(true);
                 if (lineNumber == 1)
