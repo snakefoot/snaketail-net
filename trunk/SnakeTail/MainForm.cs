@@ -202,7 +202,7 @@ namespace SnakeTail
             OpenFileDialog fileDialog = new OpenFileDialog();
             fileDialog.Multiselect = true;
             fileDialog.Title = "Open Log File";
-            fileDialog.Filter = "Text Files|*.txt|Log Files|*.log|All Files|*.*";
+            fileDialog.Filter = "Default Filter|*.txt;*.text;*.log*;*.xlog|Log Files|*.log*;*.xlog|Text Files|*.txt;*.text|All Files|*.*";
             if (fileDialog.ShowDialog() != DialogResult.OK)
                 return;
 
