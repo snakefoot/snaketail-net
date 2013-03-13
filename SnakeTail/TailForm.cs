@@ -812,7 +812,7 @@ namespace SnakeTail
             // Draw the standard header background.
             e.DrawBackground();
 
-            TextFormatFlags flags = TextFormatFlags.Left | TextFormatFlags.ExpandTabs | TextFormatFlags.SingleLine;
+            TextFormatFlags flags = TextFormatFlags.Left | TextFormatFlags.ExpandTabs | TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix;
             if (e.Item.Text.Length > 1000)
                 TextRenderer.DrawText(e.Graphics, e.Item.Text.Substring(0, 1000), e.Item.ListView.Font, e.Bounds, e.SubItem.ForeColor, flags);
             else
