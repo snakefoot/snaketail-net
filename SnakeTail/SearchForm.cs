@@ -54,7 +54,7 @@ namespace SnakeTail
             {
                 if (_activeTailForm != null)
                 {
-                    _activeTailForm.TailWindow.FormClosed -= _activeForm_FormClosed;
+                    _activeTailForm.TailWindow.FormClosing -= _activeForm_FormClosing;
                 }
                 _activeTailForm = value;
                 if (Visible)
@@ -62,7 +62,7 @@ namespace SnakeTail
                     SetWindowPos(this.Handle, HWND_TOP, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);  // BringToFront without focus
                 }
                 if (_activeTailForm != null)
-                    _activeTailForm.TailWindow.FormClosed += new FormClosedEventHandler(_activeForm_FormClosed);
+                    _activeTailForm.TailWindow.FormClosing += _activeForm_FormClosing;
             }
         }
 
@@ -100,8 +100,12 @@ namespace SnakeTail
             }
         }
 
-        void _activeForm_FormClosed(object sender, FormClosedEventArgs e)
+        void _activeForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (_activeTailForm != null)
+            {
+                _activeTailForm.TailWindow.FormClosing -= _activeForm_FormClosing;
+            }
             _activeTailForm = null;
             MainForm.Instance.Focus();
         }
