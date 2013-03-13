@@ -538,7 +538,10 @@ namespace SnakeTail
                         if (tailForm != null)
                             tailForm.LoadConfig(tailFile, tailConfigPath);
                         if (mdiForm.IsDisposed)
+                        {
+                            _MDITabControl.TabPages.Remove(mdiForm.Tag as TabPage);
                             continue;
+                        }
                     }
                     mdiForm.Show();
 
@@ -562,7 +565,7 @@ namespace SnakeTail
                 Application.DoEvents();
             }
 
-            if (tailConfig.SelectedTab != -1)
+            if (tailConfig.SelectedTab != -1 && _MDITabControl.TabPages.Count > 0)
             {
                 foreach (Form childForm in MdiChildren)
                     childForm.WindowState = FormWindowState.Minimized;
