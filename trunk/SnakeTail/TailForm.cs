@@ -250,6 +250,11 @@ namespace SnakeTail
 
             if (!string.IsNullOrEmpty(tailConfig.ServiceName))
                 _taskMonitor = new TaskMonitor(tailConfig.ServiceName);
+            else if (_taskMonitor != null)
+            {
+                _taskMonitor.Dispose();
+                _taskMonitor = null;
+            }
 
             _formTitleMatchFilename = tailConfig.TitleMatchFilename;
             if (_formTitleMatchFilename)
