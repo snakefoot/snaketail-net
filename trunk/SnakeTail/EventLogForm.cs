@@ -1213,8 +1213,14 @@ namespace SnakeTail
                     selection.Append(LookupEventLogMessage(item).Replace(Environment.NewLine, "\n").Replace("\n", Environment.NewLine));
                 }
             }
-            if (selection.Length > 0)
-                Clipboard.SetText(selection.ToString());
+            try
+            {
+                ClipboardHelper.CopyToClipboard(selection.ToString());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to copy to clipboard, maybe another application is locking the clipboard.\n\n" + ex.Message);
+            }
         }
 
         private void _configTextToolStripMenuItem_Click(object sender, EventArgs e)
