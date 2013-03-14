@@ -488,10 +488,17 @@ namespace SnakeTail
             foreach (int itemIndex in _tailListView.SelectedIndices)
             {
                 if (selection.Length > 0)
-                    selection.Append("\r\n");
+                    selection.AppendLine();;
                 selection.Append(_tailListView.Items[itemIndex].Text);
             }
-            Clipboard.SetText(selection.ToString());
+            try
+            {
+                ClipboardHelper.CopyToClipboard(selection.ToString());
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Failed to copy to clipboard, maybe another application is locking the clipboard.\n\n" + ex.Message);
+            }
         }
 
         private bool MatchTextSearch(int lineNumber, string lineText, string searchText, bool matchCase, bool lineHighlights)
@@ -1279,15 +1286,7 @@ namespace SnakeTail
         private void _copyToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Copy selected rows to clipboard
-            StringBuilder selection = new StringBuilder();
-            foreach (int itemIndex in _tailListView.SelectedIndices)
-            {
-                if (selection.Length > 0)
-                    selection.Append("\r\n");
-                selection.Append(_tailListView.Items[itemIndex].Text);
-            }
-            if (selection.Length > 0)
-                Clipboard.SetText(selection.ToString());
+            CopySelectionToClipboard();
         }
 
         private void findToolStripMenuItem_Click(object sender, EventArgs e)
