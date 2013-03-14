@@ -82,6 +82,7 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="ClipboardHelper.cs" />
     <Compile Include="ExternalTool.cs" />
     <Compile Include="ExternalToolConfigForm.cs">
       <SubType>Form</SubType>
