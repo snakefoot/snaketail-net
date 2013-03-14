@@ -48,14 +48,14 @@ namespace SnakeTail
         {
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
             startInfo.Arguments = _toolConfig.Arguments;
-            foreach (KeyValuePair<string, string> paramter in _fileParameters)
-                startInfo.Arguments = startInfo.Arguments.Replace(paramter.Key, paramter.Value);
+            foreach (KeyValuePair<string, string> parameter in _fileParameters)
+                startInfo.Arguments = startInfo.Arguments.Replace(parameter.Key, parameter.Value);
             startInfo.FileName = _toolConfig.Command;
-            foreach (KeyValuePair<string, string> paramter in _fileParameters)
-                startInfo.FileName = startInfo.FileName.Replace(paramter.Key, paramter.Value);
+            foreach (KeyValuePair<string, string> parameter in _fileParameters)
+                startInfo.FileName = startInfo.FileName.Replace(parameter.Key, parameter.Value);
             startInfo.WorkingDirectory = _toolConfig.InitialDirectory;
-            foreach (KeyValuePair<string, string> paramter in _fileParameters)
-                startInfo.WorkingDirectory = startInfo.WorkingDirectory.Replace(paramter.Key, paramter.Value);
+            foreach (KeyValuePair<string, string> parameter in _fileParameters)
+                startInfo.WorkingDirectory = startInfo.WorkingDirectory.Replace(parameter.Key, parameter.Value);
             if (_toolConfig.HideWindow)
                 startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
             if (_toolConfig.RunAsAdmin)
