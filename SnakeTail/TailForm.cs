@@ -248,13 +248,13 @@ namespace SnakeTail
                 _logFileCache.FillCacheEvent += new EventHandler(_logFileCache_FillCacheEvent);
             }
 
-            if (!string.IsNullOrEmpty(tailConfig.ServiceName))
-                _taskMonitor = new TaskMonitor(tailConfig.ServiceName);
-            else if (_taskMonitor != null)
+            if (_taskMonitor != null)
             {
                 _taskMonitor.Dispose();
                 _taskMonitor = null;
             }
+            if (!string.IsNullOrEmpty(tailConfig.ServiceName))
+                _taskMonitor = new TaskMonitor(tailConfig.ServiceName);
 
             _formTitleMatchFilename = tailConfig.TitleMatchFilename;
             if (_formTitleMatchFilename)
