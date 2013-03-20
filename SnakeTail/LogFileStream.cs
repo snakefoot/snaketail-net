@@ -213,14 +213,37 @@ namespace SnakeTail
             else
             if (fileCheckPattern)
             {
-                filepath = FindFileUsingPattern(filepath);
-                if (filepath==null)
+                try
                 {
-                    _lastFileCheckError = "No files matching pattern";
+                    filepath = FindFileUsingPattern(filepath);
+                    if (filepath == null)
+                    {
+                        _lastFileCheckError = "No files matching pattern";
+                        return false;
+                    }
+                }
+                catch (ArgumentException ex)
+                {
+                    _lastFileCheckError = "Invalid file matching pattern path - " + ex.Message;
+                    return false;
+                }
+                catch (DirectoryNotFoundException)
+                {
+                    _lastFileCheckError = "Directory not found";
+                    return false;
+                }
+                catch (System.Security.SecurityException)
+                {
+                    _lastFileCheckError = "No permission to list files using matching pattern";
+                    return false;
+                }
+                catch (IOException ex)
+                {
+                    _lastFileCheckError = ex.Message;
                     return false;
                 }
             }
-            
+
             try
             {
                 _fileStream = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, 65536, FileOptions.SequentialScan);
@@ -228,6 +251,11 @@ namespace SnakeTail
             catch (ArgumentException ex)
             {
                 _lastFileCheckError = "Invalid argument for opening file - " + ex.Message;
+                return false;
+            }
+            catch (System.Security.SecurityException)
+            {
+                _lastFileCheckError = "No permission to open file";
                 return false;
             }
             catch (UnauthorizedAccessException)
