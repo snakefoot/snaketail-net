@@ -729,16 +729,26 @@ namespace SnakeTail
                     if (oldFocusedItemIndex != -1)
                     {
                         int newFocusedItemIndex = _eventListView.VirtualListSize - (oldVirtualListSize - oldFocusedItemIndex) - newItemCount;
+                        if (newFocusedItemIndex < 0)
+                            newFocusedItemIndex = 0;
                         if (newFocusedItemIndex != oldFocusedItemIndex)
                             _eventListView.FocusedItem = _eventListView.Items[newFocusedItemIndex];
                     }
                     if (oldSelectedItemIndex != -1)
                     {
                         int newSelectedItemIndex = _eventListView.VirtualListSize - (oldVirtualListSize - oldSelectedItemIndex) - newItemCount;
+                        if (newSelectedItemIndex < 0)
+                        {
+                            if (oldFocusedItemIndex == oldSelectedItemIndex)
+                                newSelectedItemIndex = 0;
+                            else
+                                newSelectedItemIndex = -1;
+                        }
                         if (oldSelectedItemIndex != newSelectedItemIndex)
                         {
                             _eventListView.SelectedIndices.Clear();
-                            _eventListView.SelectedIndices.Add(newSelectedItemIndex);
+							if (newSelectedItemIndex != -1)
+                            	_eventListView.SelectedIndices.Add(newSelectedItemIndex);
                         }
                     }
                 }
