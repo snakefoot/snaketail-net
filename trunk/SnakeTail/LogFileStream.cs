@@ -255,12 +255,12 @@ namespace SnakeTail
             }
             catch (System.Security.SecurityException)
             {
-                _lastFileCheckError = "No permission to open file";
+                _lastFileCheckError = "No permission to open the file";
                 return false;
             }
             catch (UnauthorizedAccessException)
             {
-                _lastFileCheckError = "Unauthorized Access";
+                _lastFileCheckError = "Access to the file is denied";
                 return false;
             }
             catch (DirectoryNotFoundException)
@@ -285,6 +285,18 @@ namespace SnakeTail
             {
                 if (!_fileReader.EndOfStream)
                     _lastFileCheckError = "";
+            }
+            catch (System.Security.SecurityException)
+            {
+                CloseFile(true);
+                _lastFileCheckError = "No permission to read the file";
+                return false;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                CloseFile(true);
+                _lastFileCheckError = "Read access to the file is denied";
+                return false;
             }
             catch (System.IO.IOException ex)
             {
