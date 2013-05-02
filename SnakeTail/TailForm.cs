@@ -336,7 +336,7 @@ namespace SnakeTail
                 if (!String.IsNullOrEmpty(fileStreamPath))
                     parentTab.ToolTipText = fileStreamPath;
                 else
-                    parentTab.ToolTipText = "";
+                    parentTab.ToolTipText = _logTailStream.FilePathAbsolute;
             }
 
             if (_loghitCounter != -1)
@@ -1481,6 +1481,25 @@ namespace SnakeTail
                 _tailListView.EnsureVisible(matchFound);
                 _tailListView.SelectedIndices.Add(matchFound);   // Set selection after having scrolled to avoid top-index cache miss
                 _tailListView.Items[matchFound].Focused = true;
+            }
+        }
+
+        private void copyAsPathToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string actualFileName = string.Empty;
+            if (_logTailStream != null)
+            {
+                actualFileName = _logTailStream.Name;
+                if (string.IsNullOrEmpty(actualFileName))
+                    actualFileName = _logTailStream.FilePathAbsolute;
+            }
+            try
+            {
+                ClipboardHelper.CopyToClipboard(actualFileName);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to copy to clipboard, maybe another application is locking the clipboard.\n\n" + ex.Message);
             }
         }
     }
