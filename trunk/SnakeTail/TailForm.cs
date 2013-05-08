@@ -138,6 +138,17 @@ namespace SnakeTail
         {
             _configPath = configPath;
 
+            try
+            {
+                new DirectoryInfo(Path.GetDirectoryName(Path.Combine(configPath, tailConfig.FilePath)));
+            }
+            catch (System.ArgumentException ex)
+            {
+                MessageBox.Show(String.Format("Failed to open file:\n\n{0}\n\nError:{1}", tailConfig.FilePath, ex.Message), "Invalid filename", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Close();
+                return;
+            }
+
             if (tailConfig.FileCacheSize <= 0)
                 tailConfig.FileCacheSize = 1000;
 
