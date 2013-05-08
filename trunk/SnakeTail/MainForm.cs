@@ -80,10 +80,21 @@ namespace SnakeTail
             string[] args = Environment.GetCommandLineArgs();
             if (args.Length > 1)
             {
-                if (args[1].EndsWith(".xml", StringComparison.CurrentCultureIgnoreCase))
-                    LoadSession(args[1]);
-                else
-                    OpenFileSelection(new string[] { args[1] });
+                int filesOpened = 0;
+                for (int i = 1; i < args.Length; ++i)
+                {
+                    if (args[1].EndsWith(".xml", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        if (LoadSession(args[1]))
+                            ++filesOpened;
+                    }
+                    else
+                    {
+                        filesOpened += OpenFileSelection(new string[] { args[i] });
+                    }
+                    if (filesOpened == 0 && i >= 2)
+                        break;  // Stop attempting to open all arguements if the first two fails
+                }
             }
         }
 
@@ -215,11 +226,7 @@ namespace SnakeTail
             if (filename.EndsWith(".xml", StringComparison.CurrentCultureIgnoreCase))
                 openedFile = LoadSession(filename);
             else
-            {
-                int formCount = Application.OpenForms.Count;
-                OpenFileSelection(new string[] { filename });
-                openedFile = formCount < Application.OpenForms.Count;
-            }
+                openedFile = OpenFileSelection(new string[] { filename }) == 1;
 
             if (!openedFile)
             {
@@ -228,7 +235,7 @@ namespace SnakeTail
             }
         }
 
-        private void OpenFileSelection(string[] filenames)
+        private int OpenFileSelection(string[] filenames)
         {
             if (_defaultTailConfig == null)
             {
@@ -265,12 +272,23 @@ namespace SnakeTail
                 }
             }
 
+            int filesOpened = 0;
             foreach (string filename in filenames)
             {
+                string configPath = "";
+                try
+                {
+                    if (string.IsNullOrEmpty(Path.GetDirectoryName(filename)))
+                        configPath = Directory.GetCurrentDirectory();
+                }
+                catch
+                {
+                }
+
                 TailForm mdiForm = new TailForm();
                 TailFileConfig tailConfig = _defaultTailConfig;
                 tailConfig.FilePath = filename;
-                mdiForm.LoadConfig(tailConfig, "");
+                mdiForm.LoadConfig(tailConfig, configPath);
                 if (mdiForm.IsDisposed)
                     continue;
                 
@@ -278,8 +296,10 @@ namespace SnakeTail
 
                 mdiForm.MdiParent = this;
                 mdiForm.Show();
+                ++filesOpened;
                 Application.DoEvents();
             }
+            return filesOpened;
         }
 
         private void openEventLogToolStripMenuItem_Click(object sender, EventArgs e)
@@ -713,7 +733,7 @@ namespace SnakeTail
                 // Explorer instance from which file is dropped is not responding
                 // all the time when DragDrop handler is active, so we need to return
                 // immidiately (especially if OpenFile shows MessageBox).
-                System.Threading.ThreadPool.QueueUserWorkItem(new System.Threading.WaitCallback(worker_DoWork), filenames.ToArray());
+                System.Threading.ThreadPool.QueueUserWorkItem(worker_DoWork, filenames.ToArray());
             }
             catch (Exception ex)
             {
@@ -728,7 +748,7 @@ namespace SnakeTail
             // The solution was to create a thread, that slept for 100 ms and then invoked the wanted method. If I removed the sleep from the new thread,
             // then Windows Explorer would lock again. Very strange indeed. 
             System.Threading.Thread.Sleep(100);
-            this.BeginInvoke(new Action<string[]>(OpenFileSelection), new object[] { param });
+            this.BeginInvoke(new Action<string[]>(delegate(string[] filenames) { OpenFileSelection(filenames); }), new object[] { param });
         }
 
         private void MainForm_SizeChanged(object sender, EventArgs e)
