@@ -27,6 +27,7 @@ namespace SnakeTail
         Encoding _fileEncoding = Encoding.Default;
         FileStream _fileStream = null;
         StreamReader _fileReader = null;
+        ThreadPoolQueue _threadPool = new ThreadPoolQueue();
         DateTime _lastFileCheck = DateTime.Now;
         int _lastLineNumber = 0;
         string _lastFileCheckError = "";
@@ -56,6 +57,19 @@ namespace SnakeTail
         {
             _lastFileCheck = DateTime.Now;
 
+            try
+            {
+				// Refreshes the directory of the file, to ensure that we see the latest changes
+				// If the directory is on a network share, then this can be a long blocking operation
+                _threadPool.CheckResult();
+                _threadPool.ExecuteRequest(RefreshDirectoryInfo, new DirectoryInfo(Path.GetDirectoryName(_filePathAbsolute)));
+            }
+            catch (System.IO.IOException ex)
+            {
+                // Any problems with the path should also be detected with the synchronous LoadFile-check
+                System.Diagnostics.Debug.WriteLine("IOException while refreshing directory path: " + ex.Message);
+            }
+
             if (_fileStream == null || forceReload)
             {
                 LoadFile(_filePathAbsolute, _fileEncoding, _fileCheckPattern);
@@ -70,6 +84,7 @@ namespace SnakeTail
                 string configPath = Path.GetDirectoryName(_filePathAbsolute);
                 bool fileChanged = false;
                 long fileCheckLength = 0;
+
                 using (LogFileStream testLogFile = new LogFileStream(configPath, _filePathAbsolute, _fileEncoding, _fileCheckFrequency.Seconds, _fileCheckPattern))
                 {
                     fileCheckLength = testLogFile.Length;
@@ -94,6 +109,13 @@ namespace SnakeTail
                 }
                 _lastFileCheckLength = fileCheckLength;
             }
+        }
+
+        static void RefreshDirectoryInfo(object state)
+        {
+            DirectoryInfo directoryInfo = state as DirectoryInfo;
+            if (directoryInfo != null)
+                directoryInfo.Refresh();
         }
 
         public bool FileAtStart
@@ -149,7 +171,7 @@ namespace SnakeTail
                 return false;
         }
 
-        public static string FindFileUsingPattern(string filePathAbsolute)
+        static string FindFileUsingPattern(string filePathAbsolute)
         {
             // Consider using FileSystemWatcher
             string filename = Path.GetFileName(filePathAbsolute);
@@ -171,6 +193,8 @@ namespace SnakeTail
         public void Dispose()
         {
             FileReloadedEvent = null;
+
+            _threadPool.Dispose();
 
             CloseFile(false);
         }
