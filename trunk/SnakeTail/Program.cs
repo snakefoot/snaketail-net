@@ -71,6 +71,8 @@ namespace SnakeTail
             updateChecker.PadUrl = PadUrl;
 
             ThreadExceptionDialogEx dlg = new ThreadExceptionDialogEx(ex);
+            if (MainForm.Instance != null)
+                dlg.Owner = MainForm.Instance;
             dlg.SendReportEvent += updateChecker.SendReport;
             dlg.ShowDialog();
         }

@@ -804,6 +804,7 @@ namespace SnakeTail
         {
             try
             {
+                _instance = null;
                 if (saveRecentFilesToRegistryToolStripMenuItem.Checked)
                     _mruMenu.SaveToRegistry();
             }
