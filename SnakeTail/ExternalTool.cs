@@ -21,7 +21,7 @@ namespace SnakeTail
 {
     class ExternalTool
     {
-        ExternalToolConfig _toolConfig;
+        public readonly ExternalToolConfig ToolConfig;
         Dictionary<string, string> _fileParameters;
 
         public static readonly List<string> ParamList = new List<string> {
@@ -40,25 +40,25 @@ namespace SnakeTail
 
         public ExternalTool(ExternalToolConfig toolConfig, Dictionary<string, string> fileParameters)
         {
-            _toolConfig = toolConfig;
+            ToolConfig = toolConfig;
             _fileParameters = fileParameters;
         }
 
         public void Execute()
         {
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-            startInfo.Arguments = _toolConfig.Arguments;
+            startInfo.Arguments = Environment.ExpandEnvironmentVariables(ToolConfig.Arguments);
             foreach (KeyValuePair<string, string> parameter in _fileParameters)
                 startInfo.Arguments = startInfo.Arguments.Replace(parameter.Key, parameter.Value);
-            startInfo.FileName = _toolConfig.Command;
+            startInfo.FileName = Environment.ExpandEnvironmentVariables(ToolConfig.Command);
             foreach (KeyValuePair<string, string> parameter in _fileParameters)
                 startInfo.FileName = startInfo.FileName.Replace(parameter.Key, parameter.Value);
-            startInfo.WorkingDirectory = _toolConfig.InitialDirectory;
+            startInfo.WorkingDirectory = Environment.ExpandEnvironmentVariables(ToolConfig.InitialDirectory);
             foreach (KeyValuePair<string, string> parameter in _fileParameters)
                 startInfo.WorkingDirectory = startInfo.WorkingDirectory.Replace(parameter.Key, parameter.Value);
-            if (_toolConfig.HideWindow)
+            if (ToolConfig.HideWindow)
                 startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-            if (_toolConfig.RunAsAdmin)
+            if (ToolConfig.RunAsAdmin)
             {
                 if (!IsAdministrator)
                     startInfo.Verb = "runas";
@@ -66,7 +66,7 @@ namespace SnakeTail
             System.Diagnostics.Process.Start(startInfo);
         }
 
-        private bool IsAdministrator
+        private static bool IsAdministrator
         {
             get
             {

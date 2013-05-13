@@ -26,10 +26,14 @@ namespace SnakeTail
     public partial class KeywordConfigForm : Form
     {
         public TailKeywordConfig TailKeywordConfig { get; private set; }
+        private TailFileConfig _tailFileConfig;
 
-        public KeywordConfigForm(TailKeywordConfig keywordConfig)
+        public KeywordConfigForm(TailKeywordConfig keywordConfig, TailFileConfig tailFileConfig)
         {
             InitializeComponent();
+
+            _tailFileConfig = tailFileConfig;
+
             if (keywordConfig != null)
                 TailKeywordConfig = keywordConfig;
             else
@@ -50,6 +54,27 @@ namespace SnakeTail
             _matchCaseChk.Checked = TailKeywordConfig.MatchCaseSensitive;
             _matchRegExChk.Checked = TailKeywordConfig.MatchRegularExpression;
             _logHitChk.Checked = TailKeywordConfig.LogHitCounter;
+            _noHighlightChk.Checked = TailKeywordConfig.NoHighlightText.Value;
+            _tabWarningIconChk.Checked = TailKeywordConfig.TabWarningIcon;
+            if (_tailFileConfig != null)
+            {
+                _tabWarningIconChk.Enabled = _tailFileConfig.DisplayTabIcon;
+
+                _externalToolCmb.Items.Add(string.Empty);
+                if (_tailFileConfig.ExternalTools != null)
+                {
+                    foreach (ExternalToolConfig externalTool in _tailFileConfig.ExternalTools)
+                    {
+                        _externalToolCmb.Items.Add(externalTool.Name);
+                    }
+                }
+                if (!string.IsNullOrEmpty(TailKeywordConfig.ExternalToolName))
+                {
+                    _externalToolCmb.SelectedIndex = _externalToolCmb.Items.IndexOf(TailKeywordConfig.ExternalToolName);
+                    if (_externalToolCmb.SelectedIndex <= 0)
+                        _externalToolCmb.Text = TailKeywordConfig.ExternalToolName;
+                }
+            }
         }
 
         private void _textColorBtn_Click(object sender, EventArgs e)
@@ -93,8 +118,11 @@ namespace SnakeTail
                     return;
                 }
             }
+            TailKeywordConfig.ExternalToolName = !string.IsNullOrEmpty(_externalToolCmb.Text) ? _externalToolCmb.Text : null;
+            TailKeywordConfig.TabWarningIcon = _tabWarningIconChk.Checked;
             TailKeywordConfig.LogHitCounter = _logHitChk.Checked;
-			if (TailKeywordConfig.LogHitCounter)
+            TailKeywordConfig.NoHighlightText = _noHighlightChk.Checked;
+            if (TailKeywordConfig.NoHighlightText.Value)
 			{
 				TailKeywordConfig.FormBackColor = null;
 				TailKeywordConfig.FormTextColor = null;

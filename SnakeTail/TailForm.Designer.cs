@@ -46,6 +46,10 @@ namespace SnakeTail
             {
                 _taskMonitor.Dispose();
             }
+            if (disposing && (_threadPoolQueue != null))
+            {
+                _threadPoolQueue.Dispose();
+            }
         }
 
         #region Windows Form Designer generated code

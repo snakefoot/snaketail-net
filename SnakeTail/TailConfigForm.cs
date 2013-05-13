@@ -117,7 +117,7 @@ namespace SnakeTail
             }
         }
 
-        private void _acceptBtn_Click(object sender, EventArgs e)
+        private void TailConfigForm_Save(object sender, EventArgs e)
         {
             TailFileConfig.Title = _windowTitleEdt.Text;
             TailFileConfig.IconFile = _windowIconEdt.Text;
@@ -159,6 +159,11 @@ namespace SnakeTail
                     TailFileConfig.ExternalTools.Add(lvi.Tag as ExternalToolConfig);
                 }
             }
+        }
+
+        private void _acceptBtn_Click(object sender, EventArgs e)
+        {
+            TailConfigForm_Save(sender, e);
         }
 
         private void _textColorBtn_Click(object sender, EventArgs e)
@@ -212,7 +217,7 @@ namespace SnakeTail
 
         private void _addWordBtn_Click(object sender, EventArgs e)
         {
-            KeywordConfigForm dlg = new KeywordConfigForm(null);
+            KeywordConfigForm dlg = new KeywordConfigForm(null, TailFileConfig);
             if (dlg.ShowDialog() == DialogResult.OK && !String.IsNullOrEmpty(dlg.TailKeywordConfig.Keyword))
             {
                 ListViewItem lvi = _keywordListView.Items.Add(new ListViewItem());
@@ -225,7 +230,7 @@ namespace SnakeTail
             if (_keywordListView.SelectedItems.Count == 0)
                 return;
 
-            KeywordConfigForm dlg = new KeywordConfigForm(_keywordListView.SelectedItems[0].Tag as TailKeywordConfig);
+            KeywordConfigForm dlg = new KeywordConfigForm(_keywordListView.SelectedItems[0].Tag as TailKeywordConfig, TailFileConfig);
             if (dlg.ShowDialog() == DialogResult.OK && !String.IsNullOrEmpty(dlg.TailKeywordConfig.Keyword))
             {
                 ListViewItem lvi = _keywordListView.SelectedItems[0];
@@ -347,6 +352,11 @@ namespace SnakeTail
             ListViewItem selectedItem = _extToolsListView.SelectedItems[0];
             _extToolsListView.Items.Remove(selectedItem);
             _extToolsListView.Items.Insert(selectedIndex + 1, selectedItem);
+        }
+
+        private void _tabControl_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            TailConfigForm_Save(sender, e);
         }
     }
 }
