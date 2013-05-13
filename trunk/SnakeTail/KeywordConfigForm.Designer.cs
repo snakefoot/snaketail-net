@@ -46,6 +46,7 @@ namespace SnakeTail
             System.Windows.Forms.Label label1;
             System.Windows.Forms.Label label2;
             System.Windows.Forms.Label label3;
+            System.Windows.Forms.Label label4;
             this._keywordEdt = new System.Windows.Forms.TextBox();
             this._matchCaseChk = new System.Windows.Forms.CheckBox();
             this._matchRegExChk = new System.Windows.Forms.CheckBox();
@@ -54,9 +55,13 @@ namespace SnakeTail
             this._cancelBtn = new System.Windows.Forms.Button();
             this._okBtn = new System.Windows.Forms.Button();
             this._logHitChk = new System.Windows.Forms.CheckBox();
+            this._noHighlightChk = new System.Windows.Forms.CheckBox();
+            this._externalToolCmb = new System.Windows.Forms.ComboBox();
+            this._tabWarningIconChk = new System.Windows.Forms.CheckBox();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
+            label4 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -71,7 +76,7 @@ namespace SnakeTail
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new System.Drawing.Point(9, 113);
+            label2.Location = new System.Drawing.Point(9, 171);
             label2.Name = "label2";
             label2.Size = new System.Drawing.Size(112, 13);
             label2.TabIndex = 7;
@@ -80,11 +85,20 @@ namespace SnakeTail
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new System.Drawing.Point(9, 142);
+            label3.Location = new System.Drawing.Point(9, 200);
             label3.Name = "label3";
             label3.Size = new System.Drawing.Size(92, 13);
             label3.TabIndex = 8;
             label3.Text = "Background Color";
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new System.Drawing.Point(9, 119);
+            label4.Name = "label4";
+            label4.Size = new System.Drawing.Size(108, 13);
+            label4.TabIndex = 13;
+            label4.Text = "Launch External Tool";
             // 
             // _keywordEdt
             // 
@@ -106,16 +120,16 @@ namespace SnakeTail
             // _matchRegExChk
             // 
             this._matchRegExChk.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this._matchRegExChk.Location = new System.Drawing.Point(9, 53);
+            this._matchRegExChk.Location = new System.Drawing.Point(9, 52);
             this._matchRegExChk.Name = "_matchRegExChk";
-            this._matchRegExChk.Size = new System.Drawing.Size(153, 24);
+            this._matchRegExChk.Size = new System.Drawing.Size(153, 16);
             this._matchRegExChk.TabIndex = 4;
             this._matchRegExChk.Text = "Match Regular Expression";
             this._matchRegExChk.UseVisualStyleBackColor = true;
             // 
             // _textColorBtn
             // 
-            this._textColorBtn.Location = new System.Drawing.Point(147, 108);
+            this._textColorBtn.Location = new System.Drawing.Point(147, 166);
             this._textColorBtn.Name = "_textColorBtn";
             this._textColorBtn.Size = new System.Drawing.Size(75, 23);
             this._textColorBtn.TabIndex = 5;
@@ -125,7 +139,7 @@ namespace SnakeTail
             // 
             // _backColorBtn
             // 
-            this._backColorBtn.Location = new System.Drawing.Point(147, 137);
+            this._backColorBtn.Location = new System.Drawing.Point(147, 195);
             this._backColorBtn.Name = "_backColorBtn";
             this._backColorBtn.Size = new System.Drawing.Size(75, 23);
             this._backColorBtn.TabIndex = 6;
@@ -136,7 +150,7 @@ namespace SnakeTail
             // _cancelBtn
             // 
             this._cancelBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this._cancelBtn.Location = new System.Drawing.Point(248, 174);
+            this._cancelBtn.Location = new System.Drawing.Point(245, 235);
             this._cancelBtn.Name = "_cancelBtn";
             this._cancelBtn.Size = new System.Drawing.Size(75, 23);
             this._cancelBtn.TabIndex = 9;
@@ -145,7 +159,7 @@ namespace SnakeTail
             // 
             // _okBtn
             // 
-            this._okBtn.Location = new System.Drawing.Point(167, 174);
+            this._okBtn.Location = new System.Drawing.Point(164, 235);
             this._okBtn.Name = "_okBtn";
             this._okBtn.Size = new System.Drawing.Size(75, 23);
             this._okBtn.TabIndex = 10;
@@ -156,12 +170,41 @@ namespace SnakeTail
             // _logHitChk
             // 
             this._logHitChk.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this._logHitChk.Location = new System.Drawing.Point(9, 78);
+            this._logHitChk.Location = new System.Drawing.Point(9, 69);
             this._logHitChk.Name = "_logHitChk";
             this._logHitChk.Size = new System.Drawing.Size(153, 24);
             this._logHitChk.TabIndex = 11;
             this._logHitChk.Text = "Log Hit Counter";
             this._logHitChk.UseVisualStyleBackColor = true;
+            // 
+            // _noHighlightChk
+            // 
+            this._noHighlightChk.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this._noHighlightChk.Location = new System.Drawing.Point(9, 143);
+            this._noHighlightChk.Name = "_noHighlightChk";
+            this._noHighlightChk.Size = new System.Drawing.Size(153, 21);
+            this._noHighlightChk.TabIndex = 12;
+            this._noHighlightChk.Text = "No text highlight";
+            this._noHighlightChk.UseVisualStyleBackColor = true;
+            // 
+            // _externalToolCmb
+            // 
+            this._externalToolCmb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._externalToolCmb.FormattingEnabled = true;
+            this._externalToolCmb.Location = new System.Drawing.Point(147, 116);
+            this._externalToolCmb.Name = "_externalToolCmb";
+            this._externalToolCmb.Size = new System.Drawing.Size(121, 21);
+            this._externalToolCmb.TabIndex = 14;
+            // 
+            // _tabWarningIconChk
+            // 
+            this._tabWarningIconChk.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this._tabWarningIconChk.Location = new System.Drawing.Point(9, 92);
+            this._tabWarningIconChk.Name = "_tabWarningIconChk";
+            this._tabWarningIconChk.Size = new System.Drawing.Size(153, 21);
+            this._tabWarningIconChk.TabIndex = 15;
+            this._tabWarningIconChk.Text = "Display Tab Warning Icon";
+            this._tabWarningIconChk.UseVisualStyleBackColor = true;
             // 
             // KeywordConfigForm
             // 
@@ -169,7 +212,11 @@ namespace SnakeTail
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this._cancelBtn;
-            this.ClientSize = new System.Drawing.Size(327, 201);
+            this.ClientSize = new System.Drawing.Size(327, 264);
+            this.Controls.Add(this._tabWarningIconChk);
+            this.Controls.Add(this._externalToolCmb);
+            this.Controls.Add(label4);
+            this.Controls.Add(this._noHighlightChk);
             this.Controls.Add(this._logHitChk);
             this.Controls.Add(this._okBtn);
             this.Controls.Add(this._cancelBtn);
@@ -205,5 +252,8 @@ namespace SnakeTail
         private System.Windows.Forms.Button _cancelBtn;
         private System.Windows.Forms.Button _okBtn;
         private System.Windows.Forms.CheckBox _logHitChk;
+        private System.Windows.Forms.CheckBox _noHighlightChk;
+        private System.Windows.Forms.ComboBox _externalToolCmb;
+        private System.Windows.Forms.CheckBox _tabWarningIconChk;
     }
 }

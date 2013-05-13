@@ -59,15 +59,36 @@ namespace SnakeTail
 
             try
             {
-				// Refreshes the directory of the file, to ensure that we see the latest changes
-				// If the directory is on a network share, then this can be a long blocking operation
+                // Refreshes the directory of the file, to ensure that we see the latest changes
+                // If the directory is on a network share, then this can be a long blocking operation
                 _threadPool.CheckResult();
-                _threadPool.ExecuteRequest(RefreshDirectoryInfo, new DirectoryInfo(Path.GetDirectoryName(_filePathAbsolute)));
+                DirectoryInfo dirInfo = null;
+                try
+                {
+                    dirInfo = new DirectoryInfo(Path.GetDirectoryName(_filePathAbsolute));
+                }
+                catch (System.ArgumentException ex)
+                {
+                    // Any problems with the path should also be detected with the synchronous LoadFile-check
+                    System.Diagnostics.Debug.WriteLine("Failed to refresh directory path: " + ex.Message);
+                }
+                catch (System.Security.SecurityException ex)
+                {
+                    // Any problems with the path should also be detected with the synchronous LoadFile-check
+                    System.Diagnostics.Debug.WriteLine("Failed to access directory path: " + ex.Message);
+                }
+                catch (System.IO.IOException ex)
+                {
+                    // Any problems with the path should also be detected with the synchronous LoadFile-check
+                    System.Diagnostics.Debug.WriteLine("Failed to read directory path: " + ex.Message);
+                }
+                if (dirInfo != null)
+                    _threadPool.ExecuteRequest(RefreshDirectoryInfo, dirInfo);
             }
-            catch (System.IO.IOException ex)
+            catch (ApplicationException ex)
             {
                 // Any problems with the path should also be detected with the synchronous LoadFile-check
-                System.Diagnostics.Debug.WriteLine("IOException while refreshing directory path: " + ex.Message);
+                System.Diagnostics.Debug.WriteLine(ex.Message);
             }
 
             if (_fileStream == null || forceReload)
@@ -113,9 +134,16 @@ namespace SnakeTail
 
         static void RefreshDirectoryInfo(object state)
         {
-            DirectoryInfo directoryInfo = state as DirectoryInfo;
-            if (directoryInfo != null)
-                directoryInfo.Refresh();
+            try
+            {
+                DirectoryInfo directoryInfo = state as DirectoryInfo;
+                if (directoryInfo != null)
+                    directoryInfo.Refresh();
+            }
+            catch (System.IO.IOException ex)
+            {
+                throw new ApplicationException("Failed to refresh directory path: " + ex.Message, ex);
+            }
         }
 
         public bool FileAtStart

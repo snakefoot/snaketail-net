@@ -102,6 +102,7 @@ namespace SnakeTail
         Color _bookmarkTextColor = Color.Yellow;    // Default bookmark text color
         Color _bookmarkBackColor = Color.DarkGreen; // Default bookmark background color
         List<int> _bookmarks = new List<int>();
+        ThreadPoolQueue _threadPoolQueue = new ThreadPoolQueue();
 
         public TailForm()
         {
@@ -168,6 +169,25 @@ namespace SnakeTail
             if (tailConfig.FileChangeCheckInterval > 0)
                 _tailTimer.Interval = tailConfig.FileChangeCheckInterval;
 
+            _externalTools = tailConfig.ExternalTools;
+            externalToolsToolStripMenuItem.DropDownItems.Clear();
+            externalToolsToolStripMenuItem.Enabled = false;
+            if (_externalTools != null)
+            {
+                foreach (ExternalToolConfig externalTool in _externalTools)
+                {
+                    ToolStripMenuItem toolItem = externalToolsToolStripMenuItem.DropDownItems.Add(externalTool.Name) as ToolStripMenuItem;
+                    if (toolItem != null)
+                    {
+                        toolItem.Tag = externalTool;
+                        toolItem.Click += new EventHandler(externalToolMenuItem_Click);
+                        if (externalTool.ShortcutKeyEnum.HasValue)
+                            toolItem.ShortcutKeys = externalTool.ShortcutKeyEnum.Value;
+                    }
+                    externalToolsToolStripMenuItem.Enabled = true;
+                }
+            }
+
             _loghitCounter = -1;
             _keywordHighlight = tailConfig.KeywordHighlight;
             if (_keywordHighlight != null)
@@ -186,25 +206,11 @@ namespace SnakeTail
 
                     if (keyword.LogHitCounter)
                         _loghitCounter = 0;
-                }
-            }
 
-            _externalTools = tailConfig.ExternalTools;
-            externalToolsToolStripMenuItem.DropDownItems.Clear();
-            externalToolsToolStripMenuItem.Enabled = false;
-            if (_externalTools != null)
-            {
-                foreach (ExternalToolConfig externalTool in _externalTools)
-                {
-                    ToolStripMenuItem toolItem = externalToolsToolStripMenuItem.DropDownItems.Add(externalTool.Name) as ToolStripMenuItem;
-                    if (toolItem != null)
+                    if (!string.IsNullOrEmpty(keyword.ExternalToolName))
                     {
-                        toolItem.Tag = externalTool;
-                        toolItem.Click += new EventHandler(externalToolMenuItem_Click);
-                        if (externalTool.ShortcutKeyEnum.HasValue)
-                            toolItem.ShortcutKeys = externalTool.ShortcutKeyEnum.Value;
+                        keyword.ExternalToolConfig = _externalTools.Find((externalTool) => string.Compare(externalTool.Name, keyword.ExternalToolName) == 0);
                     }
-                    externalToolsToolStripMenuItem.Enabled = true;
                 }
             }
 
@@ -519,7 +525,7 @@ namespace SnakeTail
                 if (MatchesBookmark(lineNumber))
                     return true;
 
-                if (MatchesKeyword(lineText, false) != null)
+                if (MatchesKeyword(lineText, true) != null)
                     return true;
 
                 return false;
@@ -795,7 +801,7 @@ namespace SnakeTail
             }
             else
             {
-                TailKeywordConfig keyword = MatchesKeyword(e.Item.Text, false);
+                TailKeywordConfig keyword = MatchesKeyword(e.Item.Text, true);
                 if (keyword != null)
                 {
                     if (keyword.FormBackColor.HasValue && keyword.FormTextColor.HasValue)
@@ -853,25 +859,58 @@ namespace SnakeTail
             return _bookmarks.Contains(lineNumber);
         }
 
-        private TailKeywordConfig MatchesKeyword(string line, bool logHitCounter)
+        private TailKeywordConfig MatchesKeyword(string line, bool onlyKeywordHighlight)
         {
+            TailKeywordConfig matchKeyword = null;
             if (_keywordHighlight != null && _keywordHighlight.Count > 0)
             {
                 foreach (TailKeywordConfig keyword in _keywordHighlight)
                 {
-                    if (logHitCounter != keyword.LogHitCounter)
-                        continue;
+                    if (onlyKeywordHighlight)
+                    {
+                        if (keyword.NoHighlightText.Value)
+                            continue;
+                    }
+                    else if (matchKeyword != null)
+                    {
+                        // Ignore keywords that doesn't add extra detail to the existing keyword-match
+                        if ( (matchKeyword.ExternalToolConfig == null && keyword.ExternalToolConfig == null)
+                          && (!matchKeyword.LogHitCounter && !keyword.LogHitCounter)
+                          && (!matchKeyword.TabWarningIcon && !keyword.TabWarningIcon))
+                           continue;
+                    }
 
                     if ((keyword.KeywordRegex != null && keyword.KeywordRegex.IsMatch(line))
                       || (keyword.KeywordRegex == null && keyword.MatchCaseSensitive && line.IndexOf(keyword.Keyword, StringComparison.CurrentCulture) != -1)
                       || (keyword.KeywordRegex == null && !keyword.MatchCaseSensitive && line.IndexOf(keyword.Keyword, StringComparison.CurrentCultureIgnoreCase) != -1)
                        )
                     {
-                        return keyword;
+                        if (onlyKeywordHighlight)
+                        {
+                            return keyword;
+                        }
+                        else if (matchKeyword != null)
+                        {
+                            // Add extra detail to the existing keyword-match
+                            matchKeyword = new TailKeywordConfig() { ExternalToolConfig = matchKeyword.ExternalToolConfig, LogHitCounter = matchKeyword.LogHitCounter, TabWarningIcon = matchKeyword.TabWarningIcon };
+                            if (matchKeyword.ExternalToolConfig==null && keyword.ExternalToolConfig!=null)
+                                matchKeyword.ExternalToolConfig = keyword.ExternalToolConfig;
+                            if (!matchKeyword.LogHitCounter && keyword.LogHitCounter)
+                                matchKeyword.LogHitCounter = keyword.LogHitCounter;
+                            if (!matchKeyword.TabWarningIcon && keyword.TabWarningIcon)
+                                matchKeyword.TabWarningIcon = keyword.TabWarningIcon;
+                        }
+                        else
+                        {
+                            matchKeyword = keyword;
+                        }
+
+                        if (matchKeyword.LogHitCounter && matchKeyword.TabWarningIcon && matchKeyword.ExternalToolConfig!=null)
+                            return matchKeyword;	// We have all the details we need
                     }
                 }
             }
-            return null;
+            return matchKeyword;
         }
 
         private void _tailListView_KeyDown(object sender, KeyEventArgs e)
@@ -958,6 +997,15 @@ namespace SnakeTail
 
             UpdateFormTitle(false);
 
+            try
+            {
+                _threadPoolQueue.CheckResult();
+            }
+            catch (ApplicationException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
             int lineCount = _tailListView.VirtualListSize;
             bool listAtBottom = ListAtBottom();
             bool warningIcon = false;
@@ -976,10 +1024,26 @@ namespace SnakeTail
             {
                 ++lineCount;
                 _logFileCache.AppendTailCache(line, lineCount);
-                if (MatchesKeyword(line, true) != null)
-                    _loghitCounter++;
-                if (!warningIcon && MatchesKeyword(line, false) != null)
-                    warningIcon = true;
+                TailKeywordConfig keywordMatch = MatchesKeyword(line, false);
+                if (keywordMatch != null)
+                {
+                    if (keywordMatch.LogHitCounter)
+                        _loghitCounter++;
+                    if (keywordMatch.ExternalToolConfig != null)
+                    {
+                        try
+                        {
+                            _threadPoolQueue.CheckResult();
+                        }
+                        catch (ApplicationException ex)
+                        {
+                            MessageBox.Show(ex.Message);
+                        }
+                        _threadPoolQueue.QueueRequest(ExecuteExternalTool, GenerateExternalTool(keywordMatch.ExternalToolConfig, line, lineCount));
+                    }
+                    if (keywordMatch.TabWarningIcon)
+                        warningIcon = true;
+                }
                 line = _logTailStream.ReadLine(lineCount + 1);
             }
 
@@ -1160,41 +1224,59 @@ namespace SnakeTail
             ToolStripItem toolItem = sender as ToolStripItem;
             if (toolItem != null)
             {
-                ExternalToolConfig externalTool = toolItem.Tag as ExternalToolConfig;
-                if (externalTool != null)
+                ExternalToolConfig toolConfig = toolItem.Tag as ExternalToolConfig;
+                if (toolConfig != null)
                 {
+                    ExternalTool tool = null;
+                    if (_tailListView.FocusedItem != null)
+                        tool = GenerateExternalTool(toolConfig, _tailListView.FocusedItem.Text, _tailListView.FocusedItem.Index);
+                    else
+                        tool = GenerateExternalTool(toolConfig, string.Empty, null);
+
                     try
                     {
-                        Dictionary<string, string> fileParameters = new Dictionary<string, string>();
-                        fileParameters["$(FilePath)"] = _logTailStream != null ? _logTailStream.Name : "";
-                        fileParameters["$(FileDirectory)"] = Path.GetDirectoryName(fileParameters["$(FilePath)"]);
-                        fileParameters["$(FileName)"] = Path.GetFileName(fileParameters["$(FilePath)"]);
-                        fileParameters["$(ServiceName)"] = _taskMonitor != null ? _taskMonitor.ServiceName : "";
-                        fileParameters["$(SessionDirectory)"] = _configPath;
-                        fileParameters["$(SessionPath)"] = MainForm.Instance.CurrenTailConfig;
-                        fileParameters["$(SessionFileName)"] = Path.GetFileName(fileParameters["$(SessionPath)"]);
-                        fileParameters["$(SessionName)"] = Path.GetFileNameWithoutExtension(fileParameters["$(SessionPath)"]);
-                        fileParameters["$(ViewName)"] = _formTitle;
-                        fileParameters["$(ProgramDirectory)"] = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-                        if (_tailListView.FocusedItem != null)
-                        {
-                            fileParameters["$(LineNumber)"] = _tailListView.FocusedItem.Index.ToString();
-                            fileParameters["$(LineText)"] = _tailListView.FocusedItem.Text;
-                        }
-                        else
-                        {
-                            fileParameters["$(LineNumber)"] = "";
-                            fileParameters["$(LineText)"] = "";
-                        }
-
-                        ExternalTool tool = new ExternalTool(externalTool, fileParameters);
                         tool.Execute();
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("External Tool '" + externalTool.Name + "' failed: " + ex.Message);
+                        MessageBox.Show("External Tool '" + toolConfig.Name + "' failed: " + ex.Message);
                     }
                 }
+            }
+        }
+
+        private ExternalTool GenerateExternalTool(ExternalToolConfig toolConfig, string line, int? lineNumber)
+        {
+            Dictionary<string, string> fileParameters = new Dictionary<string, string>();
+            fileParameters["$(FilePath)"] = _logTailStream != null ? _logTailStream.Name : string.Empty;
+            fileParameters["$(FileDirectory)"] = Path.GetDirectoryName(fileParameters["$(FilePath)"]);
+            fileParameters["$(FileName)"] = Path.GetFileName(fileParameters["$(FilePath)"]);
+            fileParameters["$(ServiceName)"] = _taskMonitor != null ? _taskMonitor.ServiceName : string.Empty;
+            fileParameters["$(SessionDirectory)"] = _configPath;
+            fileParameters["$(SessionPath)"] = MainForm.Instance.CurrenTailConfig;
+            fileParameters["$(SessionFileName)"] = Path.GetFileName(fileParameters["$(SessionPath)"]);
+            fileParameters["$(SessionName)"] = Path.GetFileNameWithoutExtension(fileParameters["$(SessionPath)"]);
+            fileParameters["$(ViewName)"] = _formTitle;
+            fileParameters["$(ProgramDirectory)"] = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            fileParameters["$(LineText)"] = line != null ? line : string.Empty;
+            fileParameters["$(LineText)"] = lineNumber.HasValue ? lineNumber.Value.ToString() : string.Empty;
+
+            ExternalTool tool = new ExternalTool(toolConfig, fileParameters);
+            return tool;
+        }
+
+        private void ExecuteExternalTool(object state)
+        {
+            ExternalTool tool = state as ExternalTool;
+
+            try
+            {
+                if (tool != null)
+                    tool.Execute();
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("External Tool '" + tool.ToolConfig.Name + "' failed: " + ex.Message, ex);
             }
         }
 

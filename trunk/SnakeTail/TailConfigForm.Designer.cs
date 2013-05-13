@@ -249,6 +249,7 @@ namespace SnakeTail
             this._tabControl.SelectedIndex = 0;
             this._tabControl.Size = new System.Drawing.Size(367, 233);
             this._tabControl.TabIndex = 8;
+            this._tabControl.SelectedIndexChanged += new System.EventHandler(this._tabControl_SelectedIndexChanged);
             // 
             // _tabPageView
             // 

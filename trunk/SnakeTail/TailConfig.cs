@@ -39,6 +39,10 @@ namespace SnakeTail
         public bool MatchCaseSensitive { get; set; }
         public bool MatchRegularExpression { get; set; }
         public bool LogHitCounter { get; set; }
+        public string ExternalToolName { get; set; }
+        private bool? _noHighlightText;
+        public bool? NoHighlightText { get { return _noHighlightText != null ? _noHighlightText : (LogHitCounter || !string.IsNullOrEmpty(ExternalToolName)); } set { _noHighlightText = value; } }
+        public bool TabWarningIcon { get; set; }
         public string TextColor { get; set; }   // ColorTranslator
         public string BackColor { get; set; }   // ColorTranslator
 
@@ -78,6 +82,7 @@ namespace SnakeTail
             }
         }
 
+        internal ExternalToolConfig ExternalToolConfig { get; set; }
         internal System.Text.RegularExpressions.Regex KeywordRegex { get; set; }
     }
 
@@ -96,7 +101,7 @@ namespace SnakeTail
         {
             get
             {
-                if (ShortcutKey != null)
+                if (!string.IsNullOrEmpty(ShortcutKey))
                 {
                     System.Windows.Forms.Keys keyPress = 0;
                     string keyCode = ShortcutKey;
