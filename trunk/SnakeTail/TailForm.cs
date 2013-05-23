@@ -102,7 +102,7 @@ namespace SnakeTail
         Color _bookmarkTextColor = Color.Yellow;    // Default bookmark text color
         Color _bookmarkBackColor = Color.DarkGreen; // Default bookmark background color
         List<int> _bookmarks = new List<int>();
-        ThreadPoolQueue _threadPoolQueue = new ThreadPoolQueue();
+        ThreadPoolQueue _threadPoolQueue = null;
 
         public TailForm()
         {
@@ -210,6 +210,8 @@ namespace SnakeTail
                     if (!string.IsNullOrEmpty(keyword.ExternalToolName))
                     {
                         keyword.ExternalToolConfig = _externalTools.Find((externalTool) => string.Compare(externalTool.Name, keyword.ExternalToolName) == 0);
+                        if (_threadPoolQueue == null)
+                            _threadPoolQueue = new ThreadPoolQueue();   // Prepare the threadpool for use
                     }
                 }
             }
@@ -997,14 +999,7 @@ namespace SnakeTail
 
             UpdateFormTitle(false);
 
-            try
-            {
-                _threadPoolQueue.CheckResult();
-            }
-            catch (ApplicationException ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            CheckExternalToolResults();
 
             int lineCount = _tailListView.VirtualListSize;
             bool listAtBottom = ListAtBottom();
@@ -1031,15 +1026,9 @@ namespace SnakeTail
                         _loghitCounter++;
                     if (keywordMatch.ExternalToolConfig != null)
                     {
-                        try
-                        {
-                            _threadPoolQueue.CheckResult();
-                        }
-                        catch (ApplicationException ex)
-                        {
-                            MessageBox.Show(ex.Message);
-                        }
-                        _threadPoolQueue.QueueRequest(ExecuteExternalTool, GenerateExternalTool(keywordMatch.ExternalToolConfig, line, lineCount));
+                        CheckExternalToolResults();
+                        if (_threadPoolQueue != null)
+                            _threadPoolQueue.QueueRequest(ExecuteExternalTool, GenerateExternalTool(keywordMatch.ExternalToolConfig, line, lineCount));
                     }
                     if (keywordMatch.TabWarningIcon)
                         warningIcon = true;
@@ -1088,6 +1077,21 @@ namespace SnakeTail
                 ListViewUtil.SetVirtualListSizeWithoutRefresh(_tailListView, lineCount);
                 if (listAtBottom && _tailListView.VirtualListSize > 0)
                     _tailListView.EnsureVisible(_tailListView.VirtualListSize - 1);
+            }
+        }
+
+        private void CheckExternalToolResults()
+        {
+            if (_threadPoolQueue != null)
+            {
+                try
+                {
+                    _threadPoolQueue.CheckResult();
+                }
+                catch (ApplicationException ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
         }
 
