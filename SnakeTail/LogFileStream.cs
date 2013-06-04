@@ -27,7 +27,7 @@ namespace SnakeTail
         Encoding _fileEncoding = Encoding.Default;
         FileStream _fileStream = null;
         StreamReader _fileReader = null;
-        ThreadPoolQueue _threadPool = new ThreadPoolQueue();
+        ThreadPoolQueue _threadPool = null;
         DateTime _lastFileCheck = DateTime.Now;
         int _lastLineNumber = 0;
         string _lastFileCheckError = "";
@@ -45,7 +45,14 @@ namespace SnakeTail
             if (fileCheckFrequency > 0)
                 _fileCheckFrequency = TimeSpan.FromSeconds(fileCheckFrequency);
             _fileCheckPattern = fileCheckPattern;
+            if (_fileCheckPattern)
+                _threadPool = new ThreadPoolQueue();
             LoadFile(_filePathAbsolute, _fileEncoding, _fileCheckPattern);
+        }
+
+        ~LogFileStream()
+        {
+            Dispose();
         }
 
         public void Reset()
@@ -61,7 +68,9 @@ namespace SnakeTail
             {
                 // Refreshes the directory of the file, to ensure that we see the latest changes
                 // If the directory is on a network share, then this can be a long blocking operation
-                _threadPool.CheckResult();
+                if (_threadPool != null)
+                    _threadPool.CheckResult();
+
                 DirectoryInfo dirInfo = null;
                 try
                 {
@@ -82,7 +91,7 @@ namespace SnakeTail
                     // Any problems with the path should also be detected with the synchronous LoadFile-check
                     System.Diagnostics.Debug.WriteLine("Failed to read directory path: " + ex.Message);
                 }
-                if (dirInfo != null)
+                if (dirInfo != null && _threadPool != null)
                     _threadPool.ExecuteRequest(RefreshDirectoryInfo, dirInfo);
             }
             catch (ApplicationException ex)
@@ -222,7 +231,11 @@ namespace SnakeTail
         {
             FileReloadedEvent = null;
 
-            _threadPool.Dispose();
+            if (_threadPool != null)
+            {
+                _threadPool.Dispose();
+                _threadPool = null;
+            }
 
             CloseFile(false);
         }
