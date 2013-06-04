@@ -32,12 +32,24 @@ namespace SnakeTail
         System.Diagnostics.Process _process;
         CPUMeter _cpuMeter;
 
+        ~TaskMonitor()
+        {
+            if (_serviceController != null || _cpuMeter != null)
+                Dispose();
+        }
+
         public void Dispose()
         {
             if (_serviceController != null)
+            {
                 _serviceController.Dispose();
+                _serviceController = null;
+            }
             if (_cpuMeter != null)
+            {
                 _cpuMeter.Dispose();
+                _cpuMeter = null;
+            }
         }
 
         private uint GetProcessIDByServiceName(string serviceName)

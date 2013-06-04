@@ -35,6 +35,12 @@ namespace SnakeTail
             _requests = new Queue<KeyValuePair<WaitCallback, object>>(workItemCapacity);
         }
 
+        ~ThreadPoolQueue()
+        {
+            if (_requests != null)
+                Dispose();
+        }
+
         /// <summary>
         /// Executes the request, if no other request is pending
         /// </summary>

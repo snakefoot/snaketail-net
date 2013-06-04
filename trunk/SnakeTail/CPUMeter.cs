@@ -47,6 +47,12 @@ namespace SnakeTail
             }
         }
 
+        ~CPUMeter()
+        {
+            if (_cnt != null)
+                Dispose();
+        }
+
         /// Resets the internal counter. All subsequent calls to GetCpuUtilization() will 
         /// be relative to the point in time when you called ResetCounter(). This 
         /// method can be call as often as necessary to get a new baseline for 
@@ -108,7 +114,11 @@ namespace SnakeTail
 
         public void Dispose()
         {
-            if (_cnt != null) _cnt.Dispose();
+            if (_cnt != null)
+            {
+                _cnt.Dispose();
+                _cnt = null;
+            }
         }
     }
 }
