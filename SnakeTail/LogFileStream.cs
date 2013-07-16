@@ -192,7 +192,7 @@ namespace SnakeTail
 
         public int FileCheckInterval
         {
-            get { return _fileCheckFrequency.Seconds; }
+            get { return (int)_fileCheckFrequency.TotalSeconds; }
         }
 
         public bool FileCheckPattern
