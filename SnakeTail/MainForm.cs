@@ -643,6 +643,12 @@ namespace SnakeTail
             }
         }
 
+        private void alwaysOnTopToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TopMost = !TopMost;
+            alwaysOnTopToolStripMenuItem.Checked = TopMost;
+        }
+
         private void _trayIcon_DoubleClick(object sender, EventArgs e)
         {
             Show();
