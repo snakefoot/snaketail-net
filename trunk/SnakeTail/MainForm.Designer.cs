@@ -81,6 +81,7 @@ namespace SnakeTail
             this._trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this._trayIconContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.alwaysOnTopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._statusStrip.SuspendLayout();
             this._mainMenu.SuspendLayout();
             this._trayIconContextMenuStrip.SuspendLayout();
@@ -138,6 +139,7 @@ namespace SnakeTail
             this.recentFilesToolStripMenuItem,
             this.toolStripSeparator4,
             this.minimizeToTrayToolStripMenuItem,
+            this.alwaysOnTopToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -380,6 +382,13 @@ namespace SnakeTail
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(57, 6);
             // 
+            // alwaysOnTopToolStripMenuItem
+            // 
+            this.alwaysOnTopToolStripMenuItem.Name = "alwaysOnTopToolStripMenuItem";
+            this.alwaysOnTopToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.alwaysOnTopToolStripMenuItem.Text = "Always on top";
+            this.alwaysOnTopToolStripMenuItem.Click += new System.EventHandler(this.alwaysOnTopToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AllowDrop = true;
@@ -448,6 +457,7 @@ namespace SnakeTail
         private System.Windows.Forms.ToolStripMenuItem clearListToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
         private System.Windows.Forms.ToolStripMenuItem saveRecentFilesToRegistryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem alwaysOnTopToolStripMenuItem;
 
     }
 }
