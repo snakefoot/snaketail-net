@@ -162,6 +162,7 @@ namespace SnakeTail
     {
         public string ExceptionDetails { get; set; }
         public string StackTrace { get; set; }
+        public string ExceptionSource { get; set; }
 
         public ExceptionReport()
         {
@@ -183,6 +184,8 @@ namespace SnakeTail
             ExceptionDetails = exceptionReport.ToString();
 
             StackTrace = exception.StackTrace;
+
+            ExceptionSource = exception.Source;
         }
     }
 
