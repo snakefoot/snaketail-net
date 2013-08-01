@@ -358,5 +358,13 @@ namespace SnakeTail
         {
             TailConfigForm_Save(sender, e);
         }
+
+        private void _saveDefaultBtn_Click(object sender, EventArgs e)
+        {
+            TailConfigForm_Save(sender, e);
+            TailConfig tailConfig = new TailConfig();
+            tailConfig.TailFiles.Add(TailFileConfig);
+            MainForm.Instance.SaveConfig(tailConfig, string.Empty);
+        }
     }
 }

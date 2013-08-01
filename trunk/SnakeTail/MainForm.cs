@@ -235,31 +235,37 @@ namespace SnakeTail
             }
         }
 
+        private string GetDefaultConfigPath()
+        {
+            // Attempt to load default session configuration from these locations
+            // 1. SnakeTail.xml in application directory
+            // 2. SnakeTail.xml in current user roaming app directory
+            // 3. SnakeTail.xml in current user local app directory
+            // 4. SnakeTail.xml in common app directory
+            string appPath = Path.GetDirectoryName(Application.ExecutablePath) + "\\SnakeTail.xml";
+            string roamingPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\SnakeTail\\SnakeTail.xml";
+            string localPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\SnakeTail\\SnakeTail.xml";
+            string commonPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\SnakeTail\\SnakeTail.xml";
+            if (File.Exists(appPath))
+                return appPath;
+            else if (File.Exists(roamingPath))
+                return roamingPath;
+            else if (File.Exists(localPath))
+                return localPath;
+            else if (File.Exists(commonPath))
+                return commonPath;
+            else
+                return string.Empty;
+        }
+
         private int OpenFileSelection(string[] filenames)
         {
             if (_defaultTailConfig == null)
             {
-                // Attempt to load default session configuration from these locations
-                // 1. SnakeTail.xml in application directory
-                // 2. SnakeTail.xml in current user roaming app directory
-                // 3. SnakeTail.xml in current user local app directory
-                // 4. SnakeTail.xml in common app directory
-                string appPath = Path.GetDirectoryName(Application.ExecutablePath) + "\\SnakeTail.xml";
-                string roamingPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\SnakeTail\\SnakeTail.xml";
-                string localPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\SnakeTail\\SnakeTail.xml";
-                string commonPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\SnakeTail\\SnakeTail.xml";
                 TailConfig tailConfig = null;
-                if (File.Exists(appPath))
-                    tailConfig = LoadSessionFile(appPath);
-                else
-                if (File.Exists(roamingPath))
-                    tailConfig = LoadSessionFile(roamingPath);
-                else
-                if (File.Exists(localPath))
-                    tailConfig = LoadSessionFile(localPath);
-                else
-                if (File.Exists(commonPath))
-                    tailConfig = LoadSessionFile(commonPath);
+                string defaultPath = GetDefaultConfigPath();
+                if (!string.IsNullOrEmpty(defaultPath))
+                    tailConfig = LoadSessionFile(defaultPath);
 
                 if (tailConfig != null && tailConfig.TailFiles.Count > 0)
                 {
@@ -467,14 +473,7 @@ namespace SnakeTail
                 }
             }
 
-            XmlSerializer serializer = new XmlSerializer(typeof(TailConfig));
-            using (XmlTextWriter writer = new XmlTextWriter(filepath, Encoding.UTF8))
-            {
-                writer.Formatting = Formatting.Indented;
-                XmlSerializerNamespaces xmlnsEmpty = new XmlSerializerNamespaces();
-                xmlnsEmpty.Add("", "");
-                serializer.Serialize(writer, tailConfig, xmlnsEmpty);
-            }
+            SaveConfig(tailConfig, filepath);
 
             if (String.IsNullOrEmpty(_currenTailConfig))
                 _mruMenu.AddFile(filepath);
@@ -484,6 +483,33 @@ namespace SnakeTail
             _currenTailConfig = filepath;
 
             UpdateTitle();
+        }
+
+        public void SaveConfig(TailConfig tailConfig, string filepath)
+        {
+            if (string.IsNullOrEmpty(filepath))
+            {
+                string defaultPath = GetDefaultConfigPath();
+                if (string.IsNullOrEmpty(defaultPath))
+                {
+                    defaultPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\SnakeTail\\";
+                    if (!Directory.Exists(defaultPath))
+                        Directory.CreateDirectory(defaultPath);
+
+                    defaultPath += "SnakeTail.xml";
+                }
+
+                filepath = defaultPath;
+            }
+
+            XmlSerializer serializer = new XmlSerializer(typeof(TailConfig));
+            using (XmlTextWriter writer = new XmlTextWriter(filepath, Encoding.UTF8))
+            {
+                writer.Formatting = Formatting.Indented;
+                XmlSerializerNamespaces xmlnsEmpty = new XmlSerializerNamespaces();
+                xmlnsEmpty.Add("", "");
+                serializer.Serialize(writer, tailConfig, xmlnsEmpty);
+            }
 
             _defaultTailConfig = null;  // Force reload incase we saved a new default config
         }
