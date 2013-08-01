@@ -95,6 +95,7 @@ namespace SnakeTail
             this._acceptBtn = new System.Windows.Forms.Button();
             this._cancelBtn = new System.Windows.Forms.Button();
             this._applyAllBtn = new System.Windows.Forms.Button();
+            this._saveDefaultBtn = new System.Windows.Forms.Button();
             label2 = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -612,7 +613,7 @@ namespace SnakeTail
             // 
             this._acceptBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this._acceptBtn.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this._acceptBtn.Location = new System.Drawing.Point(198, 245);
+            this._acceptBtn.Location = new System.Drawing.Point(209, 245);
             this._acceptBtn.Name = "_acceptBtn";
             this._acceptBtn.Size = new System.Drawing.Size(75, 23);
             this._acceptBtn.TabIndex = 14;
@@ -636,10 +637,20 @@ namespace SnakeTail
             this._applyAllBtn.DialogResult = System.Windows.Forms.DialogResult.Retry;
             this._applyAllBtn.Location = new System.Drawing.Point(10, 245);
             this._applyAllBtn.Name = "_applyAllBtn";
-            this._applyAllBtn.Size = new System.Drawing.Size(81, 23);
+            this._applyAllBtn.Size = new System.Drawing.Size(67, 23);
             this._applyAllBtn.TabIndex = 16;
             this._applyAllBtn.Text = "Apply to All";
             this._applyAllBtn.UseVisualStyleBackColor = true;
+            // 
+            // _saveDefaultBtn
+            // 
+            this._saveDefaultBtn.Location = new System.Drawing.Point(83, 245);
+            this._saveDefaultBtn.Name = "_saveDefaultBtn";
+            this._saveDefaultBtn.Size = new System.Drawing.Size(89, 23);
+            this._saveDefaultBtn.TabIndex = 17;
+            this._saveDefaultBtn.Text = "Save as default";
+            this._saveDefaultBtn.UseVisualStyleBackColor = true;
+            this._saveDefaultBtn.Click += new System.EventHandler(this._saveDefaultBtn_Click);
             // 
             // TailConfigForm
             // 
@@ -648,6 +659,7 @@ namespace SnakeTail
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this._cancelBtn;
             this.ClientSize = new System.Drawing.Size(377, 271);
+            this.Controls.Add(this._saveDefaultBtn);
             this.Controls.Add(this._applyAllBtn);
             this.Controls.Add(this._cancelBtn);
             this.Controls.Add(this._acceptBtn);
@@ -710,6 +722,7 @@ namespace SnakeTail
         private System.Windows.Forms.Button _applyAllBtn;
         private System.Windows.Forms.Button _bookmarkTextColorBtn;
         private System.Windows.Forms.Button _bookmarkBackColorBtn;
+        private System.Windows.Forms.Button _saveDefaultBtn;
 
 
 
