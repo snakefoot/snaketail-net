@@ -45,6 +45,11 @@ namespace SnakeTail
             _stopWatch.Start();
         }
 
+        public static void ClearReports()
+        {
+            _profiles.Clear();
+        }
+
         public void Dispose()
         {
             _stopWatch.Stop();
