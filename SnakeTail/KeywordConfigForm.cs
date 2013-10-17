@@ -54,13 +54,16 @@ namespace SnakeTail
             _matchCaseChk.Checked = TailKeywordConfig.MatchCaseSensitive;
             _matchRegExChk.Checked = TailKeywordConfig.MatchRegularExpression;
             _logHitChk.Checked = TailKeywordConfig.LogHitCounter;
-            _noHighlightChk.Checked = TailKeywordConfig.NoHighlightText.Value;
-            _tabWarningIconChk.Checked = TailKeywordConfig.TabWarningIcon;
+            _textColoringChk.Checked = TailKeywordConfig.TextColoring.Value;
+            if (!_textColoringChk.Checked)
+            {
+                _textColorBtn.Enabled = false;
+                _backColorBtn.Enabled = false;
+            }
+            _alertHighlightChk.Checked = TailKeywordConfig.AlertHighlight.Value;
+            _launchToolChk.Checked = !string.IsNullOrEmpty(TailKeywordConfig.ExternalToolName);
             if (_tailFileConfig != null)
             {
-                _tabWarningIconChk.Enabled = _tailFileConfig.DisplayTabIcon;
-
-                _externalToolCmb.Items.Add(string.Empty);
                 if (_tailFileConfig.ExternalTools != null)
                 {
                     foreach (ExternalToolConfig externalTool in _tailFileConfig.ExternalTools)
@@ -74,6 +77,11 @@ namespace SnakeTail
                     if (_externalToolCmb.SelectedIndex <= 0)
                         _externalToolCmb.Text = TailKeywordConfig.ExternalToolName;
                 }
+            }
+            if (!_launchToolChk.Checked)
+            {
+                _externalToolCmb.Enabled = false;
+                _externalToolCmb.Text = string.Empty;
             }
         }
 
@@ -118,22 +126,33 @@ namespace SnakeTail
                     return;
                 }
             }
-            TailKeywordConfig.ExternalToolName = !string.IsNullOrEmpty(_externalToolCmb.Text) ? _externalToolCmb.Text : null;
-            TailKeywordConfig.TabWarningIcon = _tabWarningIconChk.Checked;
+            TailKeywordConfig.ExternalToolName = _externalToolCmb.Enabled && !string.IsNullOrEmpty(_externalToolCmb.Text) ? _externalToolCmb.Text : null;
+            TailKeywordConfig.AlertHighlight = _alertHighlightChk.Checked;
             TailKeywordConfig.LogHitCounter = _logHitChk.Checked;
-            TailKeywordConfig.NoHighlightText = _noHighlightChk.Checked;
-            if (TailKeywordConfig.NoHighlightText.Value)
+            TailKeywordConfig.TextColoring = _textColoringChk.Checked;
+            if (TailKeywordConfig.TextColoring.Value)
 			{
-				TailKeywordConfig.FormBackColor = null;
-				TailKeywordConfig.FormTextColor = null;
+                TailKeywordConfig.FormBackColor = _keywordEdt.BackColor;
+                TailKeywordConfig.FormTextColor = _keywordEdt.ForeColor;
 			}
 			else
 			{
-	            TailKeywordConfig.FormBackColor = _keywordEdt.BackColor;
-    	        TailKeywordConfig.FormTextColor = _keywordEdt.ForeColor;
+                TailKeywordConfig.FormBackColor = null;
+                TailKeywordConfig.FormTextColor = null;
 			}
 
             DialogResult = DialogResult.OK;
+        }
+
+        private void _launchToolChk_CheckedChanged(object sender, EventArgs e)
+        {
+            _externalToolCmb.Enabled = _launchToolChk.Checked;
+        }
+
+        private void _noHighlightChk_CheckedChanged(object sender, EventArgs e)
+        {
+            _textColorBtn.Enabled = _textColoringChk.Checked;
+            _backColorBtn.Enabled = _textColoringChk.Checked;
         }
     }
 }

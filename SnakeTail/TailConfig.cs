@@ -40,9 +40,10 @@ namespace SnakeTail
         public bool MatchRegularExpression { get; set; }
         public bool LogHitCounter { get; set; }
         public string ExternalToolName { get; set; }
-        private bool? _noHighlightText;
-        public bool? NoHighlightText { get { return _noHighlightText != null ? _noHighlightText : (LogHitCounter || !string.IsNullOrEmpty(ExternalToolName)); } set { _noHighlightText = value; } }
-        public bool TabWarningIcon { get; set; }
+        private bool? _textColoring;
+        public bool? TextColoring { get { return _textColoring != null ? _textColoring : !LogHitCounter; } set { _textColoring = value; } }
+        private bool? _alertHighlight;
+        public bool? AlertHighlight { get { return _alertHighlight != null ? _alertHighlight : !LogHitCounter; } set { _alertHighlight = value; } }
         public string TextColor { get; set; }   // ColorTranslator
         public string BackColor { get; set; }   // ColorTranslator
 

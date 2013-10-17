@@ -527,7 +527,7 @@ namespace SnakeTail
                 if (MatchesBookmark(lineNumber))
                     return true;
 
-                if (MatchesKeyword(lineText, true) != null)
+                if (MatchesKeyword(lineText, true, false) != null)
                     return true;
 
                 return false;
@@ -803,7 +803,7 @@ namespace SnakeTail
             }
             else
             {
-                TailKeywordConfig keyword = MatchesKeyword(e.Item.Text, true);
+                TailKeywordConfig keyword = MatchesKeyword(e.Item.Text, false, true);
                 if (keyword != null)
                 {
                     if (keyword.FormBackColor.HasValue && keyword.FormTextColor.HasValue)
@@ -861,16 +861,16 @@ namespace SnakeTail
             return _bookmarks.Contains(lineNumber);
         }
 
-        private TailKeywordConfig MatchesKeyword(string line, bool onlyKeywordHighlight)
+        private TailKeywordConfig MatchesKeyword(string line, bool onlyKeywordHighlight, bool onlyTextColoring)
         {
             TailKeywordConfig matchKeyword = null;
             if (_keywordHighlight != null && _keywordHighlight.Count > 0)
             {
                 foreach (TailKeywordConfig keyword in _keywordHighlight)
                 {
-                    if (onlyKeywordHighlight)
+                    if (onlyTextColoring)
                     {
-                        if (keyword.NoHighlightText.Value)
+                        if (!keyword.TextColoring.Value)
                             continue;
                     }
                     else if (matchKeyword != null)
@@ -878,7 +878,7 @@ namespace SnakeTail
                         // Ignore keywords that doesn't add extra detail to the existing keyword-match
                         if ( (matchKeyword.ExternalToolConfig == null && keyword.ExternalToolConfig == null)
                           && (!matchKeyword.LogHitCounter && !keyword.LogHitCounter)
-                          && (!matchKeyword.TabWarningIcon && !keyword.TabWarningIcon))
+                          && (!matchKeyword.AlertHighlight.Value && !keyword.AlertHighlight.Value))
                            continue;
                     }
 
@@ -889,25 +889,33 @@ namespace SnakeTail
                     {
                         if (onlyKeywordHighlight)
                         {
+                            // If high priority match is performing text-coloring, then no line match
+                            if (keyword.TextColoring.Value && !keyword.AlertHighlight.Value)
+                                return null;
+                            else if (keyword.AlertHighlight.Value)
+                                return keyword;
+                        }
+                        else if (onlyTextColoring)
+                        {
                             return keyword;
                         }
                         else if (matchKeyword != null)
                         {
                             // Add extra detail to the existing keyword-match
-                            matchKeyword = new TailKeywordConfig() { ExternalToolConfig = matchKeyword.ExternalToolConfig, LogHitCounter = matchKeyword.LogHitCounter, TabWarningIcon = matchKeyword.TabWarningIcon };
+                            matchKeyword = new TailKeywordConfig() { ExternalToolConfig = matchKeyword.ExternalToolConfig, LogHitCounter = matchKeyword.LogHitCounter, AlertHighlight = matchKeyword.AlertHighlight };
                             if (matchKeyword.ExternalToolConfig==null && keyword.ExternalToolConfig!=null)
                                 matchKeyword.ExternalToolConfig = keyword.ExternalToolConfig;
                             if (!matchKeyword.LogHitCounter && keyword.LogHitCounter)
                                 matchKeyword.LogHitCounter = keyword.LogHitCounter;
-                            if (!matchKeyword.TabWarningIcon && keyword.TabWarningIcon)
-                                matchKeyword.TabWarningIcon = keyword.TabWarningIcon;
+                            if (!matchKeyword.AlertHighlight.Value && keyword.AlertHighlight.Value)
+                                matchKeyword.AlertHighlight = keyword.AlertHighlight;
                         }
                         else
                         {
                             matchKeyword = keyword;
                         }
 
-                        if (matchKeyword.LogHitCounter && matchKeyword.TabWarningIcon && matchKeyword.ExternalToolConfig!=null)
+                        if (matchKeyword.LogHitCounter && matchKeyword.AlertHighlight.Value && matchKeyword.ExternalToolConfig != null)
                             return matchKeyword;	// We have all the details we need
                     }
                 }
@@ -1019,7 +1027,7 @@ namespace SnakeTail
             {
                 ++lineCount;
                 _logFileCache.AppendTailCache(line, lineCount);
-                TailKeywordConfig keywordMatch = MatchesKeyword(line, false);
+                TailKeywordConfig keywordMatch = MatchesKeyword(line, false, false);
                 if (keywordMatch != null)
                 {
                     if (keywordMatch.LogHitCounter)
@@ -1030,7 +1038,7 @@ namespace SnakeTail
                         if (_threadPoolQueue != null)
                             _threadPoolQueue.QueueRequest(ExecuteExternalTool, GenerateExternalTool(keywordMatch.ExternalToolConfig, line, lineCount));
                     }
-                    if (keywordMatch.TabWarningIcon)
+                    if (keywordMatch.AlertHighlight.Value)
                         warningIcon = true;
                 }
                 line = _logTailStream.ReadLine(lineCount + 1);

@@ -46,7 +46,7 @@ namespace SnakeTail
                 lvi.BackColor = keyword.FormBackColor.Value;
             lvi.SubItems.Add(keyword.MatchCaseSensitive ? "Yes" : "No");
             lvi.SubItems.Add(keyword.MatchRegularExpression ? "Yes" : "No");
-            lvi.SubItems.Add(keyword.LogHitCounter ? "Yes" : "No");
+            lvi.SubItems.Add(keyword.AlertHighlight.Value ? "Yes" : "No");
             lvi.Tag = keyword;
         }
 

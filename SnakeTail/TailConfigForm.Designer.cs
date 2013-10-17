@@ -57,7 +57,7 @@ namespace SnakeTail
             System.Windows.Forms.Label label9;
             System.Windows.Forms.ColumnHeader keywordCaseColumnHeader;
             System.Windows.Forms.ColumnHeader keywordRegexColumnHeader;
-            System.Windows.Forms.ColumnHeader keywordLogHitColumnHeader;
+            System.Windows.Forms.ColumnHeader keywordAlertColumnHeader;
             System.Windows.Forms.ColumnHeader toolShortcutColumnHeader;
             this._tabControl = new System.Windows.Forms.TabControl();
             this._tabPageView = new System.Windows.Forms.TabPage();
@@ -110,7 +110,7 @@ namespace SnakeTail
             label9 = new System.Windows.Forms.Label();
             keywordCaseColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             keywordRegexColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            keywordLogHitColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            keywordAlertColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             toolShortcutColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this._tabControl.SuspendLayout();
             this._tabPageView.SuspendLayout();
@@ -229,10 +229,10 @@ namespace SnakeTail
             keywordRegexColumnHeader.Text = "RegEx Match";
             keywordRegexColumnHeader.Width = 59;
             // 
-            // keywordLogHitColumnHeader
+            // keywordAlertColumnHeader
             // 
-            keywordLogHitColumnHeader.Text = "Log Hit";
-            keywordLogHitColumnHeader.Width = 59;
+            keywordAlertColumnHeader.Text = "Alert";
+            keywordAlertColumnHeader.Width = 59;
             // 
             // toolShortcutColumnHeader
             // 
@@ -512,7 +512,7 @@ namespace SnakeTail
             keywordColumnHeader,
             keywordCaseColumnHeader,
             keywordRegexColumnHeader,
-            keywordLogHitColumnHeader});
+            keywordAlertColumnHeader});
             this._keywordListView.FullRowSelect = true;
             this._keywordListView.HideSelection = false;
             this._keywordListView.Location = new System.Drawing.Point(6, 6);
