@@ -423,13 +423,12 @@ namespace SnakeTail
                 prettyXml = stringWriter.ToString();
             }
 
-            using (System.IO.MemoryStream memoryStream = new System.IO.MemoryStream())
-            using (System.IO.StreamWriter streamWriter = new System.IO.StreamWriter(memoryStream))
+            using (System.IO.StreamWriter streamWriter = new System.IO.StreamWriter(new System.IO.MemoryStream()))
             {
                 streamWriter.WriteLine(prettyXml);
                 streamWriter.Flush();
-                memoryStream.Position = 0;
-                ZipStore.AddStream(System.IO.Compression.ZipStorer.Compression.Deflate, "crashrpt.xml", memoryStream, DateTime.Now, "");
+                streamWriter.BaseStream.Position = 0;
+                ZipStore.AddStream(System.IO.Compression.ZipStorer.Compression.Deflate, "crashrpt.xml", streamWriter.BaseStream, DateTime.Now, "");
             }
 
             ZipStore.Close();
@@ -438,12 +437,21 @@ namespace SnakeTail
             HttpUploadFile(HttpUrl, ZipStream.ToArray(), FileParamName, FileName, "application/x-zip-compressed", HttpParams);
         }
 
-        public void Dispose()
+        protected virtual void Dispose(bool dispose)
         {
+            if (!dispose)
+                return;
+
             if (ZipStore != null)
                 ZipStore.Dispose();
             if (ZipStream != null)
                 ZipStream.Dispose();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         // Credits Cristian Romanescu @ http://stackoverflow.com/questions/566462/upload-files-with-httpwebrequest-multipart-form-data

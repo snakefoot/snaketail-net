@@ -40,12 +40,13 @@ namespace SnakeTail
                     Clipboard.Clear();
                     System.Threading.Thread.Sleep(100);
                     Clipboard.SetDataObject(content, true, 0, 0);
+                    return;
                 }
                 catch (Exception retryException)
                 {
                     System.Diagnostics.Debug.WriteLine("Clipboard cannot be updated, maybe locked by another application: " + retryException.Message);
-                    throw firstException;
                 }
+                throw;
             }
         }
     }

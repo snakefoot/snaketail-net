@@ -736,9 +736,18 @@ namespace System.IO.Compression
         /// <summary>
         /// Closes the Zip file stream
         /// </summary>
+        protected virtual void Dispose(bool dispose)
+        {
+            if (!dispose)
+                return;
+
+            this.Dispose();
+        }
+
         public void Dispose()
         {
             this.Close();
+            GC.SuppressFinalize(this);
         }
         #endregion
     }
