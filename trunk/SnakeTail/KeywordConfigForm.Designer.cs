@@ -152,7 +152,7 @@ namespace SnakeTail
             this._textColoringChk.Name = "_textColoringChk";
             this._textColoringChk.Size = new System.Drawing.Size(153, 21);
             this._textColoringChk.TabIndex = 12;
-            this._textColoringChk.Text = "Text Coloring";
+            this._textColoringChk.Text = "Line Coloring";
             this._textColoringChk.UseVisualStyleBackColor = true;
             this._textColoringChk.CheckedChanged += new System.EventHandler(this._noHighlightChk_CheckedChanged);
             // 
