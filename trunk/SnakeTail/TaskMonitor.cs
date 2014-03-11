@@ -32,12 +32,6 @@ namespace SnakeTail
         System.Diagnostics.Process _process;
         CPUMeter _cpuMeter;
 
-        ~TaskMonitor()
-        {
-            if (_serviceController != null || _cpuMeter != null)
-                Dispose();
-        }
-
         public void Dispose()
         {
             if (_serviceController != null)
@@ -45,46 +39,53 @@ namespace SnakeTail
                 _serviceController.Dispose();
                 _serviceController = null;
             }
-            if (_cpuMeter != null)
-            {
-                _cpuMeter.Dispose();
-                _cpuMeter = null;
-            }
+            Process = null;
         }
 
-        private uint GetProcessIDByServiceName(string serviceName)
+        private int GetProcessID(string name)
         {
             if (_serviceController != null)
+                return (int)GetProcessIDByServiceName(name);
+            else
+                return GetProcessIDByProcessName(name);
+        }
+
+        private static int GetProcessIDByProcessName(string processeName)
+        {
+            Process[] processList = Process.GetProcessesByName(processeName.Substring(0, processeName.LastIndexOf('.')));
+            try
             {
-                uint processId = 0;
-                string qry = "SELECT PROCESSID FROM WIN32_SERVICE WHERE NAME = '" + serviceName + "'";
-                System.Management.ManagementObjectSearcher searcher = new System.Management.ManagementObjectSearcher(qry);
+                foreach (Process process in processList)
+                {
+                    if (process.Id > 0)
+                        return process.Id;
+                }
+            }
+            finally
+            {
+                foreach (Process process in processList)
+                    process.Dispose();
+            }
+            return 0;
+        }
+
+        private static uint GetProcessIDByServiceName(string serviceName)
+        {
+            uint processId = 0;
+            string qry = "SELECT PROCESSID FROM WIN32_SERVICE WHERE NAME = '" + serviceName + "'";
+            using (System.Management.ManagementObjectSearcher searcher = new System.Management.ManagementObjectSearcher(qry))
+            {
                 foreach (System.Management.ManagementObject mngntObj in searcher.Get())
                 {
-                    processId = (uint)mngntObj["PROCESSID"];
-                    if (processId > 0)
-                        return processId;
-                }
-                return processId;
-            }
-            else
-            {
-                Process[] processList = Process.GetProcessesByName(serviceName.Substring(0, serviceName.LastIndexOf('.')));
-                try
-                {
-                    foreach (Process process in processList)
+                    using (mngntObj)
                     {
-                        if (process.Id > 0)
-                            return (uint)process.Id;
+                        processId = (uint)mngntObj["PROCESSID"];
+                        if (processId > 0)
+                            return processId;
                     }
                 }
-                finally
-                {
-                    foreach (Process process in processList)
-                        process.Dispose();
-                }
-                return 0;
             }
+            return processId;
         }
 
         public Process Process
@@ -96,7 +97,7 @@ namespace SnakeTail
                     Process = null;
                     if (ServiceRunning)
                     {
-                        int processId = (int)GetProcessIDByServiceName(ServiceName);
+                        int processId = GetProcessID(ServiceName);
                         if (processId > 0)
                         {
                             Process = System.Diagnostics.Process.GetProcessById(processId);
@@ -108,16 +109,21 @@ namespace SnakeTail
             private set
             {
                 if (_process != null)
+                {
+                    _process.Exited -= _process_Exited;
                     _process.Dispose();
-                _process = null;
+                    _process = null;
+                }
                 if (_cpuMeter != null)
+                {
                     _cpuMeter.Dispose();
-                _cpuMeter = null;
+                    _cpuMeter = null;
+                }
 
                 if (value != null)
                 {
                     _process = value;
-                    _process.Exited += new EventHandler(_process_Exited);
+                    _process.Exited += _process_Exited;
                     if (IsAdministrator)
                         PerformanceCounter.CloseSharedResources();
                     _cpuMeter = new CPUMeter(_process.Id);
@@ -145,7 +151,7 @@ namespace SnakeTail
                 {
                     System.Diagnostics.Debug.WriteLine("CPU Meter Failed: " + ex.Message);
                     Process = null;
-                    return float.NaN;
+                    return 0;
                 }
             }
         }
@@ -180,7 +186,7 @@ namespace SnakeTail
                     try
                     {
                         if (_process == null)
-                            return GetProcessIDByServiceName(ServiceName) > 0;
+                            return GetProcessIDByProcessName(ServiceName) > 0;
                         else
                         if (_process.Responding)
                             return true;
