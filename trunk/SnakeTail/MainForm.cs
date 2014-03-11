@@ -325,10 +325,20 @@ namespace SnakeTail
         {
             if ((_MDITabControl.SelectedTab != null) && (_MDITabControl.SelectedTab.Tag != null))
             {
-                // Minize flicker when switching between tabs, by changing to minimized state first
+                SuspendLayout();
+                (_MDITabControl.SelectedTab.Tag as Form).SuspendLayout();
+                Form activeMdiChild = this.ActiveMdiChild;
+                if (activeMdiChild != null)
+                    activeMdiChild.SuspendLayout();
+                // Minimize flicker when switching between tabs, by changing to minimized state first
                 if ((_MDITabControl.SelectedTab.Tag as Form).WindowState != FormWindowState.Maximized)
                     (_MDITabControl.SelectedTab.Tag as Form).WindowState = FormWindowState.Minimized;
                 (_MDITabControl.SelectedTab.Tag as Form).Select();
+                if (activeMdiChild != null && !activeMdiChild.IsDisposed)
+                    activeMdiChild.ResumeLayout();
+                (_MDITabControl.SelectedTab.Tag as Form).ResumeLayout();
+                ResumeLayout();
+                (_MDITabControl.SelectedTab.Tag as Form).Refresh();
             }
         }
 
