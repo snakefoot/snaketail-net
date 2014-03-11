@@ -470,7 +470,7 @@ namespace SnakeTail
 
         private void EventLogForm_Activated(object sender, EventArgs e)
         {
-            if (this.MdiParent != null)
+            if (this.MdiParent != null && MainForm.Instance != null)
                 MainForm.Instance.SetStatusBar(null, 0, 0);
             SearchForm.Instance.ActiveTailForm = this;
             TabPage parentTab = this.Tag as TabPage;

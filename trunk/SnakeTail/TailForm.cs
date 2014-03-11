@@ -418,7 +418,7 @@ namespace SnakeTail
                 _statusStrip.Invalidate();
                 _statusStrip.Update();
             }
-            else
+            else if (this.MdiParent != null && MainForm.Instance != null)
             {
                 if (text == null && Paused)
                     MainForm.Instance.SetStatusBar("Paused", progressValue, progressMax);
