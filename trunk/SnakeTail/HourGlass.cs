@@ -31,12 +31,6 @@ namespace SnakeTail
             }
         }
 
-        ~HourGlass()
-        {
-            if (m_Form != null)
-                Dispose();
-        }
-
         public void Dispose()
         {
             if (m_Form != null)
