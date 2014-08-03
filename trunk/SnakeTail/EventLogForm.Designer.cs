@@ -66,8 +66,10 @@ namespace SnakeTail
             this._copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findNextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this._switchModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gotoPreviousHighlightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gotoNextHighlightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._configTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._switchModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._addFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._resetFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._filterModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -91,12 +93,12 @@ namespace SnakeTail
             // toolStripSeparator4
             // 
             toolStripSeparator4.Name = "toolStripSeparator4";
-            toolStripSeparator4.Size = new System.Drawing.Size(185, 6);
+            toolStripSeparator4.Size = new System.Drawing.Size(243, 6);
             // 
             // toolStripSeparator2
             // 
             toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new System.Drawing.Size(185, 6);
+            toolStripSeparator2.Size = new System.Drawing.Size(243, 6);
             // 
             // splitContainer1
             // 
@@ -168,6 +170,8 @@ namespace SnakeTail
             this._copyToolStripMenuItem,
             this.findToolStripMenuItem,
             this.findNextToolStripMenuItem,
+            this.gotoPreviousHighlightToolStripMenuItem,
+            this.gotoNextHighlightToolStripMenuItem,
             toolStripSeparator2,
             this._configTextToolStripMenuItem,
             this._switchModeToolStripMenuItem,
@@ -186,7 +190,7 @@ namespace SnakeTail
             // 
             this._copyToolStripMenuItem.Name = "_copyToolStripMenuItem";
             this._copyToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this._copyToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this._copyToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
             this._copyToolStripMenuItem.Text = "Copy";
             this._copyToolStripMenuItem.Click += new System.EventHandler(this._copyToolStripMenuItem_Click);
             // 
@@ -194,7 +198,7 @@ namespace SnakeTail
             // 
             this.findToolStripMenuItem.Name = "findToolStripMenuItem";
             this.findToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
-            this.findToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.findToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
             this.findToolStripMenuItem.Text = "Find...";
             this.findToolStripMenuItem.Click += new System.EventHandler(this.findToolStripMenuItem_Click);
             // 
@@ -202,42 +206,58 @@ namespace SnakeTail
             // 
             this.findNextToolStripMenuItem.Name = "findNextToolStripMenuItem";
             this.findNextToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
-            this.findNextToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.findNextToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
             this.findNextToolStripMenuItem.Text = "Find Next";
             this.findNextToolStripMenuItem.Click += new System.EventHandler(this.findNextToolStripMenuItem_Click);
             // 
-            // _switchModeToolStripMenuItem
+            // gotoPreviousHighlightToolStripMenuItem
             // 
-            this._switchModeToolStripMenuItem.Name = "_switchModeToolStripMenuItem";
-            this._switchModeToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
-            this._switchModeToolStripMenuItem.Text = "Switch window mode";
-            this._switchModeToolStripMenuItem.Click += new System.EventHandler(this.switchWindowModeToolStripMenuItem_Click);
+            this.gotoPreviousHighlightToolStripMenuItem.Name = "gotoPreviousHighlightToolStripMenuItem";
+            this.gotoPreviousHighlightToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Up)));
+            this.gotoPreviousHighlightToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
+            this.gotoPreviousHighlightToolStripMenuItem.Text = "Goto Previous Highlight";
+            this.gotoPreviousHighlightToolStripMenuItem.Click += new System.EventHandler(this.gotoPreviousHighlightToolStripMenuItem_Click);
+            // 
+            // gotoNextHighlightToolStripMenuItem
+            // 
+            this.gotoNextHighlightToolStripMenuItem.Name = "gotoNextHighlightToolStripMenuItem";
+            this.gotoNextHighlightToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Down)));
+            this.gotoNextHighlightToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
+            this.gotoNextHighlightToolStripMenuItem.Text = "Goto Next Highlight";
+            this.gotoNextHighlightToolStripMenuItem.Click += new System.EventHandler(this.gotoNextHighlightToolStripMenuItem_Click);
             // 
             // _configTextToolStripMenuItem
             // 
             this._configTextToolStripMenuItem.Name = "_configTextToolStripMenuItem";
-            this._configTextToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this._configTextToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
             this._configTextToolStripMenuItem.Text = "View Options...";
             this._configTextToolStripMenuItem.Click += new System.EventHandler(this._configTextToolStripMenuItem_Click);
+            // 
+            // _switchModeToolStripMenuItem
+            // 
+            this._switchModeToolStripMenuItem.Name = "_switchModeToolStripMenuItem";
+            this._switchModeToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
+            this._switchModeToolStripMenuItem.Text = "Switch window mode";
+            this._switchModeToolStripMenuItem.Click += new System.EventHandler(this.switchWindowModeToolStripMenuItem_Click);
             // 
             // _addFilterToolStripMenuItem
             // 
             this._addFilterToolStripMenuItem.Name = "_addFilterToolStripMenuItem";
-            this._addFilterToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this._addFilterToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
             this._addFilterToolStripMenuItem.Text = "Add Filter";
             this._addFilterToolStripMenuItem.Click += new System.EventHandler(this._addFilterToolStripMenuItem_Click);
             // 
             // _resetFilterToolStripMenuItem
             // 
             this._resetFilterToolStripMenuItem.Name = "_resetFilterToolStripMenuItem";
-            this._resetFilterToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this._resetFilterToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
             this._resetFilterToolStripMenuItem.Text = "Reset Filter";
             this._resetFilterToolStripMenuItem.Click += new System.EventHandler(this.resetFilterToolStripMenuItem_Click);
             // 
             // _filterModeToolStripMenuItem
             // 
             this._filterModeToolStripMenuItem.Name = "_filterModeToolStripMenuItem";
-            this._filterModeToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this._filterModeToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
             this._filterModeToolStripMenuItem.Text = "Filter Mode";
             this._filterModeToolStripMenuItem.Click += new System.EventHandler(this._filterActiveToolStripMenuItem_Click);
             // 
@@ -296,5 +316,7 @@ namespace SnakeTail
         private System.Windows.Forms.ToolStripMenuItem _filterModeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem findToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem findNextToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem gotoPreviousHighlightToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem gotoNextHighlightToolStripMenuItem;
     }
 }

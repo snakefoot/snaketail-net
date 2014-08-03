@@ -195,15 +195,19 @@ namespace SnakeTail
             if (searchForward)
             {
                 if (!_eventListView.VirtualMode)
-                    return _eventListView.Items[startIndex];
+                {
+                    if (startIndex >= _eventListView.Items.Count)
+                        return null;
+                    else
+                        return _eventListView.Items[startIndex];
+                }
                 else
                 {
                     // Sanity checks
                     int endIndex = _eventListView.VirtualListSize;
                     if (endIndex == 0)
                         return null;
-                    else
-                    if (startIndex < endIndex)
+                    else if (startIndex < endIndex)
                     {
                         ListViewItem lvItem = _eventListView.Items[startIndex];
                         if ((int)lvItem.Tag != -1 && (int)lvItem.Tag != 0)
@@ -216,8 +220,7 @@ namespace SnakeTail
                             }
                         }
                     }
-                    else
-                    if (startIndex > 0 && startIndex == endIndex)
+                    else if (startIndex > 0 && startIndex == endIndex)
                     {
                         if (previousRecordId == (int)_eventListView.Items[startIndex - 1].Tag)
                             return null;
@@ -231,7 +234,7 @@ namespace SnakeTail
                         for (int j = endIndex - 1; j >= 0; --j)
                         {
                             ListViewItem prevItem = _eventListView.Items[j];
-                            if ((int)prevItem.Tag == -1 || (int)prevItem.Tag==0)
+                            if ((int)prevItem.Tag == -1 || (int)prevItem.Tag == 0)
                             {
                                 endIndex = _eventListView.VirtualListSize;
                                 j = endIndex - 2;
@@ -253,7 +256,7 @@ namespace SnakeTail
                         for (int j = 0; j < endIndex; ++j)
                         {
                             ListViewItem lvItem = _eventListView.Items[j];
-                            if ((int)lvItem.Tag == -1 || (int)lvItem.Tag==0)
+                            if ((int)lvItem.Tag == -1 || (int)lvItem.Tag == 0)
                             {
                                 endIndex = _eventListView.VirtualListSize;
                                 j = -1;
@@ -275,20 +278,24 @@ namespace SnakeTail
             else
             {
                 if (!_eventListView.VirtualMode)
-                    return _eventListView.Items[startIndex];
+                {
+                    if (startIndex < 0)
+                        return null;
+                    else
+                        return _eventListView.Items[startIndex];
+                }
                 else
                 {
                     // Sanity checks
                     int endIndex = _eventListView.VirtualListSize;
                     if (endIndex == 0)
                         return null;
-                    else
-                    if (startIndex < endIndex && startIndex >= 0)
+                    else if (startIndex < endIndex && startIndex >= 0)
                     {
                         ListViewItem lvItem = _eventListView.Items[startIndex];
-                        if ((int)lvItem.Tag != -1  && (int)lvItem.Tag!=0)
+                        if ((int)lvItem.Tag != -1 && (int)lvItem.Tag != 0)
                         {
-                            if ( (startIndex + 1) < endIndex)
+                            if ((startIndex + 1) < endIndex)
                             {
                                 ListViewItem prevItem = _eventListView.Items[startIndex + 1];
                                 if ((int)prevItem.Tag == previousRecordId)
@@ -296,8 +303,7 @@ namespace SnakeTail
                             }
                         }
                     }
-                    else
-                    if (startIndex < 0)
+                    else if (startIndex < 0)
                         return null;
 
                     endIndex = _eventListView.VirtualListSize;
@@ -353,7 +359,7 @@ namespace SnakeTail
             return null;    // Should never come here
         }
 
-        public bool SearchForText(string searchText, bool matchCase, bool searchForward, bool keywordHighlights)
+        public bool SearchForText(string searchText, bool matchCase, bool searchForward, bool lineHighlights)
         {
             int listCount = -1;
 
@@ -401,7 +407,12 @@ namespace SnakeTail
                             lvItem = GetNextEntry(previousRecordId, searchForward, startIndex);
                             if (lvItem != null)
                             {
-                                if (MatchTextSearch(lvItem, searchText, matchCase))
+                                if (lineHighlights)
+                                {
+                                    if (lvItem.ImageIndex < 2)
+                                        break;
+                                }
+                                else if (MatchTextSearch(lvItem, searchText, matchCase))
                                     break;
 
                                 previousRecordId = (int)lvItem.Tag;
@@ -425,7 +436,12 @@ namespace SnakeTail
                             lvItem = GetNextEntry(previousRecordId, searchForward, startIndex);
                             if (lvItem != null)
                             {
-                                if (MatchTextSearch(lvItem, searchText, matchCase))
+                                if (lineHighlights)
+                                {
+                                    if (lvItem.ImageIndex < 2)
+                                        break;
+                                }
+                                else if (MatchTextSearch(lvItem, searchText, matchCase))
                                     break;
 
                                 previousRecordId = (int)lvItem.Tag;
@@ -1259,7 +1275,34 @@ namespace SnakeTail
                 SearchForm.Instance.SearchAgain(this, false, false);
                 return true;
             }
+            else if (keyData == Keys.F3)
+            {
+                SearchForm.Instance.SearchAgain(this, true, false);
+                return true;
+            }
+
+            if (keyData == (Keys.Alt | Keys.Up))
+            {
+                SearchForm.Instance.SearchAgain(this, false, true);
+                return true;
+            }
+            else if (keyData == (Keys.Alt | Keys.Down))
+            {
+                SearchForm.Instance.SearchAgain(this, true, true);
+                return true;
+            }
+
             return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        private void gotoPreviousHighlightToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SearchForm.Instance.SearchAgain(this, false, true);
+        }
+
+        private void gotoNextHighlightToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SearchForm.Instance.SearchAgain(this, true, true);
         }
     }
 
