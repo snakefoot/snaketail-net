@@ -838,6 +838,7 @@ namespace SnakeTail
 
             // Draw the standard header background.
             e.DrawBackground();
+            e.DrawFocusRectangle(e.Bounds);
 
             TextFormatFlags flags = TextFormatFlags.Left | TextFormatFlags.ExpandTabs | TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix;
             if (e.Item.Text.Length > 1000)
@@ -1130,23 +1131,23 @@ namespace SnakeTail
                 SearchForm.Instance.SearchAgain(this, false, false);
                 return true;
             }
-            else
-            if (keyData == Keys.F3)
+            else if (keyData == Keys.F3)
             {
                 SearchForm.Instance.SearchAgain(this, true, false);
                 return true;
             }
-            if (keyData == (Keys.Control | Keys.Up))
+
+            if (keyData == (Keys.Alt | Keys.Up))
             {
                 SearchForm.Instance.SearchAgain(this, false, true);
                 return true;
             }
-            else
-            if (keyData == (Keys.Control | Keys.Down))
+            else if (keyData == (Keys.Alt | Keys.Down))
             {
                 SearchForm.Instance.SearchAgain(this, true, true);
                 return true;
             }
+
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
