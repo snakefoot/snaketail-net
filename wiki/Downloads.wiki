@@ -7,8 +7,7 @@ Google Code no longer supports binary releases. Instead the releases are made as
 
 = Details =
 
-[http://code.google.com/p/snaketail-net/downloads/detail?
-name=SnakeTail.v1.8.2.x64.msi SnakeTail.v1.8.2.x64.msi]
+[http://code.google.com/p/snaketail-net/downloads/detail?name=SnakeTail.v1.8.2.x64.msi SnakeTail.v1.8.2.x64.msi]
 [http://code.google.com/p/snaketail-net/downloads/detail?name=SnakeTail.v1.8.2.x86.msi SnakeTail.v1.8.2.x86.msi]
 [http://code.google.com/p/snaketail-net/downloads/detail?name=SnakeTail_v1.8.2.zip SnakeTail_v1.8.2.zip]
 
