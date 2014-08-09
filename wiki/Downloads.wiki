@@ -2,7 +2,7 @@
 
 = Introduction =
 
-Google Code no longer supports binary releases. Instead the releases are made as an attachment to an issue.
+Google Code no longer supports binary releases. Instead the releases are made as an attachment to an issue. [http://code.google.com/p/snaketail-net/downloads/list Old Download Page]
 
 
 = Details =
