@@ -2,7 +2,7 @@
 
 = Introduction =
 
-Add your content here.
+Google Code no longer supports binary releases. Instead the releases are made as an attachment to an issue.
 
 
 = Details =
