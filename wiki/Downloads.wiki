@@ -7,8 +7,8 @@ Download links to latest release. If wanting an older version go to [DownloadsOl
 = Details =
 
 SnakeTail 1.9.0
-  * [https://googledrive.com/host/0B4mlaSkLLFxsVXVQaXJkTjQ4UXc/  SnakeTail.v1.9.0.x64.msi SnakeTail.v1.9.0.x64.msi]
+  * [https://googledrive.com/host/0B4mlaSkLLFxsVXVQaXJkTjQ4UXc/SnakeTail.v1.9.0.x64.msi SnakeTail.v1.9.0.x64.msi]
 
-  * [https://googledrive.com/host/0B4mlaSkLLFxsVXVQaXJkTjQ4UXc/  SnakeTail.v1.9.0.x86.msi SnakeTail.v1.9.0.x86.msi]
+  * [https://googledrive.com/host/0B4mlaSkLLFxsVXVQaXJkTjQ4UXc/SnakeTail.v1.9.0.x86.msi SnakeTail.v1.9.0.x86.msi]
 
-  * [https://googledrive.com/host/0B4mlaSkLLFxsVXVQaXJkTjQ4UXc/  SnakeTail_v1.9.0.zip SnakeTail_v1.9.0.zip]
+  * [https://googledrive.com/host/0B4mlaSkLLFxsVXVQaXJkTjQ4UXc/SnakeTail_v1.9.0.zip SnakeTail_v1.9.0.zip]
