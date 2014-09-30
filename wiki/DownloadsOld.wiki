@@ -2,8 +2,7 @@
 
 = Download Old Releases =
 
-Add your content here.
-
+Google Code no longer supports new binary releases. [http://code.google.com/p/snaketail-net/downloads/list Old Download Page]
 
 = Details =
 
