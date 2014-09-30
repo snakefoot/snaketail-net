@@ -2,7 +2,7 @@
 
 = Introduction =
 
-Download links to latest release. If wanting an older version go to [DownloadsOld Previous Releases]
+Changelog and download links to latest release. If wanting an older version go to [DownloadsOld Previous Releases]
 
 == SnakeTail 1.9.0 ==
 
