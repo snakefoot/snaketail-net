@@ -2,7 +2,7 @@
 
 = Download Old Releases =
 
-Google Code no longer supports release of binary files. The last releases can be found here: [http://code.google.com/p/snaketail-net/downloads/list Old Download Page]
+Google Code stopped support for making downloads available directly, so the [http://code.google.com/p/snaketail-net/downloads/list Original Download Page] is not longer updated. New releases are placed on Google Drive.
 
 = Details =
 
