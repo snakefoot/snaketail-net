@@ -16,7 +16,7 @@ Changelog and download links to latest release. If wanting an older version go t
   * Faster discovery of new files when monitoring network path for the latest file to tail.
   * Execute external tool when keyword match, with support for environment variables (Ex. play sound).
   * Toggle the tail window to be 'Always on top'.
-  * Configuration window now has a 'Save as default'.
+  * Configuration window now has a 'Save as default'-button.
 
 === Minor changes ===
 
