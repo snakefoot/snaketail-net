@@ -13,7 +13,7 @@ Download links to latest release. If wanting an older version go to [DownloadsOl
   * Quick jump also works for EventLog where it jumps between Warnings and Errors.
   * Added 'Copy as Path' to context menu
   * Possible to specify multiple files when using command line
-  * Improved monitoring of network path for tailing the latest file in directory.
+  * Faster discovery of new files when tailing the latest file on a Network path.
   * Execute external tool when keyword match, with support for environment variables (Ex. play sound).
   * Toggle the tail window to be 'Always on top'
   * Configuration window now has a 'Save as default'
