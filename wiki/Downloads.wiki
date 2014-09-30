@@ -9,7 +9,7 @@ Download links to latest release. If wanting an older version go to [DownloadsOl
 === Feature changes ===
 
   * Quick jump to has changed from CTRL+KeyUp/KeyDown to ALT+KeyUp/KeyDown.
-  * Keyword highlight can now be coloring only without being 'Alert Highlight'. Meaning that ALT+KeyUp/KeyDown will ignore them.(Ex. green color for success).
+  * Keyword highlight can now be just line coloring without being 'Alert Highlight'. Meaning that ALT+KeyUp/KeyDown will ignore them.(Ex. green color for success).
   * Quick jump also works for EventLog where it jumps between Warnings and Errors.
   * Added 'Copy as Path' to context menu
   * Possible to specify multiple files when using command line
