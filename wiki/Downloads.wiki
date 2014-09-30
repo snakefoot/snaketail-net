@@ -6,7 +6,28 @@ Download links to latest release. If wanting an older version go to [DownloadsOl
 
 == SnakeTail 1.9.0 ==
 
-=== Changes ===
+=== Feature changes ===
+
+  * Quick jump to has changed from CTRL+KeyUp/KeyDown to ALT+KeyUp/KeyDown.
+  * Keyword highlight can now be coloring only without being 'Alert Highlight'. Meaning that ALT+KeyUp/KeyDown will ignore them.(Ex. green color for success).
+  * Quick jump also works for EventLog where it jumps between Warnings and Errors.
+  * Added 'Copy as Path' to context menu
+  * Possible to specify multiple files when using command line
+  * Improved monitoring of Network path for tailing the latest file in directory.
+  * Execute external tool when keyword match, with support for environment variables (Ex. play sound).
+  * Toggle the tail window to be 'Always on top'
+  * Configuration window now has a 'Save as default'
+
+=== Other changes ===
+
+  * Fixed unhandled exception when copy to clipboard fails, because other application is holding lock.
+  * Fixed unhandled exception when trying to monitor an invalid file path for file changes.
+  * Fixed unhandled exception when trying to monitor a without having proper access rights.
+  * Fixed unhandled exception when given invalid path to session file.
+  * Fixed crash dialog it doesn't become hidden behind main application.
+  * Fixed bug where 'File Reopen Check Interval' could not get higher than 59 secs 
+  * Fixed unhandled exception when closing the application.
+  * Less flicker when changing between different window tabs.
 
 === Download ===
 
