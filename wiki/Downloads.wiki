@@ -18,7 +18,7 @@ Download links to latest release. If wanting an older version go to [DownloadsOl
   * Toggle the tail window to be 'Always on top'
   * Configuration window now has a 'Save as default'
 
-=== Other changes ===
+=== Minor changes ===
 
   * Fixed unhandled exception when copy to clipboard fails, because other application is holding lock.
   * Fixed unhandled exception when trying to monitor an invalid file path for file changes.
