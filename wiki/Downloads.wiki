@@ -8,7 +8,7 @@ Changelog and download links to latest release. If wanting an older version go t
 
 === Feature changes ===
 
-  * Quick jump shortcut has changed to ALT+KeyUp/KeyDown (Instead of CTRL+KeyUp/KeyDown.
+  * Quick jump shortcut has changed to ALT+KeyUp/KeyDown (Instead of CTRL+KeyUp/KeyDown).
   * Keyword highlight can now be just line coloring without being 'Alert Highlight'. Meaning that ALT+KeyUp/KeyDown will ignore them.(Ex. green color for success).
   * Quick jump also works for EventLog where it jumps between Warnings and Errors.
   * Added 'Copy as Path' to context menu.
