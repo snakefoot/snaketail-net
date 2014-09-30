@@ -22,7 +22,7 @@ Download links to latest release. If wanting an older version go to [DownloadsOl
 
   * Fixed unhandled exception when copy to clipboard fails, because other application is holding lock.
   * Fixed unhandled exception when trying to monitor an invalid file path for file changes.
-  * Fixed unhandled exception when trying to monitor a without having proper access rights.
+  * Fixed unhandled exception when trying to monitor a file without having proper access rights.
   * Fixed unhandled exception when given invalid path to session file.
   * Fixed crash dialog it doesn't become hidden behind main application.
   * Fixed bug where 'File Reopen Check Interval' could not get higher than 59 secs 
