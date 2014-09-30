@@ -1,6 +1,6 @@
 #summary Downloads links to previous releases
 
-= Introduction =
+= Download Old Releases =
 
 Add your content here.
 
