@@ -4,9 +4,10 @@
 
 Google Code stopped support for making downloads available directly, so the [http://code.google.com/p/snaketail-net/downloads/list Original Download Page] is not longer updated. New releases are placed on Google Drive.
 
-= Details =
+= SnakeTail 1.8.2 =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+  * [http://code.google.com/p/snaketail-net/downloads/detail?name=SnakeTail.v1.8.2.x64.msi SnakeTail.v1.8.2.x64.msi]
+
+  * [http://code.google.com/p/snaketail-net/downloads/detail?name=SnakeTail.v1.8.2.x86.msi SnakeTail.v1.8.2.x86.msi]
+
+  * [http://code.google.com/p/snaketail-net/downloads/detail?name=SnakeTail_v1.8.2.zip SnakeTail_v1.8.2.zip]
