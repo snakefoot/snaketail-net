@@ -11,17 +11,17 @@ Changelog and download links to latest release. If wanting an older version go t
   * Quick jump to has changed from CTRL+KeyUp/KeyDown to ALT+KeyUp/KeyDown.
   * Keyword highlight can now be just line coloring without being 'Alert Highlight'. Meaning that ALT+KeyUp/KeyDown will ignore them.(Ex. green color for success).
   * Quick jump also works for EventLog where it jumps between Warnings and Errors.
-  * Added 'Copy as Path' to context menu
-  * Possible to specify multiple files when using command line
-  * Faster discovery of new files when tailing the latest file using network path
+  * Added 'Copy as Path' to context menu.
+  * Possible to specify multiple files when using command line.
+  * Faster discovery of new files when tailing the latest file using network path.
   * Execute external tool when keyword match, with support for environment variables (Ex. play sound).
-  * Toggle the tail window to be 'Always on top'
-  * Configuration window now has a 'Save as default'
+  * Toggle the tail window to be 'Always on top'.
+  * Configuration window now has a 'Save as default'.
 
 === Minor changes ===
 
   * Fixed unhandled exception when copy to clipboard fails, because other application is holding lock.
-  * Fixed unhandled exception when trying to monitor an invalid file path for file changes.
+  * Fixed unhandled exception when trying to monitor an invalid file path for the latest file to tail.
   * Fixed unhandled exception when trying to monitor a file without having proper access rights.
   * Fixed unhandled exception when given invalid path to session file.
   * Fixed crash dialog so it doesn't become hidden behind main application.
