@@ -7,7 +7,7 @@
 	</MASTER_PAD_VERSION_INFO>
 	<Company_Info>
 		<Company_Name>SnakeNest</Company_Name>
-		<Address_1>Mariendalsvej 13 3TH</Address_1>
+		<Address_1>Vagtelvej</Address_1>
 		<Address_2 />
 		<City_Town>Copenhagen</City_Town>
 		<State_Province />
@@ -30,10 +30,10 @@
 	</Company_Info>
 	<Program_Info>
 		<Program_Name>SnakeTail</Program_Name>
-		<Program_Version>1.8.2</Program_Version>
-		<Program_Release_Month>03</Program_Release_Month>
-		<Program_Release_Day>13</Program_Release_Day>
-		<Program_Release_Year>2013</Program_Release_Year>
+		<Program_Version>1.9.0</Program_Version>
+		<Program_Release_Month>09</Program_Release_Month>
+		<Program_Release_Day>30</Program_Release_Day>
+		<Program_Release_Year>2014</Program_Release_Year>
 		<Program_Type>Freeware</Program_Type>
 		<Program_Release_Status>New Release</Program_Release_Status>
 		<Program_Install_Support>No Install Support</Program_Install_Support>
@@ -48,8 +48,8 @@
 			<Has_Expire_Info>N</Has_Expire_Info>
 		</Expire_Info>
 		<File_Info>
-			<File_Size_Bytes>225000</File_Size_Bytes>
-			<File_Size_K>225.0</File_Size_K>
+			<File_Size_Bytes>235000</File_Size_Bytes>
+			<File_Size_K>235.0</File_Size_K>
 			<File_Size_MB>0.2</File_Size_MB>
 		</File_Info>
 	</Program_Info>
@@ -60,7 +60,7 @@
 			<Char_Desc_80>Windows tail utility for monitoring Text files and Windows EVentLog</Char_Desc_80>
 			<Char_Desc_250>SnakeTail is a Windows tail utility. Monitor text log files. Monitor Windows Event Logs. Save and load entire window session. Sentence color highlight based on keywords. Toggle bookmarks and quickly jump between bookmarks.</Char_Desc_250>
 			<Char_Desc_450>SnakeTail is a Windows tail utility. Monitor text log files. Monitor Windows Event Logs. Multiple Window Modes supported (MDI, Tabbed, Floating). Save and load entire window session. Sentence color highlight based on keywords. Toggle bookmarks and quickly jump between bookmarks. Search in log files both forward and backward. Customize tail window color and font. Configure external tools and bind custom shortcut key.</Char_Desc_450>
-			<Char_Desc_2000>SnakeTail is a Windows tail utility. Monitor text log files. Monitor Windows Event Logs. Multiple Window Modes supported (MDI, Tabbed, Floating). Save and load entire window session. Sentence color highlight based on keywords. Toggle bookmarks and quickly jump between bookmarks. Search in log files both forward and backward. Customize tail window color and font. Configure external tools and bind custom shortcut key. Filtering of Windows Event Logs using regular expressions. Display simple process statistics in window title bar (RAM + CPU usage + TRX/Sec). Stop and start Windows service by right clicking in the tail window. Tails log directory where the latest log file is displayed.</Char_Desc_2000>
+			<Char_Desc_2000>SnakeTail is a Windows tail utility. Monitor text log files. Monitor Windows Event Logs. Multiple Window Modes supported (MDI, Tabbed, Floating). Save and load entire window session. Sentence color highlight based on keywords. Toggle bookmarks and quickly jump between bookmarks. Search in log files both forward and backward. Customize tail window color and font. Configure external tools and bind custom shortcut key. Filtering of Windows Event Logs using regular expressions. Display simple process statistics in window title bar (RAM, CPU usage, TRX/Sec). Stop and start Windows service by right clicking in the tail window. Tails log directory where the latest log file is displayed.</Char_Desc_2000>
 		</English>
 	</Program_Descriptions>
 	<Web_Info>
@@ -72,7 +72,7 @@
 			<Application_XML_File_URL>http://snakenest.com/snaketail.pad.xml</Application_XML_File_URL>
 		</Application_URLs>
 		<Download_URLs>
-			<Primary_Download_URL>http://snaketail-net.googlecode.com/files/SnakeTail_v1.8.2.zip</Primary_Download_URL>
+			<Primary_Download_URL>http://googledrive.com/host/0B4mlaSkLLFxsVXVQaXJkTjQ4UXc/SnakeTail_v1.9.0.zip</Primary_Download_URL>
 			<Secondary_Download_URL />
 			<Additional_Download_URL_1 />
 			<Additional_Download_URL_2 />
