@@ -22,23 +22,30 @@ namespace SnakeTail
     class ExternalTool
     {
         public readonly ExternalToolConfig ToolConfig;
-        Dictionary<string, string> _fileParameters;
+        Dictionary<ParameterName, string> _fileParameters;
 
-        public static readonly List<string> ParamList = new List<string> {
-            "$(FilePath)",
-            "$(FileDirectory)",
-            "$(FileName)",
-            "$(LineText)",
-            "$(LineNumber)",
-            "$(ProgramDirectory)",
-            "$(ServiceName)",
-            "$(SessionDirectory)",
-            "$(SessionFileName)",
-            "$(SessionName)",
-            "$(SessionPath)",
-            "$(ViewName)"};
+        public enum ParameterName
+        {
+            FilePath,
+            FileDirectory,
+            FileName,
+            LineText,
+            LineNumber,
+            ProgramDirectory,
+            ServiceName,
+            SessionDirectory,
+            SessionFileName,
+            SessionName,
+            SessionPath,
+            ViewName,
+        };
 
-        public ExternalTool(ExternalToolConfig toolConfig, Dictionary<string, string> fileParameters)
+        public static string GetParameterSymbol(ParameterName parameterName)
+        {
+            return string.Format("$({0})", parameterName.ToString());
+        }
+
+        public ExternalTool(ExternalToolConfig toolConfig, Dictionary<ParameterName, string> fileParameters)
         {
             ToolConfig = toolConfig;
             _fileParameters = fileParameters;
@@ -48,14 +55,14 @@ namespace SnakeTail
         {
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
             startInfo.Arguments = Environment.ExpandEnvironmentVariables(ToolConfig.Arguments);
-            foreach (KeyValuePair<string, string> parameter in _fileParameters)
-                startInfo.Arguments = startInfo.Arguments.Replace(parameter.Key, parameter.Value);
+            foreach (KeyValuePair<ParameterName, string> parameter in _fileParameters)
+                startInfo.Arguments = startInfo.Arguments.Replace(GetParameterSymbol(parameter.Key), parameter.Value);
             startInfo.FileName = Environment.ExpandEnvironmentVariables(ToolConfig.Command);
-            foreach (KeyValuePair<string, string> parameter in _fileParameters)
-                startInfo.FileName = startInfo.FileName.Replace(parameter.Key, parameter.Value);
+            foreach (KeyValuePair<ParameterName, string> parameter in _fileParameters)
+                startInfo.FileName = startInfo.FileName.Replace(GetParameterSymbol(parameter.Key), parameter.Value);
             startInfo.WorkingDirectory = Environment.ExpandEnvironmentVariables(ToolConfig.InitialDirectory);
-            foreach (KeyValuePair<string, string> parameter in _fileParameters)
-                startInfo.WorkingDirectory = startInfo.WorkingDirectory.Replace(parameter.Key, parameter.Value);
+            foreach (KeyValuePair<ParameterName, string> parameter in _fileParameters)
+                startInfo.WorkingDirectory = startInfo.WorkingDirectory.Replace(GetParameterSymbol(parameter.Key), parameter.Value);
             if (ToolConfig.HideWindow)
                 startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
             if (ToolConfig.RunAsAdmin)

@@ -1238,7 +1238,7 @@ namespace SnakeTail
                 {
                     ExternalTool tool = null;
                     if (_tailListView.FocusedItem != null)
-                        tool = GenerateExternalTool(toolConfig, _tailListView.FocusedItem.Text, _tailListView.FocusedItem.Index);
+                        tool = GenerateExternalTool(toolConfig, _tailListView.FocusedItem.Text, _tailListView.FocusedItem.Index + 1);
                     else
                         tool = GenerateExternalTool(toolConfig, string.Empty, null);
 
@@ -1256,19 +1256,19 @@ namespace SnakeTail
 
         private ExternalTool GenerateExternalTool(ExternalToolConfig toolConfig, string line, int? lineNumber)
         {
-            Dictionary<string, string> fileParameters = new Dictionary<string, string>();
-            fileParameters["$(FilePath)"] = _logTailStream != null ? _logTailStream.Name : string.Empty;
-            fileParameters["$(FileDirectory)"] = Path.GetDirectoryName(fileParameters["$(FilePath)"]);
-            fileParameters["$(FileName)"] = Path.GetFileName(fileParameters["$(FilePath)"]);
-            fileParameters["$(ServiceName)"] = _taskMonitor != null ? _taskMonitor.ServiceName : string.Empty;
-            fileParameters["$(SessionDirectory)"] = _configPath;
-            fileParameters["$(SessionPath)"] = MainForm.Instance.CurrenTailConfig;
-            fileParameters["$(SessionFileName)"] = Path.GetFileName(fileParameters["$(SessionPath)"]);
-            fileParameters["$(SessionName)"] = Path.GetFileNameWithoutExtension(fileParameters["$(SessionPath)"]);
-            fileParameters["$(ViewName)"] = _formTitle;
-            fileParameters["$(ProgramDirectory)"] = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            fileParameters["$(LineText)"] = line != null ? line : string.Empty;
-            fileParameters["$(LineText)"] = lineNumber.HasValue ? lineNumber.Value.ToString() : string.Empty;
+            Dictionary<ExternalTool.ParameterName, string> fileParameters = new Dictionary<ExternalTool.ParameterName, string>();
+            fileParameters[ExternalTool.ParameterName.FilePath] = _logTailStream != null ? _logTailStream.Name : string.Empty;
+            fileParameters[ExternalTool.ParameterName.FileDirectory] = Path.GetDirectoryName(fileParameters[ExternalTool.ParameterName.FilePath]);
+            fileParameters[ExternalTool.ParameterName.FileName] = Path.GetFileName(fileParameters[ExternalTool.ParameterName.FilePath]);
+            fileParameters[ExternalTool.ParameterName.ServiceName] = _taskMonitor != null ? _taskMonitor.ServiceName : string.Empty;
+            fileParameters[ExternalTool.ParameterName.SessionDirectory] = _configPath;
+            fileParameters[ExternalTool.ParameterName.SessionPath] = MainForm.Instance.CurrenTailConfig;
+            fileParameters[ExternalTool.ParameterName.SessionFileName] = Path.GetFileName(fileParameters[ExternalTool.ParameterName.SessionPath]);
+            fileParameters[ExternalTool.ParameterName.SessionName] = Path.GetFileNameWithoutExtension(fileParameters[ExternalTool.ParameterName.SessionPath]);
+            fileParameters[ExternalTool.ParameterName.ViewName] = _formTitle;
+            fileParameters[ExternalTool.ParameterName.ProgramDirectory] = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            fileParameters[ExternalTool.ParameterName.LineText] = line != null ? line : string.Empty;
+            fileParameters[ExternalTool.ParameterName.LineNumber] = lineNumber.HasValue ? lineNumber.Value.ToString() : string.Empty;
 
             ExternalTool tool = new ExternalTool(toolConfig, fileParameters);
             return tool;
