@@ -1033,7 +1033,7 @@ namespace SnakeTail
                     {
                         CheckExternalToolResults();
                         if (_threadPoolQueue != null)
-                            _threadPoolQueue.QueueRequest(ExecuteExternalTool, GenerateExternalTool(keywordMatch.ExternalToolConfig, line, lineCount));
+                            _threadPoolQueue.QueueRequest(ExecuteExternalTool, GenerateExternalTool(keywordMatch.ExternalToolConfig, line, lineCount, keywordMatch.Keyword));
                     }
                     if (keywordMatch.AlertHighlight.Value)
                         warningIcon = true;
@@ -1238,9 +1238,9 @@ namespace SnakeTail
                 {
                     ExternalTool tool = null;
                     if (_tailListView.FocusedItem != null)
-                        tool = GenerateExternalTool(toolConfig, _tailListView.FocusedItem.Text, _tailListView.FocusedItem.Index + 1);
+                        tool = GenerateExternalTool(toolConfig, _tailListView.FocusedItem.Text, _tailListView.FocusedItem.Index + 1, string.Empty);
                     else
-                        tool = GenerateExternalTool(toolConfig, string.Empty, null);
+                        tool = GenerateExternalTool(toolConfig, string.Empty, null, string.Empty);
 
                     try
                     {
@@ -1254,7 +1254,7 @@ namespace SnakeTail
             }
         }
 
-        private ExternalTool GenerateExternalTool(ExternalToolConfig toolConfig, string line, int? lineNumber)
+        private ExternalTool GenerateExternalTool(ExternalToolConfig toolConfig, string line, int? lineNumber, string keywordMatch)
         {
             Dictionary<ExternalTool.ParameterName, string> fileParameters = new Dictionary<ExternalTool.ParameterName, string>();
             fileParameters[ExternalTool.ParameterName.FilePath] = _logTailStream != null ? _logTailStream.Name : string.Empty;
@@ -1269,6 +1269,7 @@ namespace SnakeTail
             fileParameters[ExternalTool.ParameterName.ProgramDirectory] = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             fileParameters[ExternalTool.ParameterName.LineText] = line != null ? line : string.Empty;
             fileParameters[ExternalTool.ParameterName.LineNumber] = lineNumber.HasValue ? lineNumber.Value.ToString() : string.Empty;
+            fileParameters[ExternalTool.ParameterName.KeywordText] = keywordMatch != null ? keywordMatch : string.Empty;
 
             ExternalTool tool = new ExternalTool(toolConfig, fileParameters);
             return tool;
