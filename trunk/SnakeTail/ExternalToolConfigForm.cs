@@ -38,7 +38,11 @@ namespace SnakeTail
                 ExternalToolConfig.Name = "New Tool";
             }
 
-            _paramBindingSource.DataSource = ExternalTool.ParamList;
+            List<string> parameterNames = new List<string>();
+            foreach (ExternalTool.ParameterName parameterName in Enum.GetValues(typeof(ExternalTool.ParameterName)))
+                parameterNames.Add(ExternalTool.GetParameterSymbol(parameterName));
+
+            _paramBindingSource.DataSource = parameterNames;
 
             _argParamCmb.DataSource = _paramBindingSource;
             _initDirParamCmb.DataSource = _paramBindingSource;
