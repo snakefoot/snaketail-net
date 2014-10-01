@@ -29,6 +29,7 @@ namespace SnakeTail
             FilePath,
             FileDirectory,
             FileName,
+            KeywordText,
             LineText,
             LineNumber,
             ProgramDirectory,
