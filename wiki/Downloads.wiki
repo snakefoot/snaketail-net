@@ -1,9 +1,5 @@
 #summary Links for downloading latest version
 
-= Introduction =
-
-Changelog and download links to latest release.
-
 == SnakeTail 1.9.0 ==
 
 === Feature changes ===
