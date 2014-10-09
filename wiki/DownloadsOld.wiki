@@ -2,7 +2,7 @@
 
 = Download Old Releases =
 
-Google Code stopped support for making downloads available directly, so the [http://code.google.com/p/snaketail-net/downloads/list?can=4 Original Download Page] is not longer updated. New releases are placed on Google Drive.
+Google Code stopped support for making downloads available directly, so the [http://code.google.com/p/snaketail-net/downloads/list?can=4 Original Download Page] is no longer updated. New releases are placed on Google Drive.
 
 == SnakeTail 1.8.2 ==
 
