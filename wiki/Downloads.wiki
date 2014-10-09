@@ -2,7 +2,7 @@
 
 = Introduction =
 
-Changelog and download links to latest release. If wanting an older version go to [DownloadsOld Previous Releases]
+Changelog and download links to latest release.
 
 == SnakeTail 1.9.0 ==
 
@@ -36,3 +36,5 @@ Changelog and download links to latest release. If wanting an older version go t
   * [https://googledrive.com/host/0B4mlaSkLLFxsVXVQaXJkTjQ4UXc/SnakeTail.v1.9.0.x86.msi SnakeTail.v1.9.0.x86.msi]
 
   * [https://googledrive.com/host/0B4mlaSkLLFxsVXVQaXJkTjQ4UXc/SnakeTail_v1.9.0.zip SnakeTail_v1.9.0.zip]
+
+If wanting an older version go to [DownloadsOld Previous Releases]
