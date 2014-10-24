@@ -928,26 +928,28 @@ namespace SnakeTail
                 return;
             }
 
-            if (e.KeyCode == Keys.End)
+            if (_tailListView.VirtualListSize > 0)
             {
-                if (_tailListView.VirtualListSize > 0)
+                if (e.KeyCode == Keys.End)
                 {
-                    _logFileCache.PrepareCache(Math.Max(_tailListView.VirtualListSize - _logFileCache.Items.Count,0), _tailListView.VirtualListSize, false);
+                    _logFileCache.PrepareCache(Math.Max(_tailListView.VirtualListSize - _logFileCache.Items.Count, 0), _tailListView.VirtualListSize, false);
                     _tailListView.EnsureVisible(_tailListView.VirtualListSize - 1);
+                }
+
+                // For some weird reason the cache request for page-down / page-up comes after the item-requests
+                if (e.KeyCode == Keys.PageDown)
+                {
+                    int topIndex = _tailListView.TopItem.Index;
+                    _logFileCache.PrepareCache(topIndex + _logFileCache.Items.Count / 2, topIndex + _logFileCache.Items.Count / 2, false);
+                }
+
+                if (e.KeyCode == Keys.PageUp)
+                {
+                    int topIndex = _tailListView.TopItem.Index;
+                    _logFileCache.PrepareCache(topIndex - _logFileCache.Items.Count / 2, topIndex + 100, false);
                 }
             }
 
-            // For some weird reason the cache request for page-down / page-up comes after the item-requests
-            if (e.KeyCode == Keys.PageDown)
-            {
-                int topIndex = _tailListView.TopItem.Index;
-                _logFileCache.PrepareCache(topIndex + _logFileCache.Items.Count / 2, topIndex + _logFileCache.Items.Count / 2, false);
-            }
-            if (e.KeyCode == Keys.PageUp)
-            {
-                int topIndex = _tailListView.TopItem.Index;
-                _logFileCache.PrepareCache(topIndex - _logFileCache.Items.Count / 2, topIndex + 100, false);
-            }
             if (e.KeyCode == Keys.Pause)
             {
                 Paused = !Paused;
