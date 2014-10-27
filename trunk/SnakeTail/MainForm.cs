@@ -214,7 +214,7 @@ namespace SnakeTail
             fileDialog.Multiselect = true;
             fileDialog.Title = "Open Log File";
             fileDialog.Filter = "Default Filter|*.txt;*.text;*.log*;*.xlog|Log Files|*.log*;*.xlog|Text Files|*.txt;*.text|All Files|*.*";
-            if (fileDialog.ShowDialog() != DialogResult.OK)
+            if (fileDialog.ShowDialog(this) != DialogResult.OK)
                 return;
 
             OpenFileSelection(fileDialog.FileNames);
@@ -235,7 +235,7 @@ namespace SnakeTail
             }
         }
 
-        private string GetDefaultConfigPath()
+        private static string GetDefaultConfigPath()
         {
             // Attempt to load default session configuration from these locations
             // 1. SnakeTail.xml in application directory
@@ -311,7 +311,7 @@ namespace SnakeTail
         private void openEventLogToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenEventLogDialog openEventLogDlg = new OpenEventLogDialog();
-            if (openEventLogDlg.ShowDialog() != DialogResult.OK)
+            if (openEventLogDlg.ShowDialog(this) != DialogResult.OK)
                 return;
 
             EventLogForm mdiForm = new EventLogForm();
@@ -427,7 +427,7 @@ namespace SnakeTail
                 saveFileDialog.InitialDirectory = Path.GetDirectoryName(_currenTailConfig);
             }
             saveFileDialog.Filter = "Xml files (*.xml)|*.xml|All files (*.*)|*.*";
-            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            if (saveFileDialog.ShowDialog(this) == DialogResult.OK)
             {
                 SaveSession(saveFileDialog.FileName);
             }
@@ -437,7 +437,7 @@ namespace SnakeTail
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Xml files (*.xml)|*.xml|All files (*.*)|*.*";
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            if (openFileDialog.ShowDialog(this) == DialogResult.OK)
             {
                 LoadSession(openFileDialog.FileName);
             }
@@ -700,7 +700,7 @@ namespace SnakeTail
         private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             AboutBox aboutBox = new AboutBox();
-            aboutBox.ShowDialog();
+            aboutBox.ShowDialog(this);
         }
 
         private void checkForUpdateToolStripMenuItem_Click(object sender, EventArgs e)
@@ -719,7 +719,7 @@ namespace SnakeTail
             {
                 ThreadExceptionDialog dlg = new ThreadExceptionDialog(ex);
                 dlg.Text = "Error checking for new updates";
-                dlg.ShowDialog();
+                dlg.ShowDialog(this);
             }
         }
 

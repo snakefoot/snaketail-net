@@ -89,7 +89,7 @@ namespace SnakeTail
         {
             ColorDialog colorDlg = new ColorDialog();
             colorDlg.Color = _keywordEdt.ForeColor;
-            if (colorDlg.ShowDialog() == DialogResult.OK)
+            if (colorDlg.ShowDialog(this) == DialogResult.OK)
             {
                 _keywordEdt.ForeColor = colorDlg.Color;
             }

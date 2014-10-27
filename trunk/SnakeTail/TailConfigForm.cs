@@ -174,7 +174,7 @@ namespace SnakeTail
             if (TailFileConfig.FormTextColor != null)
                 fdlgText.Color = TailFileConfig.FormTextColor.Value;
             fdlgText.ShowColor = true;
-            if (fdlgText.ShowDialog() == DialogResult.OK)
+            if (fdlgText.ShowDialog(this) == DialogResult.OK)
             {
                 TailFileConfig.FormFont = fdlgText.Font;
                 TailFileConfig.FormTextColor = fdlgText.Color;
@@ -186,7 +186,7 @@ namespace SnakeTail
             ColorDialog colorDlg = new ColorDialog();
             if (TailFileConfig.FormBackColor != null)
                 colorDlg.Color = TailFileConfig.FormBackColor.Value;
-            if (colorDlg.ShowDialog() == DialogResult.OK)
+            if (colorDlg.ShowDialog(this) == DialogResult.OK)
             {
                 TailFileConfig.FormBackColor = colorDlg.Color;
             }
@@ -197,7 +197,7 @@ namespace SnakeTail
             ColorDialog colorDlg = new ColorDialog();
             if (TailFileConfig.FormBookmarkTextColor != null)
                 colorDlg.Color = TailFileConfig.FormBookmarkTextColor.Value;
-            if (colorDlg.ShowDialog() == DialogResult.OK)
+            if (colorDlg.ShowDialog(this) == DialogResult.OK)
             {
                 TailFileConfig.FormBookmarkTextColor = colorDlg.Color;
             }
@@ -209,7 +209,7 @@ namespace SnakeTail
             ColorDialog colorDlg = new ColorDialog();
             if (TailFileConfig.FormBookmarkBackColor != null)
                 colorDlg.Color = TailFileConfig.FormBookmarkBackColor.Value;
-            if (colorDlg.ShowDialog() == DialogResult.OK)
+            if (colorDlg.ShowDialog(this) == DialogResult.OK)
             {
                 TailFileConfig.FormBookmarkBackColor = colorDlg.Color;
             }
@@ -218,7 +218,7 @@ namespace SnakeTail
         private void _addWordBtn_Click(object sender, EventArgs e)
         {
             KeywordConfigForm dlg = new KeywordConfigForm(null, TailFileConfig);
-            if (dlg.ShowDialog() == DialogResult.OK && !String.IsNullOrEmpty(dlg.TailKeywordConfig.Keyword))
+            if (dlg.ShowDialog(this) == DialogResult.OK && !String.IsNullOrEmpty(dlg.TailKeywordConfig.Keyword))
             {
                 ListViewItem lvi = _keywordListView.Items.Add(new ListViewItem());
                 UpdateKeywordListItem(dlg.TailKeywordConfig, ref lvi);
@@ -231,7 +231,7 @@ namespace SnakeTail
                 return;
 
             KeywordConfigForm dlg = new KeywordConfigForm(_keywordListView.SelectedItems[0].Tag as TailKeywordConfig, TailFileConfig);
-            if (dlg.ShowDialog() == DialogResult.OK && !String.IsNullOrEmpty(dlg.TailKeywordConfig.Keyword))
+            if (dlg.ShowDialog(this) == DialogResult.OK && !String.IsNullOrEmpty(dlg.TailKeywordConfig.Keyword))
             {
                 ListViewItem lvi = _keywordListView.SelectedItems[0];
                 UpdateKeywordListItem(dlg.TailKeywordConfig, ref lvi);
@@ -283,7 +283,7 @@ namespace SnakeTail
             fileDialog.Filter = "Text Files|*.txt|Log Files|*.log|All Files|*.*";
             fileDialog.InitialDirectory = System.IO.Path.GetDirectoryName(_filePathEdt.Text);
             fileDialog.FileName = System.IO.Path.GetFileName(_filePathEdt.Text);
-            if (fileDialog.ShowDialog() != DialogResult.OK)
+            if (fileDialog.ShowDialog(this) != DialogResult.OK)
                 return;
 
             _filePathEdt.Text = fileDialog.FileName;
@@ -297,7 +297,7 @@ namespace SnakeTail
         private void _addToolBtn_Click(object sender, EventArgs e)
         {
             ExternalToolConfigForm dlg = new ExternalToolConfigForm(null);
-            if (dlg.ShowDialog() == DialogResult.OK && !String.IsNullOrEmpty(dlg.ExternalToolConfig.Name))
+            if (dlg.ShowDialog(this) == DialogResult.OK && !String.IsNullOrEmpty(dlg.ExternalToolConfig.Name))
             {
                 ListViewItem lvi = _extToolsListView.Items.Add(new ListViewItem());
                 UpdateExtToolListItem(dlg.ExternalToolConfig, ref lvi);
@@ -310,7 +310,7 @@ namespace SnakeTail
                 return;
 
             ExternalToolConfigForm dlg = new ExternalToolConfigForm(_extToolsListView.SelectedItems[0].Tag as ExternalToolConfig);
-            if (dlg.ShowDialog() == DialogResult.OK && !String.IsNullOrEmpty(dlg.ExternalToolConfig.Name))
+            if (dlg.ShowDialog(this) == DialogResult.OK && !String.IsNullOrEmpty(dlg.ExternalToolConfig.Name))
             {
                 ListViewItem lvi = _extToolsListView.SelectedItems[0];
                 UpdateExtToolListItem(dlg.ExternalToolConfig, ref lvi);

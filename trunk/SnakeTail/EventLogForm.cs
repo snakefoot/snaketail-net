@@ -1254,7 +1254,7 @@ namespace SnakeTail
             TailFileConfig configFile = new TailFileConfig();
             SaveConfig(configFile);
             TailConfigForm configForm = new TailConfigForm(configFile, false);
-            if (configForm.ShowDialog() == DialogResult.OK)
+            if (configForm.ShowDialog(this) == DialogResult.OK)
                 LoadConfig(configForm.TailFileConfig, null);
         }
 

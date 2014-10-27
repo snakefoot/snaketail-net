@@ -98,7 +98,7 @@ namespace SnakeTail
             if (!String.IsNullOrEmpty(_cmdEdt.Text))
                 fileDialog.InitialDirectory = System.IO.Path.GetDirectoryName(_cmdEdt.Text);
             fileDialog.Filter = "Executable Files|*.exe|All Files|*.*";
-            if (fileDialog.ShowDialog() != DialogResult.OK)
+            if (fileDialog.ShowDialog(this) != DialogResult.OK)
                 return;
 
             _cmdEdt.Text = fileDialog.FileName;

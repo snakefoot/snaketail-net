@@ -1412,7 +1412,7 @@ namespace SnakeTail
             TailFileConfig configFile = new TailFileConfig();
             SaveConfig(configFile);
             TailConfigForm configForm = new TailConfigForm(configFile, true);
-            switch (configForm.ShowDialog())
+            switch (configForm.ShowDialog(this))
             {
                 case DialogResult.OK:
                 {
@@ -1427,7 +1427,7 @@ namespace SnakeTail
                     configFile = new TailFileConfig();
                     SaveConfig(configFile);
                     TailConfigApplyAllForm configFormApply = new TailConfigApplyAllForm();
-                    if (configFormApply.ShowDialog() == DialogResult.OK)
+                    if (configFormApply.ShowDialog(this) == DialogResult.OK)
                     {
                         // Then we loop through all forms (includes free floating)
                         foreach (Form childForm in Application.OpenForms)
