@@ -122,7 +122,22 @@ namespace SnakeTail
                 tmp.ShortcutKeyEnum = Control.ModifierKeys | e.KeyCode;
                 _shortcutEdt.Text = tmp.ShortcutKey;
                 _shortcutEdt.Select(0, 0);
+                try
+                {
+                    ToolStripMenuItem tempItem = new ToolStripMenuItem();
+                    tempItem.ShortcutKeys = tmp.ShortcutKeyEnum.Value;
+                }
+                catch
+                {
+                    MessageBox.Show(this, string.Format("'{0}' cannot be used as shortcut", tmp.ShortcutKey), this.Text + " - Invalid shortcut", MessageBoxButtons.OK);
+                    _shortcutEdt.Text = string.Empty;
+                }
             }
+        }
+
+        private void _shortcutEdt_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            e.Handled = true;
         }
     }
 }
