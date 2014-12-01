@@ -873,9 +873,10 @@ namespace SnakeTail
                     else if (matchKeyword != null)
                     {
                         // Ignore keywords that doesn't add extra detail to the existing keyword-match
-                        if ( (matchKeyword.ExternalToolConfig == null && keyword.ExternalToolConfig == null)
-                          && (!matchKeyword.LogHitCounter && !keyword.LogHitCounter)
-                          && (!matchKeyword.AlertHighlight.Value && !keyword.AlertHighlight.Value))
+                        if ( (matchKeyword.ExternalToolConfig != null || keyword.ExternalToolConfig == null)
+                          && (matchKeyword.LogHitCounter || !keyword.LogHitCounter)
+                          && (matchKeyword.AlertHighlight.Value || !keyword.AlertHighlight.Value)
+                            )
                            continue;
                     }
 
