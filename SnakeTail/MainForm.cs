@@ -230,7 +230,7 @@ namespace SnakeTail
 
             if (!openedFile)
             {
-                MessageBox.Show("The file '" + filename + "'cannot be opened and will be removed from the Recent list(s)", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(this, "The file '" + filename + "'cannot be opened and will be removed from the Recent list(s)", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 _mruMenu.RemoveFile(number);
             }
         }
@@ -545,7 +545,7 @@ namespace SnakeTail
                     ex = ex.InnerException;
                     errorMsg += "\n" + ex.Message;
                 }
-                MessageBox.Show("Failed to open session xml file, please ensure it is valid file:\n\n   " + filepath + "\n\n" + errorMsg, "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(this, "Failed to open session xml file, please ensure it is valid file:\n\n   " + filepath + "\n\n" + errorMsg, "", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
             }
         }
@@ -853,7 +853,7 @@ namespace SnakeTail
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Failed to remove list of recently used files from registry.\n\n" + ex.Message, "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(this, "Failed to remove list of recently used files from registry.\n\n" + ex.Message, "", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             else
@@ -872,7 +872,7 @@ namespace SnakeTail
             }
             catch(Exception ex)
             {
-                MessageBox.Show("Failed to save list of recently used files to registry.\n\n" + ex.Message, "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(this, "Failed to save list of recently used files to registry.\n\n" + ex.Message, "", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

@@ -122,7 +122,7 @@ namespace SnakeTail
                 }
                 catch (System.ArgumentException exception)
                 {
-                    MessageBox.Show(String.Format("Failed to parse regular expression:\n\n{0} ({1})", exception.Message, exception.GetType().ToString()), "Invalid regular expression", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(this, String.Format("Failed to parse regular expression:\n\n{0} ({1})", exception.Message, exception.GetType().ToString()), "Invalid regular expression", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
             }

@@ -91,7 +91,7 @@ namespace SnakeTail
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Failed to send report");
+                MessageBox.Show(this, ex.Message, "Failed to send report");
             }
             DialogResult = DialogResult.Ignore;
             Close();
@@ -117,7 +117,7 @@ namespace SnakeTail
                     ns.Add("", "");
                     System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(reportItem.GetType());
                     x.Serialize(stringWriter, reportItem, ns);
-                    MessageBox.Show(stringWriter.ToString(), reportItem.GetType().ToString());
+                    MessageBox.Show(this, stringWriter.ToString(), reportItem.GetType().ToString());
                 }
             }
         }

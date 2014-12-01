@@ -104,7 +104,7 @@ namespace SnakeTail
             }
             catch (System.Security.SecurityException ex)
             {
-                MessageBox.Show("Access denied when opening log: " + tailConfig.FilePath + "\n\n" + ex.Message);
+                MessageBox.Show(this, "Access denied when opening log: " + tailConfig.FilePath + "\n\n" + ex.Message);
                 Close();
                 return;
             }
@@ -1245,7 +1245,7 @@ namespace SnakeTail
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to copy to clipboard, maybe another application is locking the clipboard.\n\n" + ex.Message);
+                MessageBox.Show(this, "Failed to copy to clipboard, maybe another application is locking the clipboard.\n\n" + ex.Message);
             }
         }
 
