@@ -89,7 +89,7 @@ namespace SnakeTail
             this.labelProductName.MaximumSize = new System.Drawing.Size(0, 17);
             this.labelProductName.Name = "labelProductName";
             this.labelProductName.Size = new System.Drawing.Size(342, 17);
-            this.labelProductName.TabIndex = 19;
+            this.labelProductName.TabIndex = 2;
             this.labelProductName.Text = "Product Name";
             this.labelProductName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -101,7 +101,7 @@ namespace SnakeTail
             this.labelVersion.MaximumSize = new System.Drawing.Size(0, 17);
             this.labelVersion.Name = "labelVersion";
             this.labelVersion.Size = new System.Drawing.Size(342, 17);
-            this.labelVersion.TabIndex = 0;
+            this.labelVersion.TabIndex = 3;
             this.labelVersion.Text = "Version";
             this.labelVersion.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -113,7 +113,7 @@ namespace SnakeTail
             this.labelCopyright.MaximumSize = new System.Drawing.Size(0, 17);
             this.labelCopyright.Name = "labelCopyright";
             this.labelCopyright.Size = new System.Drawing.Size(342, 17);
-            this.labelCopyright.TabIndex = 21;
+            this.labelCopyright.TabIndex = 4;
             this.labelCopyright.Text = "Copyright";
             this.labelCopyright.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -125,7 +125,7 @@ namespace SnakeTail
             this.labelCompanyName.MaximumSize = new System.Drawing.Size(0, 17);
             this.labelCompanyName.Name = "labelCompanyName";
             this.labelCompanyName.Size = new System.Drawing.Size(342, 17);
-            this.labelCompanyName.TabIndex = 22;
+            this.labelCompanyName.TabIndex = 5;
             this.labelCompanyName.TabStop = true;
             this.labelCompanyName.Text = "Company Name";
             this.labelCompanyName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -141,7 +141,7 @@ namespace SnakeTail
             this.textBoxDescription.ReadOnly = true;
             this.textBoxDescription.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.textBoxDescription.Size = new System.Drawing.Size(342, 60);
-            this.textBoxDescription.TabIndex = 23;
+            this.textBoxDescription.TabIndex = 6;
             this.textBoxDescription.TabStop = false;
             this.textBoxDescription.Text = "Description";
             // 
@@ -155,7 +155,7 @@ namespace SnakeTail
             this.tableLayoutPanel.SetRowSpan(this.logoPictureBox, 2);
             this.logoPictureBox.Size = new System.Drawing.Size(55, 48);
             this.logoPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.logoPictureBox.TabIndex = 12;
+            this.logoPictureBox.TabIndex = 7;
             this.logoPictureBox.TabStop = false;
             // 
             // okButton
@@ -165,7 +165,7 @@ namespace SnakeTail
             this.okButton.Location = new System.Drawing.Point(334, 186);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 21);
-            this.okButton.TabIndex = 24;
+            this.okButton.TabIndex = 1;
             this.okButton.Text = "&OK";
             // 
             // notifyIcon1
