@@ -165,6 +165,7 @@ namespace SnakeTail
             this._shortcutEdt.Size = new System.Drawing.Size(130, 20);
             this._shortcutEdt.TabIndex = 7;
             this._shortcutEdt.KeyDown += new System.Windows.Forms.KeyEventHandler(this._shortcutEdt_KeyDown);
+            this._shortcutEdt.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this._shortcutEdt_KeyPress);
             // 
             // _cancelBtn
             // 
