@@ -230,7 +230,7 @@ namespace SnakeTail
             // 
             this._configTextToolStripMenuItem.Name = "_configTextToolStripMenuItem";
             this._configTextToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
-            this._configTextToolStripMenuItem.Text = "View Options...";
+            this._configTextToolStripMenuItem.Text = "View &Options...";
             this._configTextToolStripMenuItem.Click += new System.EventHandler(this._configTextToolStripMenuItem_Click);
             // 
             // _switchModeToolStripMenuItem

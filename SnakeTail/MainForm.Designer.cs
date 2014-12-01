@@ -149,35 +149,35 @@ namespace SnakeTail
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-            this.openToolStripMenuItem.Text = "Open File...";
+            this.openToolStripMenuItem.Text = "Open &File...";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // openEventLogToolStripMenuItem
             // 
             this.openEventLogToolStripMenuItem.Name = "openEventLogToolStripMenuItem";
             this.openEventLogToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-            this.openEventLogToolStripMenuItem.Text = "Open EventLog...";
+            this.openEventLogToolStripMenuItem.Text = "Open &EventLog...";
             this.openEventLogToolStripMenuItem.Click += new System.EventHandler(this.openEventLogToolStripMenuItem_Click);
             // 
             // loadSessionToolStripMenuItem
             // 
             this.loadSessionToolStripMenuItem.Name = "loadSessionToolStripMenuItem";
             this.loadSessionToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-            this.loadSessionToolStripMenuItem.Text = "Open Session...";
+            this.loadSessionToolStripMenuItem.Text = "&Open Session...";
             this.loadSessionToolStripMenuItem.Click += new System.EventHandler(this.loadSessionToolStripMenuItem_Click);
             // 
             // saveSessionToolStripMenuItem
             // 
             this.saveSessionToolStripMenuItem.Name = "saveSessionToolStripMenuItem";
             this.saveSessionToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-            this.saveSessionToolStripMenuItem.Text = "Save Session...";
+            this.saveSessionToolStripMenuItem.Text = "&Save Session...";
             this.saveSessionToolStripMenuItem.Click += new System.EventHandler(this.saveSessionToolStripMenuItem_Click);
             // 
             // closeSessionToolStripMenuItem
             // 
             this.closeSessionToolStripMenuItem.Name = "closeSessionToolStripMenuItem";
             this.closeSessionToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-            this.closeSessionToolStripMenuItem.Text = "Close Session";
+            this.closeSessionToolStripMenuItem.Text = "&Close Session";
             this.closeSessionToolStripMenuItem.Click += new System.EventHandler(this.closeAllToolStripMenuItem_Click);
             // 
             // toolStripSeparator5
@@ -194,7 +194,7 @@ namespace SnakeTail
             this.saveRecentFilesToRegistryToolStripMenuItem});
             this.recentFilesToolStripMenuItem.Name = "recentFilesToolStripMenuItem";
             this.recentFilesToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-            this.recentFilesToolStripMenuItem.Text = "Recent Files";
+            this.recentFilesToolStripMenuItem.Text = "&Recent Files";
             // 
             // recentFile1ToolStripMenuItem
             // 

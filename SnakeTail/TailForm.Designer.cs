@@ -267,7 +267,7 @@ namespace SnakeTail
             // 
             this.configureViewToolStripMenuItem.Name = "configureViewToolStripMenuItem";
             this.configureViewToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
-            this.configureViewToolStripMenuItem.Text = "View Options...";
+            this.configureViewToolStripMenuItem.Text = "View &Options...";
             this.configureViewToolStripMenuItem.Click += new System.EventHandler(this.configureViewToolStripMenuItem_Click);
             // 
             // switchModeToolStripMenuItem
@@ -324,7 +324,7 @@ namespace SnakeTail
             this.clearBookmarksToolStripMenuItem});
             this.bookmarksToolStripMenuItem.Name = "bookmarksToolStripMenuItem";
             this.bookmarksToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
-            this.bookmarksToolStripMenuItem.Text = "Bookmarks";
+            this.bookmarksToolStripMenuItem.Text = "&Bookmarks";
             // 
             // toggleBookmarkToolStripMenuItem
             // 
