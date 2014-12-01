@@ -145,7 +145,7 @@ namespace SnakeTail
             }
             catch (System.ArgumentException ex)
             {
-                MessageBox.Show(String.Format("Failed to open file:\n\n{0}\n\nError:{1}", tailConfig.FilePath, ex.Message), "Invalid filename", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show(this, String.Format("Failed to open file:\n\n{0}\n\nError:{1}", tailConfig.FilePath, ex.Message), "Invalid filename", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 Close();
                 return;
             }
@@ -234,7 +234,7 @@ namespace SnakeTail
                 _logTailStream = new LogFileStream(configPath, tailConfig.FilePath, fileEncoding, tailConfig.FileCheckInterval, tailConfig.FileCheckPattern);
                 if (_logTailStream.Length > 500 * 1024 * 1024)
                 {
-                    if (MessageBox.Show(String.Format("The file is very large, sure you want to open it?\n\nFile Name: {0}\nFile Size: {1} Megabytes", _logTailStream.FilePath, _logTailStream.Length / 1024 / 1024), "Large file detected", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                    if (MessageBox.Show(this, String.Format("The file is very large, sure you want to open it?\n\nFile Name: {0}\nFile Size: {1} Megabytes", _logTailStream.FilePath, _logTailStream.Length / 1024 / 1024), "Large file detected", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
                     {
                         Close();
                         return;
@@ -300,7 +300,7 @@ namespace SnakeTail
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Failed to load icon\n\n   " + formIconFilePathAbsolute + "\n\n" + ex.Message, null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(this, "Failed to load icon\n\n   " + formIconFilePathAbsolute + "\n\n" + ex.Message, null, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
 
@@ -512,7 +512,7 @@ namespace SnakeTail
             }
             catch(Exception ex)
             {
-                MessageBox.Show("Failed to copy to clipboard, maybe another application is locking the clipboard.\n\n" + ex.Message);
+                MessageBox.Show(this, "Failed to copy to clipboard, maybe another application is locking the clipboard.\n\n" + ex.Message);
             }
         }
 
@@ -1098,7 +1098,7 @@ namespace SnakeTail
                 }
                 catch (ApplicationException ex)
                 {
-                    MessageBox.Show(ex.Message);
+                    MessageBox.Show(this, ex.Message);
                 }
             }
         }
@@ -1201,7 +1201,7 @@ namespace SnakeTail
             catch (Exception ex)
             {
                 SetStatusBar(null);
-                MessageBox.Show("Start service failed: " + ex.Message);
+                MessageBox.Show(this, "Start service failed: " + ex.Message);
             }
         }
 
@@ -1227,7 +1227,7 @@ namespace SnakeTail
             catch (Exception ex)
             {
                 SetStatusBar(null);
-                MessageBox.Show("Stop service failed: " + ex.Message);
+                MessageBox.Show(this, "Stop service failed: " + ex.Message);
             }
         }
 
@@ -1251,7 +1251,7 @@ namespace SnakeTail
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("External Tool '" + toolConfig.Name + "' failed: " + ex.Message);
+                        MessageBox.Show(this, "External Tool '" + toolConfig.Name + "' failed: " + ex.Message);
                     }
                 }
             }
@@ -1307,7 +1307,7 @@ namespace SnakeTail
             catch (Exception ex)
             {
                 SetStatusBar(null);
-                MessageBox.Show("Pause service failed: " + ex.Message);
+                MessageBox.Show(this, "Pause service failed: " + ex.Message);
             }
         }
 
@@ -1325,7 +1325,7 @@ namespace SnakeTail
             catch (Exception ex)
             {
                 SetStatusBar(null);
-                MessageBox.Show("Continue service failed: " + ex.Message);
+                MessageBox.Show(this, "Continue service failed: " + ex.Message);
             }
         }
 
@@ -1605,7 +1605,7 @@ namespace SnakeTail
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to copy to clipboard, maybe another application is locking the clipboard.\n\n" + ex.Message);
+                MessageBox.Show(this, "Failed to copy to clipboard, maybe another application is locking the clipboard.\n\n" + ex.Message);
             }
         }
     }
