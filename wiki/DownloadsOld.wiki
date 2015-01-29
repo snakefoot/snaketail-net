@@ -1,4 +1,5 @@
 #summary Downloads links to previous releases
+#labels Restrict-AddWikiComment-Commit
 
 = Download Old Releases =
 
