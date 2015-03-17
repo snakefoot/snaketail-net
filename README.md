@@ -1,5 +1,5 @@
 # snaketail-net
-Tail utility for text log files and Windows EventLog
+Tail utility for monitoring text log files and Windows EventLog
 
 - Monitor "large" text log files
 - Monitor Windows Event Logs (Without needing administrator rights)
