@@ -11,7 +11,7 @@ Tail utility for monitoring text log files and Windows EventLog
 - Configure external tools and bind custom shortcut key (Trigger execute on highlight)
 - Tails circular logs where the log file is periodically truncated/renamed
 - Tails log directory where the latest log file is displayed (Includes wildcards)
-- Search in the entire text log file (or EventLog?)
+- Search in the entire text log file (or Windows EventLog)
 - Highlight window tabs using icons, when file changes are detected
 - Tail new log files with a simple drag drop from Windows Explorer
 - Filtering of Windows Event Logs using regular expressions
