@@ -513,15 +513,28 @@ namespace SnakeTail
             }
 
             XmlSerializer serializer = new XmlSerializer(typeof(TailConfig));
-            using (XmlTextWriter writer = new XmlTextWriter(filepath, Encoding.UTF8))
+            try
             {
-                writer.Formatting = Formatting.Indented;
-                XmlSerializerNamespaces xmlnsEmpty = new XmlSerializerNamespaces();
-                xmlnsEmpty.Add("", "");
-                serializer.Serialize(writer, tailConfig, xmlnsEmpty);
-            }
+                using (XmlTextWriter writer = new XmlTextWriter(filepath, Encoding.UTF8))
+                {
+                    writer.Formatting = Formatting.Indented;
+                    XmlSerializerNamespaces xmlnsEmpty = new XmlSerializerNamespaces();
+                    xmlnsEmpty.Add("", "");
+                    serializer.Serialize(writer, tailConfig, xmlnsEmpty);
+                }
 
-            _defaultTailConfig = null;  // Force reload incase we saved a new default config
+                _defaultTailConfig = null;  // Force reload incase we saved a new default config
+            }
+            catch(System.Exception ex)
+            {
+                string errorMsg = ex.Message;
+                while (ex.InnerException != null)
+                {
+                    ex = ex.InnerException;
+                    errorMsg += "\n" + ex.Message;
+                }
+                MessageBox.Show(this, "Failed to save session xml file, please ensure it is valid location:\n\n   " + filepath + "\n\n" + errorMsg, "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private TailConfig LoadSessionFile(string filepath)
