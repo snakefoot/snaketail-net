@@ -363,6 +363,12 @@ namespace SnakeTail
                 _lastFileCheckError = "Read access to the file is denied";
                 return false;
             }
+            catch (OperationCanceledException)
+            {
+                CloseFile(true);
+                _lastFileCheckError = "Read file operation was aborted. File is currently not available.";
+                return false;
+            }
             catch (System.IO.IOException ex)
             {
                 CloseFile(true);
