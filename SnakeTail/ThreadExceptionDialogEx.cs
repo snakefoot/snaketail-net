@@ -432,9 +432,10 @@ namespace SnakeTail
             }
 
             ZipStore.Close();
+            ZipStream.Position = 0;
 
             // Upload File
-            HttpUploadFile(HttpUrl, ZipStream.ToArray(), FileParamName, FileName, "application/x-zip-compressed", HttpParams);
+            HttpUploadFile(HttpUrl, ZipStream, FileParamName, FileName, "application/x-zip-compressed", HttpParams);
         }
 
         protected virtual void Dispose(bool dispose)
@@ -455,7 +456,7 @@ namespace SnakeTail
         }
 
         // Credits Cristian Romanescu @ http://stackoverflow.com/questions/566462/upload-files-with-httpwebrequest-multipart-form-data
-        static void HttpUploadFile(string url, byte[] fileContents, string fileParam, string fileName, string contentType, System.Collections.Specialized.NameValueCollection nvc)
+        static void HttpUploadFile(string url, System.IO.Stream fileStream, string fileParam, string fileName, string contentType, System.Collections.Specialized.NameValueCollection nvc)
         {
             string boundary = "---------------------------" + DateTime.Now.Ticks.ToString("x");
             byte[] boundarybytes = System.Text.Encoding.ASCII.GetBytes("\r\n--" + boundary + "\r\n");
@@ -472,24 +473,40 @@ namespace SnakeTail
 
             System.IO.Stream rs = wr.GetRequestStream();
 
-            string formdataTemplate = "Content-Disposition: form-data; name=\"{0}\"\r\n\r\n{1}";
-            foreach (string key in nvc.Keys)
             {
-                rs.Write(boundarybytes, 0, boundarybytes.Length);
-                string formitem = string.Format(formdataTemplate, key, nvc[key]);
-                byte[] formitembytes = System.Text.Encoding.UTF8.GetBytes(formitem);
-                rs.Write(formitembytes, 0, formitembytes.Length);
+                string formdataTemplate = "Content-Disposition: form-data; name=\"{0}\"\r\n\r\n";
+                foreach (string key in nvc.Keys)
+                {
+                    // Parameter Header (+ boundary)
+                    rs.Write(boundarybytes, 0, boundarybytes.Length);
+                    string header = string.Format(formdataTemplate, key);
+                    byte[] headerbytes = System.Text.Encoding.UTF8.GetBytes(header);
+                    rs.Write(headerbytes, 0, headerbytes.Length);
+
+                    // Parameter Content
+                    byte[] buffer = System.Text.Encoding.UTF8.GetBytes(nvc[key].ToString());
+                    rs.Write(buffer, 0, buffer.Length);
+                }
             }
-            rs.Write(boundarybytes, 0, boundarybytes.Length);
+            {
+                // File Header (+ boundary)
+                rs.Write(boundarybytes, 0, boundarybytes.Length);
+                string headerTemplate = "Content-Disposition: form-data; name=\"{0}\"; filename=\"{1}\"\r\nContent-Type: {2}\r\n\r\n";
+                string header = string.Format(headerTemplate, fileParam, fileName, contentType);
+                byte[] headerbytes = System.Text.Encoding.UTF8.GetBytes(header);
+                rs.Write(headerbytes, 0, headerbytes.Length);
 
-            string headerTemplate = "Content-Disposition: form-data; name=\"{0}\"; filename=\"{1}\"\r\nContent-Type: {2}\r\n\r\n";
-            string header = string.Format(headerTemplate, fileParam, fileName, contentType);
-            byte[] headerbytes = System.Text.Encoding.UTF8.GetBytes(header);
-            rs.Write(headerbytes, 0, headerbytes.Length);
-            rs.Write(fileContents, 0, fileContents.Length);
-
-            byte[] trailer = System.Text.Encoding.ASCII.GetBytes("\r\n--" + boundary + "--\r\n");
-            rs.Write(trailer, 0, trailer.Length);
+                // File Content
+                byte[] buffer = new byte[4096];
+                int bytesRead = 0;
+                while ((bytesRead = fileStream.Read(buffer, 0, buffer.Length)) != 0)
+                    rs.Write(buffer, 0, bytesRead);
+            }
+            {
+                // WebRequest Trailer
+                byte[] trailer = System.Text.Encoding.ASCII.GetBytes("\r\n--" + boundary + "--\r\n");
+                rs.Write(trailer, 0, trailer.Length);
+            }
             rs.Close();
 
             try
