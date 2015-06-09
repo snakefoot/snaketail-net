@@ -299,7 +299,12 @@ namespace SnakeTail
                 }
                 catch (System.Security.SecurityException)
                 {
-                    _lastFileCheckError = "No permission to list files using matching pattern";
+                    _lastFileCheckError = "No permission to list folder contents";
+                    return false;
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    _lastFileCheckError = "Access to the directory is denied";
                     return false;
                 }
                 catch (IOException ex)
@@ -318,6 +323,11 @@ namespace SnakeTail
                 _lastFileCheckError = "Invalid argument for opening file - " + ex.Message;
                 return false;
             }
+            catch (DirectoryNotFoundException)
+            {
+                _lastFileCheckError = "Directory not found";
+                return false;
+            }
             catch (System.Security.SecurityException)
             {
                 _lastFileCheckError = "No permission to open the file";
@@ -326,11 +336,6 @@ namespace SnakeTail
             catch (UnauthorizedAccessException)
             {
                 _lastFileCheckError = "Access to the file is denied";
-                return false;
-            }
-            catch (DirectoryNotFoundException)
-            {
-                _lastFileCheckError = "Directory not found";
                 return false;
             }
             catch (FileNotFoundException)
