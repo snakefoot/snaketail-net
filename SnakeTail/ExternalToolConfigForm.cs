@@ -23,7 +23,7 @@ using System.Windows.Forms;
 
 namespace SnakeTail
 {
-    public partial class ExternalToolConfigForm : Form
+    partial class ExternalToolConfigForm : Form
     {
         public ExternalToolConfig ExternalToolConfig { get; private set; }
 

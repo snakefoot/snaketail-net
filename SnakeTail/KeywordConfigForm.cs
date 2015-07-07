@@ -23,7 +23,7 @@ using System.Windows.Forms;
 
 namespace SnakeTail
 {
-    public partial class KeywordConfigForm : Form
+    partial class KeywordConfigForm : Form
     {
         public TailKeywordConfig TailKeywordConfig { get; private set; }
         private TailFileConfig _tailFileConfig;

@@ -741,12 +741,12 @@ namespace System.IO.Compression
             if (!dispose)
                 return;
 
-            this.Dispose();
+            this.Close();
         }
 
         public void Dispose()
         {
-            this.Close();
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
         #endregion

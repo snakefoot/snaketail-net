@@ -23,7 +23,7 @@ using System.Windows.Forms;
 
 namespace SnakeTail
 {
-    public partial class TailConfigApplyAllForm : Form
+    partial class TailConfigApplyAllForm : Form
     {
         public TailConfigApplyAllForm()
         {

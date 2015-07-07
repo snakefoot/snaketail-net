@@ -27,7 +27,7 @@ using System.Xml;
 
 namespace SnakeTail
 {
-    public partial class ThreadExceptionDialogEx : Form
+    partial class ThreadExceptionDialogEx : Form
     {
         public CrashReportDetails CrashReport { get; set; }
 
@@ -270,7 +270,7 @@ namespace SnakeTail
         }
     }
 
-    public class CheckForUpdates
+    class CheckForUpdates
     {
         public string PadUrl { get; set; }
         public bool PromptAlways { get; set; }

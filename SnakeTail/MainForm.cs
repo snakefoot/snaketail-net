@@ -26,7 +26,7 @@ using System.Xml.Serialization;
 
 namespace SnakeTail
 {
-    public partial class MainForm : Form
+    partial class MainForm : Form
     {
         private static MainForm _instance = null;
         public static MainForm Instance { get { return _instance; } }

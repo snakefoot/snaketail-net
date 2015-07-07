@@ -26,7 +26,7 @@ using System.Diagnostics;
 
 namespace SnakeTail
 {
-    public partial class TailForm : Form, ITailForm
+    partial class TailForm : Form, ITailForm
     {
         // Todo Implement inline selection when owner-drawn
         // Todo Implement inline keyword highlight when owner-drawn

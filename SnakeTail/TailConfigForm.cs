@@ -23,7 +23,7 @@ using System.Windows.Forms;
 
 namespace SnakeTail
 {
-    public partial class TailConfigForm : Form
+    partial class TailConfigForm : Form
     {
         public TailFileConfig TailFileConfig { get; private set; }
         bool _displayFileTab;

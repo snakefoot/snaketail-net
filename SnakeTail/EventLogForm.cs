@@ -26,7 +26,7 @@ using System.Windows.Forms;
 
 namespace SnakeTail
 {
-    public partial class EventLogForm : Form, ITailForm
+    partial class EventLogForm : Form, ITailForm
     {
         EventLog _eventLog;
         List<List<Regex>> _columnFilters = new List<List<Regex>>();

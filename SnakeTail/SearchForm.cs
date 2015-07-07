@@ -24,7 +24,7 @@ using System.Windows.Forms;
 
 namespace SnakeTail
 {
-    public partial class SearchForm : Form
+    partial class SearchForm : Form
     {
         private static SearchForm _instance = null;
         public static SearchForm Instance
