@@ -1430,7 +1430,8 @@ namespace SnakeTail
                         disposeReader.Dispose();
                 }
             }
-            else
+            
+            if (eventMessage == null)
             {
                 eventMessage = GetEventLogItemMessage(eventLog.MachineName, eventLog.LogDisplayName, (uint)eventRecordId);
             }
@@ -1538,21 +1539,21 @@ namespace SnakeTail
             if (eventRecordObj == null)
                 return null;
 
-            object eventProperties = _eventLogRecordType.InvokeMember("Properties", System.Reflection.BindingFlags.GetProperty, null, eventRecordObj, null);
-            System.Collections.IEnumerable eventPropertiesList = eventProperties as System.Collections.IEnumerable;
-
-            List<string> eventPropertyValues = new List<string>();
-            foreach (object property in eventPropertiesList)
-            {
-                string propertyValue = _eventLogPropertyType.InvokeMember("Value", System.Reflection.BindingFlags.GetProperty, null, property, null) as string;
-                if (propertyValue != null)
-                    eventPropertyValues.Add(propertyValue);
-            }
-
             System.Globalization.CultureInfo backupCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
 
             try
             {
+                object eventProperties = _eventLogRecordType.InvokeMember("Properties", System.Reflection.BindingFlags.GetProperty, null, eventRecordObj, null);
+                System.Collections.IEnumerable eventPropertiesList = eventProperties as System.Collections.IEnumerable;
+
+                List<string> eventPropertyValues = new List<string>();
+                foreach (object property in eventPropertiesList)
+                {
+                    string propertyValue = _eventLogPropertyType.InvokeMember("Value", System.Reflection.BindingFlags.GetProperty, null, property, null) as string;
+                    if (propertyValue != null)
+                        eventPropertyValues.Add(propertyValue);
+                }
+
                 System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
                 object eventMessageStr = _eventLogRecordType.InvokeMember("FormatDescription", System.Reflection.BindingFlags.InvokeMethod, null, eventRecordObj, null, new System.Globalization.CultureInfo("en-US"));
                 if (eventMessageStr != null)
@@ -1562,6 +1563,12 @@ namespace SnakeTail
                     return eventPropertyValues[0];
                 else
                     return null;
+            }
+            catch (System.Reflection.TargetInvocationException ex)
+            {
+                if (ex.InnerException != null && ex.InnerException.GetType().FullName == "System.Diagnostics.Eventing.Reader.EventLogException")
+                    return null;    // Failed to Format as string
+                throw;
             }
             finally
             {
