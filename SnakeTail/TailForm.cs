@@ -23,6 +23,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Collections;
 using System.Diagnostics;
+using System.Linq;
 
 namespace SnakeTail
 {
@@ -585,12 +586,12 @@ namespace SnakeTail
             return -1;
         }
 
-        public bool SearchForText(string searchText, bool matchCase, bool searchForward, bool lineHighlights)
+        public bool SearchForText(string searchText, bool matchCase, bool searchForward, bool lineHighlights, bool wrapAround)
         {
             if (_tailListView.VirtualListSize == 0)
                 return false;
 
-            if (lineHighlights && (_keywordHighlight == null || _keywordHighlight.Count == 0) && _bookmarks.Count==0)
+            if (lineHighlights && (_keywordHighlight == null || !_keywordHighlight.Any()) && !_bookmarks.Any())
                 return false;
 
             // Use selection if it is below top-index
@@ -605,95 +606,118 @@ namespace SnakeTail
             {
                 // First use the visual cache, when that have failed, then revert to search from the beginning
                 // and find the last match
-                startIndex -= 1;
-                for (int i = startIndex; i >= 0; --i)
+                var found = SearchForTextBackward(searchText, matchCase, lineHighlights, startIndex - 1, 0);
+                //Retry if not found
+                if (!found && wrapAround)
                 {
-                    if (i % _logFileCache.Items.Count == 0)
-                        SetStatusBar("Searching...", _tailListView.VirtualListSize - i, _tailListView.VirtualListSize);
+                    found = SearchForTextBackward(searchText, matchCase, lineHighlights, _tailListView.VirtualListSize - 1, startIndex);
+                }
 
-                    string lineText;
-                    ListViewItem lvi = _logFileCache.LookupCache(i);
-                    if (lvi != null)
-                        lineText = lvi.Text;
-                    else
-                    {
-                        LogFileCache searchFileCache = null;
-                        int matchFound = -1;
-                        int lastMatchFound = -1;
-                        startIndex = 0;
-                        int endIndex = i + 1;
-                        do
-                        {
-                            matchFound = SearchForTextForward(searchText, matchCase, lineHighlights, startIndex, endIndex, ref searchFileCache);
-                            if (matchFound != -1)
-                            {
-                                lastMatchFound = matchFound;
-                                startIndex = matchFound + 1;
-                                _tailListView.SelectedIndices.Clear();
-                                if (searchFileCache != null)
-                                {
-                                    _logFileCache = searchFileCache;    // Store the cache of the last match
-                                    searchFileCache = new LogFileCache(_logFileCache.Items.Count);
-                                    searchFileCache.Items = _logFileCache.Items.GetRange(0, _logFileCache.Items.Count);
-                                    searchFileCache.FirstIndex = _logFileCache.FirstIndex;
-                                }
-                            }
-                        } while (matchFound != -1);
+                if (!found)
+                {
+                    SetStatusBar(null);
+                }
+                return found;
+            }
+            else
+            {
+                LogFileCache searchFileCache = null;
+                int endIndex = _tailListView.VirtualListSize;
 
-                        if (lastMatchFound != -1)
-                        {
-                            SetStatusBar(null);
-                            _tailListView.SelectedIndices.Clear();
-                            _tailListView.EnsureVisible(lastMatchFound);
-                            _tailListView.SelectedIndices.Add(lastMatchFound);
-                            _tailListView.Items[lastMatchFound].Focused = true;
-                            return true;
-                        }
-                        else
-                        {
-                            SetStatusBar(null);
-                            return false;
-                        }
-                    }
+                int matchFound = SearchForTextForward(searchText, matchCase, lineHighlights, startIndex + 1, endIndex, ref searchFileCache);
+                //Retry if not found
+                if (wrapAround && matchFound == -1)
+                {
+                    matchFound = SearchForTextForward(searchText, matchCase, lineHighlights, 0 , startIndex + 1, ref searchFileCache);
+                }
 
-                    if (MatchTextSearch(i, lineText, searchText, matchCase, lineHighlights))
-                    {
-                        SetStatusBar(null);
-                        _tailListView.SelectedIndices.Clear();
-                        _tailListView.EnsureVisible(i);
-                        _tailListView.SelectedIndices.Add(i);
-                        _tailListView.Items[i].Focused = true;
-                        return true;
-                    }
+                if (matchFound != -1)
+                {
+                    if (searchFileCache != null)
+                        _logFileCache = searchFileCache;    // Swap cache before displaying search result
+                    
+                    SetMatchFound(matchFound);
+                    return true;
                 }
 
                 SetStatusBar(null);
                 return false;
             }
-            else
-            {
-                LogFileCache searchFileCache = null;
-                startIndex += 1;
-                int endIndex = _tailListView.VirtualListSize;
+        }
 
-                int matchFound = SearchForTextForward(searchText, matchCase, lineHighlights, startIndex, endIndex, ref searchFileCache);
-                if (matchFound != -1)
-                {
-                    SetStatusBar(null);
-                    _tailListView.SelectedIndices.Clear();  // Clear selection before changing cache to avoid cache miss
-                    if (searchFileCache != null)
-                        _logFileCache = searchFileCache;    // Swap cache before displaying search result
-                    _tailListView.EnsureVisible(matchFound);
-                    _tailListView.SelectedIndices.Add(matchFound);   // Set selection after having scrolled to avoid top-index cache miss
-                    _tailListView.Items[matchFound].Focused = true;
-                    return true;
-                }
+        private bool SearchForTextBackward(string searchText, bool matchCase, bool lineHighlights, int startIndex, int endIndexLoop)
+        {
+            for (int i = startIndex; i >= endIndexLoop; --i)
+            {
+                if (i%_logFileCache.Items.Count == 0)
+                    SetStatusBar("Searching...", _tailListView.VirtualListSize - i, _tailListView.VirtualListSize);
+
+                string lineText;
+                ListViewItem lvi = _logFileCache.LookupCache(i);
+                if (lvi != null)
+                    lineText = lvi.Text;
                 else
                 {
-                    SetStatusBar(null);
-                    return false;
+                    var lastMatchFound = SearchLastFoundOutCache(searchText, matchCase, lineHighlights, i);
+
+                    if (lastMatchFound != -1 && endIndexLoop <= lastMatchFound)
+                    {
+                        SetMatchFound(lastMatchFound);
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+
+                if (MatchTextSearch(i, lineText, searchText, matchCase, lineHighlights))
+                {
+                    SetMatchFound(i);
+                    return true;
                 }
             }
+            
+            return false;
+        }
+
+        private int SearchLastFoundOutCache(string searchText, bool matchCase, bool lineHighlights, int i)
+        {
+            LogFileCache searchFileCache = null;
+            int matchFound = -1;
+            int lastMatchFound = -1;
+            var startIndex = 0;
+            int endIndex = i + 1;
+            do
+            {
+                matchFound = SearchForTextForward(searchText, matchCase, lineHighlights, startIndex, endIndex,
+                    ref searchFileCache);
+                if (matchFound != -1)
+                {
+                    lastMatchFound = matchFound;
+                    startIndex = matchFound + 1;
+                    _tailListView.SelectedIndices.Clear();
+                    if (searchFileCache != null)
+                    {
+                        _logFileCache = searchFileCache; // Store the cache of the last match
+                        searchFileCache = new LogFileCache(_logFileCache.Items.Count)
+                        {
+                            Items = _logFileCache.Items.GetRange(0, _logFileCache.Items.Count),
+                            FirstIndex = _logFileCache.FirstIndex
+                        };
+                    }
+                }
+            } while (matchFound != -1);
+            return lastMatchFound;
+        }
+
+        private void SetMatchFound(int i)
+        {
+            SetStatusBar(null);
+            _tailListView.SelectedIndices.Clear();
+            _tailListView.EnsureVisible(i);
+            _tailListView.SelectedIndices.Add(i);
+            _tailListView.Items[i].Focused = true;
         }
 
         private void _tailListView_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
@@ -1131,23 +1155,23 @@ namespace SnakeTail
         {
             if (keyData == (Keys.Shift | Keys.F3))
             {
-                SearchForm.Instance.SearchAgain(this, false, false);
+                SearchForm.Instance.SearchAgain(this, false, false, false);
                 return true;
             }
             else if (keyData == Keys.F3)
             {
-                SearchForm.Instance.SearchAgain(this, true, false);
+                SearchForm.Instance.SearchAgain(this, true, false, false);
                 return true;
             }
 
             if (keyData == (Keys.Alt | Keys.Up))
             {
-                SearchForm.Instance.SearchAgain(this, false, true);
+                SearchForm.Instance.SearchAgain(this, false, true, false);
                 return true;
             }
             else if (keyData == (Keys.Alt | Keys.Down))
             {
-                SearchForm.Instance.SearchAgain(this, true, true);
+                SearchForm.Instance.SearchAgain(this, true, true, false);
                 return true;
             }
 
@@ -1404,7 +1428,7 @@ namespace SnakeTail
         {
             if (SearchForm.Instance.Visible)
             {
-                SearchForm.Instance.SearchAgain(this, true, false);
+                SearchForm.Instance.SearchAgain(this, true, false, false);
             }
         }
 
@@ -1462,12 +1486,12 @@ namespace SnakeTail
 
         private void gotoPreviousHighlightToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SearchForm.Instance.SearchAgain(this, false, true);
+            SearchForm.Instance.SearchAgain(this, false, true, false);
         }
 
         private void gotoNextHighlightToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SearchForm.Instance.SearchAgain(this, true, true);
+            SearchForm.Instance.SearchAgain(this, true, true, false);
         }
 
         private void pauseWindowToolStripMenuItem_Click(object sender, EventArgs e)

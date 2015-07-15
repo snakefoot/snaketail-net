@@ -359,7 +359,7 @@ namespace SnakeTail
             return null;    // Should never come here
         }
 
-        public bool SearchForText(string searchText, bool matchCase, bool searchForward, bool lineHighlights)
+        public bool SearchForText(string searchText, bool matchCase, bool searchForward, bool lineHighlights, bool wrapAround)
         {
             int listCount = -1;
 
@@ -1265,30 +1265,30 @@ namespace SnakeTail
 
         private void findNextToolStripMenuItem_Click(object sender, EventArgs e)
         {
-             SearchForm.Instance.SearchAgain(this, true, false);
+             SearchForm.Instance.SearchAgain(this, true, false, false);
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             if (keyData == (Keys.Shift | Keys.F3))
             {
-                SearchForm.Instance.SearchAgain(this, false, false);
+                SearchForm.Instance.SearchAgain(this, false, false, false);
                 return true;
             }
             else if (keyData == Keys.F3)
             {
-                SearchForm.Instance.SearchAgain(this, true, false);
+                SearchForm.Instance.SearchAgain(this, true, false, false);
                 return true;
             }
 
             if (keyData == (Keys.Alt | Keys.Up))
             {
-                SearchForm.Instance.SearchAgain(this, false, true);
+                SearchForm.Instance.SearchAgain(this, false, true, false);
                 return true;
             }
             else if (keyData == (Keys.Alt | Keys.Down))
             {
-                SearchForm.Instance.SearchAgain(this, true, true);
+                SearchForm.Instance.SearchAgain(this, true, true, false);
                 return true;
             }
 
@@ -1297,12 +1297,12 @@ namespace SnakeTail
 
         private void gotoPreviousHighlightToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SearchForm.Instance.SearchAgain(this, false, true);
+            SearchForm.Instance.SearchAgain(this, false, true, false);
         }
 
         private void gotoNextHighlightToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SearchForm.Instance.SearchAgain(this, true, true);
+            SearchForm.Instance.SearchAgain(this, true, true, false);
         }
     }
 

@@ -76,7 +76,7 @@ namespace SnakeTail
             _searchTextBox.Focus();
         }
 
-        public void SearchAgain(ITailForm activeTailForm, bool searchForward, bool keywordHighlights)
+        public void SearchAgain(ITailForm activeTailForm, bool searchForward, bool keywordHighlights, bool wrapAround)
         {
             if (activeTailForm != null)
             {
@@ -87,7 +87,7 @@ namespace SnakeTail
                 {
                     using (new HourGlass(activeTailForm.TailWindow))
                     {
-                        found = ActiveTailForm.SearchForText(_searchTextBox.Text, _matchCaseCheckBox.Checked, searchForward, keywordHighlights);
+                        found = ActiveTailForm.SearchForText(_searchTextBox.Text, _matchCaseCheckBox.Checked, searchForward, keywordHighlights, wrapAround);
                     }
                 }
                 if (!found)
@@ -116,7 +116,6 @@ namespace SnakeTail
             _findNextBtn.Enabled = false;
             MaximizeBox = false;
             MinimizeBox = false;
-            ControlBox = false;
             ShowInTaskbar = false;
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
         }
@@ -143,12 +142,12 @@ namespace SnakeTail
         {
             if (keyData == Keys.F3)
             {
-                SearchAgain(ActiveTailForm, !_upRadioBtn.Checked, false);
+                SearchAgain(ActiveTailForm, !_upRadioBtn.Checked, false, false);
                 return true;
             }
             if (keyData == (Keys.Shift | Keys.F3))
             {
-                SearchAgain(ActiveTailForm, _upRadioBtn.Checked, false);
+                SearchAgain(ActiveTailForm, _upRadioBtn.Checked, false, false);
                 return true;
             }
             return base.ProcessCmdKey(ref msg, keyData);
@@ -173,9 +172,9 @@ namespace SnakeTail
             if (ActiveTailForm != null)
             {
                 if ((Control.ModifierKeys & Keys.Shift) == Keys.None)
-                    SearchAgain(ActiveTailForm, !_upRadioBtn.Checked, false);
+                    SearchAgain(ActiveTailForm, !_upRadioBtn.Checked, false, _wrapArroundcheckBox.Checked);
                 else
-                    SearchAgain(ActiveTailForm, _upRadioBtn.Checked, false);
+                    SearchAgain(ActiveTailForm, _upRadioBtn.Checked, false, _wrapArroundcheckBox.Checked);
             }
         }
 
