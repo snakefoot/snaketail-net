@@ -23,7 +23,6 @@ using System.Windows.Forms;
 using System.IO;
 using System.Collections;
 using System.Diagnostics;
-using System.Linq;
 
 namespace SnakeTail
 {
@@ -591,7 +590,7 @@ namespace SnakeTail
             if (_tailListView.VirtualListSize == 0)
                 return false;
 
-            if (lineHighlights && (_keywordHighlight == null || !_keywordHighlight.Any()) && !_bookmarks.Any())
+            if (lineHighlights && (_keywordHighlight == null || _keywordHighlight.Count == 0) && _bookmarks.Count == 0)
                 return false;
 
             // Use selection if it is below top-index
