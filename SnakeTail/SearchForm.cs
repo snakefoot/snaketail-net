@@ -116,7 +116,6 @@ namespace SnakeTail
             _findNextBtn.Enabled = false;
             MaximizeBox = false;
             MinimizeBox = false;
-            ControlBox = false;
             ShowInTaskbar = false;
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
         }
