@@ -16,7 +16,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -175,6 +174,15 @@ namespace SnakeTail
             mdiChild.FormClosed += new FormClosedEventHandler(ActiveMdiChild_FormClosed);
             mdiChild.SizeChanged += new EventHandler(ActiveMdiChild_SizeChanged);
             mdiChild.Shown += new EventHandler(ActiveMdiChild_Shown);
+
+            //No MDIChildCloseAction so hooking this with an event here.
+            mdiChild.FormClosed += CloseMdiChild;
+            SetClosedItemToolStripMenuItem();
+        }
+
+        private void CloseMdiChild(object sender, FormClosedEventArgs e)
+        {
+            SetClosedItemToolStripMenuItem();
         }
 
         void ActiveMdiChild_Shown(object sender, EventArgs e)
@@ -305,7 +313,13 @@ namespace SnakeTail
                 ++filesOpened;
                 Application.DoEvents();
             }
+
             return filesOpened;
+        }
+
+        private void SetClosedItemToolStripMenuItem()
+        {
+            closeItemToolStripMenuItem.Enabled = _MDITabControl.TabCount > 0;
         }
 
         private void openEventLogToolStripMenuItem_Click(object sender, EventArgs e)
@@ -886,6 +900,14 @@ namespace SnakeTail
             catch(Exception ex)
             {
                 MessageBox.Show(this, "Failed to save list of recently used files to registry.\n\n" + ex.Message, "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void closeItemToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (this.ActiveMdiChild != null)
+            {
+                ActiveMdiChild.Close();
             }
         }
     }

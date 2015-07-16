@@ -51,6 +51,7 @@ namespace SnakeTail
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openEventLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.closeItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadSessionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveSessionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeSessionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -132,6 +133,7 @@ namespace SnakeTail
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openToolStripMenuItem,
             this.openEventLogToolStripMenuItem,
+            this.closeItemToolStripMenuItem,
             this.loadSessionToolStripMenuItem,
             this.saveSessionToolStripMenuItem,
             this.closeSessionToolStripMenuItem,
@@ -165,6 +167,15 @@ namespace SnakeTail
             this.loadSessionToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.loadSessionToolStripMenuItem.Text = "&Open Session...";
             this.loadSessionToolStripMenuItem.Click += new System.EventHandler(this.loadSessionToolStripMenuItem_Click);
+            // 
+            // closeItemToolStripMenuItem
+            //
+            this.closeItemToolStripMenuItem.Enabled = false;
+            this.closeItemToolStripMenuItem.Name = "closeItemToolStripMenuItem";
+            this.closeItemToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.W)));
+            this.closeItemToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.closeItemToolStripMenuItem.Text = "&Close";
+            this.closeItemToolStripMenuItem.Click += new System.EventHandler(this.closeItemToolStripMenuItem_Click);
             // 
             // saveSessionToolStripMenuItem
             // 
