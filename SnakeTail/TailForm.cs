@@ -16,12 +16,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
-using System.Collections;
 using System.Diagnostics;
 
 namespace SnakeTail
@@ -306,16 +304,13 @@ namespace SnakeTail
 
             UpdateFormTitle(true);
 
-            if (Visible)
+            if (Visible && _tailListView.VirtualListSize > 0)
             {
-                if (_tailListView.VirtualListSize > 0)
-                {
-                    _tailListView.EnsureVisible(_tailListView.VirtualListSize - 1);
-                    _tailListView.FocusedItem = _tailListView.Items[_tailListView.VirtualListSize - 1];
-                    _tailListView.SelectedIndices.Add(_tailListView.VirtualListSize - 1);
-                    _tailListView.Invalidate();
-                    _tailListView.Update();
-                }
+                _tailListView.EnsureVisible(_tailListView.VirtualListSize - 1);
+                _tailListView.FocusedItem = _tailListView.Items[_tailListView.VirtualListSize - 1];
+                _tailListView.SelectedIndices.Add(_tailListView.VirtualListSize - 1);
+                _tailListView.Invalidate();
+                _tailListView.Update();
             }
         }
 
@@ -344,6 +339,7 @@ namespace SnakeTail
                 return;
 
             string title = _formTitle;
+            StringBuilder sb = new StringBuilder(_formTitle);
 
             TabPage parentTab = this.Tag as TabPage;
             if (parentTab != null)
@@ -360,7 +356,7 @@ namespace SnakeTail
 
             if (_loghitCounter != -1)
             {
-                title += " Hits: " + _loghitCounter.ToString();
+                sb.AppendFormat(" Hits: {0:N}", _loghitCounter);
                 _loghitCounter = 0;
             }
 
@@ -372,24 +368,26 @@ namespace SnakeTail
                     Process process = _taskMonitor.Process;
                     if (process != null)
                     {
-                        title += " CPU: " + cpuUtilization.ToString("F0");
+                        sb.AppendFormat(" CPU: {0:F0}", cpuUtilization);
 
                         process.Refresh();
-                        title += " RAM: " + (process.PrivateMemorySize64 / (1024 * 1024)).ToString();
-                        title += _taskMonitor.ServiceRunning ? " (Started)" : " (Stopped)";
+                        sb.AppendFormat(" RAM: {0:N2}", (process.PrivateMemorySize64 / (1024 * 1024)));
+                        sb.AppendFormat(_taskMonitor.ServiceRunning ? " (Started)" : " (Stopped)");
                     }
                     else
                     {
-                        title += " (Stopped)";
+                        sb.AppendFormat(" (Stopped)");
                     }
                 }
                 catch (Exception ex)
                 {
-                    title += " (" + ex.Message + ")";
+                    sb.AppendFormat(" ({0})", ex.Message);
                 }
             }
 
             _lastFormTitleUpdate = DateTime.Now;
+
+            title = sb.ToString();
             if (Text != title)
                 Text = title;
         }
@@ -1278,9 +1276,9 @@ namespace SnakeTail
             fileParameters[ExternalTool.ParameterName.SessionName] = Path.GetFileNameWithoutExtension(fileParameters[ExternalTool.ParameterName.SessionPath]);
             fileParameters[ExternalTool.ParameterName.ViewName] = _formTitle;
             fileParameters[ExternalTool.ParameterName.ProgramDirectory] = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            fileParameters[ExternalTool.ParameterName.LineText] = line != null ? line : string.Empty;
+            fileParameters[ExternalTool.ParameterName.LineText] = line ?? string.Empty;
             fileParameters[ExternalTool.ParameterName.LineNumber] = lineNumber.HasValue ? lineNumber.Value.ToString() : string.Empty;
-            fileParameters[ExternalTool.ParameterName.KeywordText] = keywordMatch != null ? keywordMatch : string.Empty;
+            fileParameters[ExternalTool.ParameterName.KeywordText] = keywordMatch ?? string.Empty;
 
             ExternalTool tool = new ExternalTool(toolConfig, fileParameters);
             return tool;
