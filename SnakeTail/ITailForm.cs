@@ -23,7 +23,7 @@ namespace SnakeTail
     {
         Form TailWindow { get; }
 
-        bool SearchForText(string searchText, bool matchCase, bool searchForward, bool keywordHighlights);
+        bool SearchForText(string searchText, bool matchCase, bool searchForward, bool keywordHighlights, bool wrapAround);
 
         void SaveConfig(TailFileConfig config);
 

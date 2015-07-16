@@ -390,8 +390,8 @@ namespace SnakeTail
             }
 
             _lastFormTitleUpdate = DateTime.Now;
-			if (Text != title)
-	            Text = title;
+            if (Text != title)
+                Text = title;
         }
 
         public void SetStatusBar(string text)
@@ -432,7 +432,7 @@ namespace SnakeTail
             LogFileStream filestream = sender as LogFileStream;
             if (filestream != null)
             {
-                double position = filestream.Position / (double)filestream.Length*100;
+                double position = filestream.Position / (double)filestream.Length * 100;
                 SetStatusBar("Loading file...", (int)position, 100);
             }
             else
@@ -487,7 +487,7 @@ namespace SnakeTail
                 tailConfig.WindowSize = Size;
                 tailConfig.WindowPosition = DesktopLocation;
             }
-            
+
             if (_taskMonitor != null)
                 tailConfig.ServiceName = _taskMonitor.ServiceName;
             else
@@ -503,14 +503,14 @@ namespace SnakeTail
             foreach (int itemIndex in _tailListView.SelectedIndices)
             {
                 if (selection.Length > 0)
-                    selection.AppendLine();;
+                    selection.AppendLine();
                 selection.Append(_tailListView.Items[itemIndex].Text);
             }
             try
             {
                 ClipboardHelper.CopyToClipboard(selection.ToString());
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(this, "Failed to copy to clipboard, maybe another application is locking the clipboard.\n\n" + ex.Message);
             }
@@ -585,12 +585,12 @@ namespace SnakeTail
             return -1;
         }
 
-        public bool SearchForText(string searchText, bool matchCase, bool searchForward, bool lineHighlights)
+        public bool SearchForText(string searchText, bool matchCase, bool searchForward, bool lineHighlights, bool wrapAround)
         {
             if (_tailListView.VirtualListSize == 0)
                 return false;
 
-            if (lineHighlights && (_keywordHighlight == null || _keywordHighlight.Count == 0) && _bookmarks.Count==0)
+            if (lineHighlights && (_keywordHighlight == null || _keywordHighlight.Count == 0) && _bookmarks.Count == 0)
                 return false;
 
             // Use selection if it is below top-index
@@ -601,99 +601,107 @@ namespace SnakeTail
                     startIndex = _tailListView.SelectedIndices[0];
             }
 
+            int matchFound = -1;
             if (!searchForward)
             {
-                // First use the visual cache, when that have failed, then revert to search from the beginning
-                // and find the last match
-                startIndex -= 1;
-                for (int i = startIndex; i >= 0; --i)
+                matchFound = SearchForTextBackward(searchText, matchCase, lineHighlights, startIndex - 1, 0);
+                //Retry if not found
+                if (matchFound == -1 && wrapAround)
                 {
-                    if (i % _logFileCache.Items.Count == 0)
-                        SetStatusBar("Searching...", _tailListView.VirtualListSize - i, _tailListView.VirtualListSize);
-
-                    string lineText;
-                    ListViewItem lvi = _logFileCache.LookupCache(i);
-                    if (lvi != null)
-                        lineText = lvi.Text;
-                    else
-                    {
-                        LogFileCache searchFileCache = null;
-                        int matchFound = -1;
-                        int lastMatchFound = -1;
-                        startIndex = 0;
-                        int endIndex = i + 1;
-                        do
-                        {
-                            matchFound = SearchForTextForward(searchText, matchCase, lineHighlights, startIndex, endIndex, ref searchFileCache);
-                            if (matchFound != -1)
-                            {
-                                lastMatchFound = matchFound;
-                                startIndex = matchFound + 1;
-                                _tailListView.SelectedIndices.Clear();
-                                if (searchFileCache != null)
-                                {
-                                    _logFileCache = searchFileCache;    // Store the cache of the last match
-                                    searchFileCache = new LogFileCache(_logFileCache.Items.Count);
-                                    searchFileCache.Items = _logFileCache.Items.GetRange(0, _logFileCache.Items.Count);
-                                    searchFileCache.FirstIndex = _logFileCache.FirstIndex;
-                                }
-                            }
-                        } while (matchFound != -1);
-
-                        if (lastMatchFound != -1)
-                        {
-                            SetStatusBar(null);
-                            _tailListView.SelectedIndices.Clear();
-                            _tailListView.EnsureVisible(lastMatchFound);
-                            _tailListView.SelectedIndices.Add(lastMatchFound);
-                            _tailListView.Items[lastMatchFound].Focused = true;
-                            return true;
-                        }
-                        else
-                        {
-                            SetStatusBar(null);
-                            return false;
-                        }
-                    }
-
-                    if (MatchTextSearch(i, lineText, searchText, matchCase, lineHighlights))
-                    {
-                        SetStatusBar(null);
-                        _tailListView.SelectedIndices.Clear();
-                        _tailListView.EnsureVisible(i);
-                        _tailListView.SelectedIndices.Add(i);
-                        _tailListView.Items[i].Focused = true;
-                        return true;
-                    }
+                    matchFound = SearchForTextBackward(searchText, matchCase, lineHighlights, _tailListView.VirtualListSize - 1, startIndex);
                 }
-
-                SetStatusBar(null);
-                return false;
             }
             else
             {
                 LogFileCache searchFileCache = null;
-                startIndex += 1;
-                int endIndex = _tailListView.VirtualListSize;
+                matchFound = SearchForTextForward(searchText, matchCase, lineHighlights, startIndex + 1, _tailListView.VirtualListSize, ref searchFileCache);
+                //Retry if not found
+                if (matchFound == -1 && wrapAround)
+                {
+                    matchFound = SearchForTextForward(searchText, matchCase, lineHighlights, 0, startIndex + 1, ref searchFileCache);
+                }
 
-                int matchFound = SearchForTextForward(searchText, matchCase, lineHighlights, startIndex, endIndex, ref searchFileCache);
                 if (matchFound != -1)
                 {
-                    SetStatusBar(null);
-                    _tailListView.SelectedIndices.Clear();  // Clear selection before changing cache to avoid cache miss
+                    // Swap cache before displaying search result
                     if (searchFileCache != null)
-                        _logFileCache = searchFileCache;    // Swap cache before displaying search result
-                    _tailListView.EnsureVisible(matchFound);
-                    _tailListView.SelectedIndices.Add(matchFound);   // Set selection after having scrolled to avoid top-index cache miss
-                    _tailListView.Items[matchFound].Focused = true;
-                    return true;
+                        _logFileCache = searchFileCache;
+                }
+            }
+
+            SetStatusBar(null);
+            if (matchFound != -1)
+            {
+                _tailListView.SelectedIndices.Clear();
+                _tailListView.EnsureVisible(matchFound);
+                _tailListView.SelectedIndices.Add(matchFound);
+                _tailListView.Items[matchFound].Focused = true;
+                return true;
+            }
+
+            return false;
+        }
+
+        private int SearchForTextBackward(string searchText, bool matchCase, bool lineHighlights, int startIndex, int endIndex)
+        {
+            // First use the visual cache, when that have failed, then revert to search from the beginning
+            // and find the last match
+            for (int i = startIndex; i >= endIndex; --i)
+            {
+                if (i % _logFileCache.Items.Count == 0)
+                    SetStatusBar("Searching...", _tailListView.VirtualListSize - i, _tailListView.VirtualListSize);
+
+                string lineText;
+                ListViewItem lvi = _logFileCache.LookupCache(i);
+                if (lvi != null)
+                {
+                    lineText = lvi.Text;
+                    if (MatchTextSearch(i, lineText, searchText, matchCase, lineHighlights))
+                    {
+                        return i;
+                    }
                 }
                 else
                 {
-                    SetStatusBar(null);
-                    return false;
+                    int lastMatchFound = SearchForwardForLastMatch(searchText, matchCase, lineHighlights, i + 1);
+                    if (lastMatchFound != -1 && endIndex <= lastMatchFound)
+                    {
+                        return lastMatchFound;
+                    }
+                    else
+                    {
+                        return -1;
+                    }
                 }
             }
+            return -1;
+        }
+
+        private int SearchForwardForLastMatch(string searchText, bool matchCase, bool lineHighlights, int endIndex)
+        {
+            LogFileCache searchFileCache = null;
+            int matchFound = -1;
+            int lastMatchFound = -1;
+            int startIndex = 0;
+            do
+            {
+                matchFound = SearchForTextForward(searchText, matchCase, lineHighlights, startIndex, endIndex, ref searchFileCache);
+                if (matchFound != -1)
+                {
+                    lastMatchFound = matchFound;
+                    startIndex = matchFound + 1;
+                    _tailListView.SelectedIndices.Clear();
+                    if (searchFileCache != null)
+                    {
+                        _logFileCache = searchFileCache; // Store the cache of the last match
+                        searchFileCache = new LogFileCache(_logFileCache.Items.Count);
+                        searchFileCache.Items = _logFileCache.Items.GetRange(0, _logFileCache.Items.Count);
+                        searchFileCache.FirstIndex = _logFileCache.FirstIndex;
+                    }
+                }
+            } while (matchFound != -1);
+
+            return lastMatchFound;
         }
 
         private void _tailListView_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
@@ -788,9 +796,9 @@ namespace SnakeTail
             if (e.ColumnIndex != 1)
                 return;
 
-            Color? textColor = null;;
+            Color? textColor = null;
             Color? backColor = null;
-            
+
             // Bookmark coloring has higher priority, than keyword highlight
             if (MatchesBookmark(e.ItemIndex))
             {
@@ -852,7 +860,7 @@ namespace SnakeTail
             if (_bookmarkBackColor == null || _bookmarkTextColor == null)
                 return false;
 
-            if (_bookmarks.Count==0)
+            if (_bookmarks.Count == 0)
                 return false;
 
             return _bookmarks.Contains(lineNumber);
@@ -873,11 +881,11 @@ namespace SnakeTail
                     else if (matchKeyword != null)
                     {
                         // Ignore keywords that doesn't add extra detail to the existing keyword-match
-                        if ( (matchKeyword.ExternalToolConfig != null || keyword.ExternalToolConfig == null)
+                        if ((matchKeyword.ExternalToolConfig != null || keyword.ExternalToolConfig == null)
                           && (matchKeyword.LogHitCounter || !keyword.LogHitCounter)
                           && (matchKeyword.AlertHighlight.Value || !keyword.AlertHighlight.Value)
                             )
-                           continue;
+                            continue;
                     }
 
                     if ((keyword.KeywordRegex != null && keyword.KeywordRegex.IsMatch(line))
@@ -901,7 +909,7 @@ namespace SnakeTail
                         {
                             // Add extra detail to the existing keyword-match
                             matchKeyword = new TailKeywordConfig() { ExternalToolConfig = matchKeyword.ExternalToolConfig, LogHitCounter = matchKeyword.LogHitCounter, AlertHighlight = matchKeyword.AlertHighlight };
-                            if (matchKeyword.ExternalToolConfig==null && keyword.ExternalToolConfig!=null)
+                            if (matchKeyword.ExternalToolConfig == null && keyword.ExternalToolConfig != null)
                                 matchKeyword.ExternalToolConfig = keyword.ExternalToolConfig;
                             if (!matchKeyword.LogHitCounter && keyword.LogHitCounter)
                                 matchKeyword.LogHitCounter = keyword.LogHitCounter;
@@ -1023,7 +1031,7 @@ namespace SnakeTail
                 warningIcon = true;
 
             string line = _logTailStream.ReadLine(lineCount + 1);
-            while(line != null)
+            while (line != null)
             {
                 ++lineCount;
                 _logFileCache.AppendTailCache(line, lineCount);
@@ -1416,47 +1424,47 @@ namespace SnakeTail
             switch (configForm.ShowDialog(this))
             {
                 case DialogResult.OK:
-                {
-                    LoadConfig(configForm.TailFileConfig, _configPath);
-                    break;
-                }
+                    {
+                        LoadConfig(configForm.TailFileConfig, _configPath);
+                        break;
+                    }
 
                 case DialogResult.Retry:
-                {
-                    // Apply Config To All
-                    LoadConfig(configForm.TailFileConfig, _configPath);
-                    configFile = new TailFileConfig();
-                    SaveConfig(configFile);
-                    TailConfigApplyAllForm configFormApply = new TailConfigApplyAllForm();
-                    if (configFormApply.ShowDialog(this) == DialogResult.OK)
                     {
-                        // Then we loop through all forms (includes free floating)
-                        foreach (Form childForm in Application.OpenForms)
+                        // Apply Config To All
+                        LoadConfig(configForm.TailFileConfig, _configPath);
+                        configFile = new TailFileConfig();
+                        SaveConfig(configFile);
+                        TailConfigApplyAllForm configFormApply = new TailConfigApplyAllForm();
+                        if (configFormApply.ShowDialog(this) == DialogResult.OK)
                         {
-                            TailForm tailForm = childForm as TailForm;
-                            if (tailForm != null && tailForm != this)
+                            // Then we loop through all forms (includes free floating)
+                            foreach (Form childForm in Application.OpenForms)
                             {
-                                TailFileConfig configFileOther = new TailFileConfig();
-                                tailForm.SaveConfig(configFileOther);
-                                if (configFormApply._checkBoxColors.Checked)
+                                TailForm tailForm = childForm as TailForm;
+                                if (tailForm != null && tailForm != this)
                                 {
-                                    configFileOther.FormBackColor = configFile.FormBackColor;
-                                    configFileOther.FormTextColor = configFile.FormTextColor;
-                                    configFileOther.FormBookmarkBackColor = configFile.FormBookmarkBackColor;
-                                    configFileOther.FormBookmarkTextColor = configFile.FormBookmarkTextColor;
+                                    TailFileConfig configFileOther = new TailFileConfig();
+                                    tailForm.SaveConfig(configFileOther);
+                                    if (configFormApply._checkBoxColors.Checked)
+                                    {
+                                        configFileOther.FormBackColor = configFile.FormBackColor;
+                                        configFileOther.FormTextColor = configFile.FormTextColor;
+                                        configFileOther.FormBookmarkBackColor = configFile.FormBookmarkBackColor;
+                                        configFileOther.FormBookmarkTextColor = configFile.FormBookmarkTextColor;
+                                    }
+                                    if (configFormApply._checkBoxFont.Checked)
+                                        configFileOther.FontInvariant = configFile.FontInvariant;
+                                    if (configFormApply._checkboxKeywords.Checked)
+                                        configFileOther.KeywordHighlight = configFile.KeywordHighlight;
+                                    if (configFormApply._checkboxTools.Checked)
+                                        configFileOther.ExternalTools = configFile.ExternalTools;
+                                    tailForm.LoadConfig(configFileOther, _configPath);
                                 }
-                                if (configFormApply._checkBoxFont.Checked)
-                                    configFileOther.FontInvariant = configFile.FontInvariant;
-                                if (configFormApply._checkboxKeywords.Checked)
-                                    configFileOther.KeywordHighlight = configFile.KeywordHighlight;
-                                if (configFormApply._checkboxTools.Checked)
-                                    configFileOther.ExternalTools = configFile.ExternalTools;
-                                tailForm.LoadConfig(configFileOther, _configPath);
                             }
                         }
+                        break;
                     }
-                    break;
-                } 
             }
         }
 
@@ -1490,7 +1498,7 @@ namespace SnakeTail
                 return;
 
             ListViewItem focusedItem = _tailListView.FocusedItem;
-            if (focusedItem==null)
+            if (focusedItem == null)
                 return;
 
             if (!_bookmarks.Contains(focusedItem.Index))

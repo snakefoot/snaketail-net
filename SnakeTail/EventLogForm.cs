@@ -359,7 +359,7 @@ namespace SnakeTail
             return null;    // Should never come here
         }
 
-        public bool SearchForText(string searchText, bool matchCase, bool searchForward, bool lineHighlights)
+        public bool SearchForText(string searchText, bool matchCase, bool searchForward, bool lineHighlights, bool wrapAround)
         {
             int listCount = -1;
 

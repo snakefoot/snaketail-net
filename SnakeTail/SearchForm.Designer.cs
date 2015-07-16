@@ -51,6 +51,7 @@ namespace SnakeTail
             this._findNextBtn = new System.Windows.Forms.Button();
             this._cancelBtn = new System.Windows.Forms.Button();
             this._matchCaseCheckBox = new System.Windows.Forms.CheckBox();
+            this._wrapArroundcheckBox = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -58,7 +59,7 @@ namespace SnakeTail
             // 
             this._searchTextBox.Location = new System.Drawing.Point(72, 11);
             this._searchTextBox.Name = "_searchTextBox";
-            this._searchTextBox.Size = new System.Drawing.Size(223, 20);
+            this._searchTextBox.Size = new System.Drawing.Size(241, 20);
             this._searchTextBox.TabIndex = 1;
             this._searchTextBox.TextChanged += new System.EventHandler(this._searchTextBox_TextChanged);
             // 
@@ -73,9 +74,10 @@ namespace SnakeTail
             // 
             // groupBox1
             // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this._downRadioBtn);
             this.groupBox1.Controls.Add(this._upRadioBtn);
-            this.groupBox1.Location = new System.Drawing.Point(179, 39);
+            this.groupBox1.Location = new System.Drawing.Point(198, 39);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(115, 44);
             this.groupBox1.TabIndex = 3;
@@ -106,8 +108,9 @@ namespace SnakeTail
             // 
             // _findNextBtn
             // 
+            this._findNextBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this._findNextBtn.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this._findNextBtn.Location = new System.Drawing.Point(308, 10);
+            this._findNextBtn.Location = new System.Drawing.Point(327, 10);
             this._findNextBtn.Name = "_findNextBtn";
             this._findNextBtn.Size = new System.Drawing.Size(75, 23);
             this._findNextBtn.TabIndex = 4;
@@ -117,8 +120,9 @@ namespace SnakeTail
             // 
             // _cancelBtn
             // 
+            this._cancelBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this._cancelBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this._cancelBtn.Location = new System.Drawing.Point(308, 39);
+            this._cancelBtn.Location = new System.Drawing.Point(327, 39);
             this._cancelBtn.Name = "_cancelBtn";
             this._cancelBtn.Size = new System.Drawing.Size(75, 23);
             this._cancelBtn.TabIndex = 5;
@@ -136,13 +140,24 @@ namespace SnakeTail
             this._matchCaseCheckBox.Text = "Match Case";
             this._matchCaseCheckBox.UseVisualStyleBackColor = true;
             // 
+            // _wrapArroundcheckBox
+            // 
+            this._wrapArroundcheckBox.AutoSize = true;
+            this._wrapArroundcheckBox.Location = new System.Drawing.Point(104, 58);
+            this._wrapArroundcheckBox.Name = "_wrapArroundcheckBox";
+            this._wrapArroundcheckBox.Size = new System.Drawing.Size(89, 17);
+            this._wrapArroundcheckBox.TabIndex = 6;
+            this._wrapArroundcheckBox.Text = "Wrap Around";
+            this._wrapArroundcheckBox.UseVisualStyleBackColor = true;
+            // 
             // SearchForm
             // 
             this.AcceptButton = this._findNextBtn;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this._cancelBtn;
-            this.ClientSize = new System.Drawing.Size(396, 92);
+            this.ClientSize = new System.Drawing.Size(415, 92);
+            this.Controls.Add(this._wrapArroundcheckBox);
             this.Controls.Add(this._matchCaseCheckBox);
             this.Controls.Add(this._cancelBtn);
             this.Controls.Add(this._findNextBtn);
@@ -175,5 +190,6 @@ namespace SnakeTail
         private System.Windows.Forms.Button _findNextBtn;
         private System.Windows.Forms.Button _cancelBtn;
         private System.Windows.Forms.CheckBox _matchCaseCheckBox;
+        private System.Windows.Forms.CheckBox _wrapArroundcheckBox;
     }
 }

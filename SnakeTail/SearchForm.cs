@@ -87,7 +87,7 @@ namespace SnakeTail
                 {
                     using (new HourGlass(activeTailForm.TailWindow))
                     {
-                        found = ActiveTailForm.SearchForText(_searchTextBox.Text, _matchCaseCheckBox.Checked, searchForward, keywordHighlights);
+                        found = ActiveTailForm.SearchForText(_searchTextBox.Text, _matchCaseCheckBox.Checked, searchForward, keywordHighlights, keywordHighlights ? false : _wrapArroundcheckBox.Checked);
                     }
                 }
                 if (!found)
