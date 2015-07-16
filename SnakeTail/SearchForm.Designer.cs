@@ -91,7 +91,7 @@ namespace SnakeTail
             this._downRadioBtn.Name = "_downRadioBtn";
             this._downRadioBtn.Size = new System.Drawing.Size(53, 17);
             this._downRadioBtn.TabIndex = 4;
-            this._downRadioBtn.Text = "Down";
+            this._downRadioBtn.Text = "&Down";
             this._downRadioBtn.UseVisualStyleBackColor = true;
             // 
             // _upRadioBtn
@@ -103,7 +103,7 @@ namespace SnakeTail
             this._upRadioBtn.Size = new System.Drawing.Size(39, 17);
             this._upRadioBtn.TabIndex = 4;
             this._upRadioBtn.TabStop = true;
-            this._upRadioBtn.Text = "Up";
+            this._upRadioBtn.Text = "&Up";
             this._upRadioBtn.UseVisualStyleBackColor = true;
             // 
             // _findNextBtn
@@ -113,7 +113,7 @@ namespace SnakeTail
             this._findNextBtn.Location = new System.Drawing.Point(327, 10);
             this._findNextBtn.Name = "_findNextBtn";
             this._findNextBtn.Size = new System.Drawing.Size(75, 23);
-            this._findNextBtn.TabIndex = 4;
+            this._findNextBtn.TabIndex = 5;
             this._findNextBtn.Text = "Find Next";
             this._findNextBtn.UseVisualStyleBackColor = true;
             this._findNextBtn.Click += new System.EventHandler(this._findNextBtn_Click);
@@ -125,7 +125,7 @@ namespace SnakeTail
             this._cancelBtn.Location = new System.Drawing.Point(327, 39);
             this._cancelBtn.Name = "_cancelBtn";
             this._cancelBtn.Size = new System.Drawing.Size(75, 23);
-            this._cancelBtn.TabIndex = 5;
+            this._cancelBtn.TabIndex = 6;
             this._cancelBtn.Text = "Cancel";
             this._cancelBtn.UseVisualStyleBackColor = true;
             this._cancelBtn.Click += new System.EventHandler(this._cancelBtn_Click);
@@ -137,7 +137,7 @@ namespace SnakeTail
             this._matchCaseCheckBox.Name = "_matchCaseCheckBox";
             this._matchCaseCheckBox.Size = new System.Drawing.Size(83, 17);
             this._matchCaseCheckBox.TabIndex = 2;
-            this._matchCaseCheckBox.Text = "Match Case";
+            this._matchCaseCheckBox.Text = "Match &Case";
             this._matchCaseCheckBox.UseVisualStyleBackColor = true;
             // 
             // _wrapArroundcheckBox
@@ -146,8 +146,8 @@ namespace SnakeTail
             this._wrapArroundcheckBox.Location = new System.Drawing.Point(104, 58);
             this._wrapArroundcheckBox.Name = "_wrapArroundcheckBox";
             this._wrapArroundcheckBox.Size = new System.Drawing.Size(89, 17);
-            this._wrapArroundcheckBox.TabIndex = 6;
-            this._wrapArroundcheckBox.Text = "Wrap Around";
+            this._wrapArroundcheckBox.TabIndex = 3;
+            this._wrapArroundcheckBox.Text = "Wra&p Around";
             this._wrapArroundcheckBox.UseVisualStyleBackColor = true;
             // 
             // SearchForm
