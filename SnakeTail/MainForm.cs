@@ -123,6 +123,8 @@ namespace SnakeTail
 
         private void MainForm_MdiChildActivate(object sender, EventArgs e)
         {
+            closeItemToolStripMenuItem.Enabled = this.ActiveMdiChild != null;
+
             // If no any child form, hide tabControl 
             if (this.ActiveMdiChild == null)
             {
@@ -886,6 +888,14 @@ namespace SnakeTail
             catch(Exception ex)
             {
                 MessageBox.Show(this, "Failed to save list of recently used files to registry.\n\n" + ex.Message, "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void closeItemToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (ActiveMdiChild != null)
+            {
+                ActiveMdiChild.Close();
             }
         }
     }

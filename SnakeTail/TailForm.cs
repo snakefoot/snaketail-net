@@ -358,38 +358,47 @@ namespace SnakeTail
                     parentTab.ToolTipText = _logTailStream.FilePathAbsolute;
             }
 
+            StringBuilder sb = null;
+
             if (_loghitCounter != -1)
             {
-                title += " Hits: " + _loghitCounter.ToString();
+                sb = sb != null ? sb : new StringBuilder(title);
+                sb.Append(" Hits:").Append(_loghitCounter);
                 _loghitCounter = 0;
             }
 
             if (_taskMonitor != null)
             {
+                sb = sb != null ? sb : new StringBuilder(title);
+
                 try
                 {
                     float cpuUtilization = _taskMonitor.ProcessorUsage;
                     Process process = _taskMonitor.Process;
                     if (process != null)
                     {
-                        title += " CPU: " + cpuUtilization.ToString("F0");
+                        sb.AppendFormat(" CPU: {0:F0}", cpuUtilization);
 
                         process.Refresh();
-                        title += " RAM: " + (process.PrivateMemorySize64 / (1024 * 1024)).ToString();
-                        title += _taskMonitor.ServiceRunning ? " (Started)" : " (Stopped)";
+                        sb.Append(" RAM: ").Append(process.PrivateMemorySize64 / (1024 * 1024));
+                        sb.Append(_taskMonitor.ServiceRunning ? " (Started)" : " (Stopped)");
                     }
                     else
                     {
-                        title += " (Stopped)";
+                        sb.Append(" (Stopped)");
                     }
                 }
                 catch (Exception ex)
                 {
-                    title += " (" + ex.Message + ")";
+                    sb.Append(" (").Append(ex.Message).Append(")");
                 }
             }
 
             _lastFormTitleUpdate = DateTime.Now;
+
+            if (sb != null)
+                title = sb.ToString();
+
             if (Text != title)
                 Text = title;
         }
