@@ -323,6 +323,11 @@ namespace SnakeTail
                 _lastFileCheckError = "Invalid argument for opening file - " + ex.Message;
                 return false;
             }
+            catch (NotSupportedException ex)
+            {
+                _lastFileCheckError = "Not supported option used for opening file - " + ex.Message;
+                return false;
+            }
             catch (DirectoryNotFoundException)
             {
                 _lastFileCheckError = "Directory not found";
