@@ -455,6 +455,7 @@ namespace SnakeTail
             tailConfig.WindowSize = Size;
             tailConfig.WindowPosition = DesktopLocation;
             tailConfig.MinimizedToTray = _trayIcon.Visible;
+            tailConfig.AlwaysOnTop = TopMost;
 
             List<Form> childForms = new List<Form>();
 
@@ -651,6 +652,11 @@ namespace SnakeTail
                 _trayIcon.Visible = true;
                 WindowState = FormWindowState.Minimized;
                 Visible = false;
+            }
+            else if (tailConfig.AlwaysOnTop)
+            {
+                alwaysOnTopToolStripMenuItem.Checked = true;
+                TopMost = true;
             }
 
             return true;

@@ -31,6 +31,7 @@ namespace SnakeTail
         public System.Drawing.Size WindowSize { get; set; }
         public System.Drawing.Point WindowPosition { get; set; }
         public bool MinimizedToTray { get; set; }
+        public bool AlwaysOnTop { get; set; }
     }
 
     public class TailKeywordConfig
