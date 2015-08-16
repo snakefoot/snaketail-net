@@ -390,28 +390,6 @@ namespace SnakeTail
             return true;
         }
 
-        public bool CloseToEnd(int lineCount)
-        {
-            try
-            {
-                if (_fileReader == null)
-                    return true;
-
-                if (_fileReader.EndOfStream)
-                    return true;
-
-                if (_fileStream.Length <= _fileStream.Position + lineCount * 80)
-                    return true;
-                else
-                    return false;
-            }
-            catch (System.IO.IOException)
-            {
-                CloseFile(true);
-                return true;    // File is non-existing (empty)
-            }
-        }
-
         public string ReadLine(int lineNumber)
         {
             if (_fileReader == null || _fileStream == null)
@@ -473,6 +451,50 @@ namespace SnakeTail
                 if (lineNumber == 1)
                     return "Cannot read file: " + _filePathAbsolute + " (" + ex.Message + ")";
                 return null;
+            }
+        }
+
+        public int SkipLines(long lineCount)
+        {
+            // Quickly fast forward to near the file bottom
+            try
+            {
+                long fileLength = Length - lineCount * 80;
+                long filePosiion = Position;
+                for(int i = 0; i < lineCount && filePosiion < fileLength && !_fileReader.EndOfStream; ++i)
+                {
+                    string line = ReadLine(_lastLineNumber + 1);
+                    if (line == null)
+                        return _lastLineNumber;
+
+                    filePosiion += line.Length * (FileEncoding.IsSingleByte ? 1 : 2);
+                }
+
+                return _lastLineNumber;
+            }
+            catch (System.Security.SecurityException)
+            {
+                CloseFile(true);
+                _lastFileCheckError = "No permission to read the file";
+                return -1;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                CloseFile(true);
+                _lastFileCheckError = "Read access to the file is denied";
+                return -1;
+            }
+            catch (OperationCanceledException)
+            {
+                CloseFile(true);
+                _lastFileCheckError = "Read file operation was aborted. File is currently not available.";
+                return -1;
+            }
+            catch (System.IO.IOException ex)
+            {
+                CloseFile(true);
+                _lastFileCheckError = ex.Message;
+                return -1;
             }
         }
     }

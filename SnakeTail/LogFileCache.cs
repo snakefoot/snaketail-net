@@ -81,28 +81,24 @@ namespace SnakeTail
         public int FillTailCache(LogFileStream logFileStream)
         {
             int lineCount = 0;
+            int readLines = 0;
 
             // Quickly fast forward to near the file bottom
-            if (!logFileStream.CloseToEnd(Items.Count))
+            do
             {
-                do
-                {
-                    if (logFileStream.ReadLine(lineCount + 1) != null)
-                        lineCount++;
-
-                    // We have read a good part of the file
-                    if (lineCount % Items.Count == 0)
-                    {
-                        if (LoadingFileEvent != null)
-                            LoadingFileEvent(logFileStream, null);
-                    }
-                }
-                while (!logFileStream.CloseToEnd(Items.Count));
-
-                // We are almost finished with loading the file
+                readLines = lineCount;
+                lineCount = logFileStream.SkipLines(Items.Count);
+                readLines = lineCount - readLines;
                 if (LoadingFileEvent != null)
-                    LoadingFileEvent(null, null);
-            }
+                    LoadingFileEvent(logFileStream, null);
+            } while (readLines == Items.Count);
+
+            // We are almost finished with loading the file
+            if (LoadingFileEvent != null)
+                LoadingFileEvent(null, null);
+
+            if (lineCount <= 0)
+                return 0;
 
             // Read the last lines of the file into the cache
             bool continueReading = false;
