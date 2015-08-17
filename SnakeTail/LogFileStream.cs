@@ -118,15 +118,16 @@ namespace SnakeTail
                 using (LogFileStream testLogFile = new LogFileStream(configPath, _filePathAbsolute, _fileEncoding, _fileCheckFrequency.Seconds, _fileCheckPattern))
                 {
                     fileCheckLength = testLogFile.Length;
+                    long currentFileLength = Length;
                     string name = testLogFile._fileStream != null ? testLogFile._fileStream.Name : null;
 
-                    if (fileCheckLength < Length)
+                    if (fileCheckLength < currentFileLength)
                         fileChanged = true;
                     else if (Position > fileCheckLength)
                         fileChanged = true;
                     else if (_fileStream.Name != name)
                         fileChanged = true;
-                    else if (_lastFileCheckLength <= fileCheckLength && _lastFileCheckLength > Length)
+                    else if (_lastFileCheckLength <= fileCheckLength && _lastFileCheckLength > currentFileLength)
                         fileChanged = true;
                 }
 
@@ -459,7 +460,7 @@ namespace SnakeTail
             // Quickly fast forward to near the file bottom
             try
             {
-                long fileLength = Length - lineCount * 80;
+                long fileLength = Length - lineCount * 80 * (FileEncoding.IsSingleByte ? 1 : 2);
                 long filePosiion = Position;
                 for(int i = 0; i < lineCount && filePosiion < fileLength && !_fileReader.EndOfStream; ++i)
                 {
