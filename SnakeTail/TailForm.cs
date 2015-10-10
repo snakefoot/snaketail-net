@@ -441,7 +441,7 @@ namespace SnakeTail
             LogFileStream filestream = sender as LogFileStream;
             if (filestream != null)
             {
-                double position = filestream.Position / (double)filestream.Length * 100;
+                double position = filestream.Length != 0 ? filestream.Position / (double)filestream.Length * 100 : 100;
                 SetStatusBar("Loading file...", (int)position, 100);
             }
             else
