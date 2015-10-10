@@ -30,9 +30,9 @@
 	</Company_Info>
 	<Program_Info>
 		<Program_Name>SnakeTail</Program_Name>
-		<Program_Version>1.9.2</Program_Version>
-		<Program_Release_Month>08</Program_Release_Month>
-		<Program_Release_Day>17</Program_Release_Day>
+		<Program_Version>1.9.3</Program_Version>
+		<Program_Release_Month>10</Program_Release_Month>
+		<Program_Release_Day>10</Program_Release_Day>
 		<Program_Release_Year>2015</Program_Release_Year>
 		<Program_Type>Freeware</Program_Type>
 		<Program_Release_Status>New Release</Program_Release_Status>
@@ -48,9 +48,9 @@
 			<Has_Expire_Info>N</Has_Expire_Info>
 		</Expire_Info>
 		<File_Info>
-			<File_Size_Bytes>235000</File_Size_Bytes>
-			<File_Size_K>235.0</File_Size_K>
-			<File_Size_MB>0.2</File_Size_MB>
+			<File_Size_Bytes>465000</File_Size_Bytes>
+			<File_Size_K>465.0</File_Size_K>
+			<File_Size_MB>0.5</File_Size_MB>
 		</File_Info>
 	</Program_Info>
 	<Program_Descriptions>
@@ -72,7 +72,7 @@
 			<Application_XML_File_URL>http://snakenest.com/snaketail.pad.xml</Application_XML_File_URL>
 		</Application_URLs>
 		<Download_URLs>
-			<Primary_Download_URL>http://github.com/snakefoot/snaketail-net/releases/download/1.9.2/SnakeTail_v1.9.2.zip</Primary_Download_URL>
+			<Primary_Download_URL>http://github.com/snakefoot/snaketail-net/releases/download/1.9.3/SnakeTail_v1.9.3.zip</Primary_Download_URL>
 			<Secondary_Download_URL />
 			<Additional_Download_URL_1 />
 			<Additional_Download_URL_2 />
