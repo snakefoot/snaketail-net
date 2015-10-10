@@ -210,7 +210,7 @@ namespace SnakeTail
             if (attributes.Length > 0)
             {
                 AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute)attributes[0];
-                if (titleAttribute.Title != "")
+                if (!string.IsNullOrEmpty(titleAttribute.Title))
                 {
                     return titleAttribute.Title;
                 }
@@ -432,10 +432,9 @@ namespace SnakeTail
             }
 
             ZipStore.Close();
-            ZipStream.Position = 0;
 
             // Upload File
-            HttpUploadFile(HttpUrl, ZipStream, FileParamName, FileName, "application/x-zip-compressed", HttpParams);
+            HttpUploadFile(HttpUrl, ZipStream.ToArray(), FileParamName, FileName, "application/x-zip-compressed", HttpParams);
         }
 
         protected virtual void Dispose(bool dispose)
@@ -456,7 +455,7 @@ namespace SnakeTail
         }
 
         // Credits Cristian Romanescu @ http://stackoverflow.com/questions/566462/upload-files-with-httpwebrequest-multipart-form-data
-        static void HttpUploadFile(string url, System.IO.Stream fileStream, string fileParam, string fileName, string contentType, System.Collections.Specialized.NameValueCollection nvc)
+        static void HttpUploadFile(string url, byte[] fileContents, string fileParam, string fileName, string contentType, System.Collections.Specialized.NameValueCollection nvc)
         {
             string boundary = "---------------------------" + DateTime.Now.Ticks.ToString("x");
             byte[] boundarybytes = System.Text.Encoding.ASCII.GetBytes("\r\n--" + boundary + "\r\n");
@@ -497,10 +496,7 @@ namespace SnakeTail
                 rs.Write(headerbytes, 0, headerbytes.Length);
 
                 // File Content
-                byte[] buffer = new byte[4096];
-                int bytesRead = 0;
-                while ((bytesRead = fileStream.Read(buffer, 0, buffer.Length)) != 0)
-                    rs.Write(buffer, 0, bytesRead);
+                rs.Write(fileContents, 0, fileContents.Length);
             }
             {
                 // WebRequest Trailer
