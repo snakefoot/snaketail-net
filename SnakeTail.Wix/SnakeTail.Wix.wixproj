@@ -2,32 +2,34 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <TargetPlatform Condition=" '$(TargetPlatform)' == '' ">x86</TargetPlatform>
     <ProductVersion>3.6</ProductVersion>
     <ProjectGuid>{4b757eac-87d4-443b-a404-cb8e36af0b84}</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>SnakeTail.Wix.$(Platform)</OutputName>
+    <OutputName>SnakeTail.Wix.$(TargetPlatform)</OutputName>
     <OutputType>Package</OutputType>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <OutputPath>bin\$(Configuration)\$(Platform)\</OutputPath>
-    <IntermediateOutputPath>obj\$(Configuration)\$(Platform)\</IntermediateOutputPath>
-    <DefineConstants>Debug</DefineConstants>
+  <PropertyGroup Condition=" '$(Configuration)|$(TargetPlatform)' == 'Debug|x86' ">
+    <OutputPath>bin\$(Configuration)\$(TargetPlatform)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\$(TargetPlatform)\</IntermediateOutputPath>
+    <DefineConstants>Debug;TargetPlatform=$(TargetPlatform)</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <OutputPath>bin\$(Configuration)\$(Platform)\</OutputPath>
-    <IntermediateOutputPath>obj\$(Configuration)\$(Platform)\</IntermediateOutputPath>
+  <PropertyGroup Condition=" '$(Configuration)|$(TargetPlatform)' == 'Release|x86' ">
+    <OutputPath>bin\$(Configuration)\$(TargetPlatform)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\$(TargetPlatform)\</IntermediateOutputPath>
+    <DefineConstants>TargetPlatform=$(TargetPlatform)</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
-    <OutputPath>bin\$(Configuration)\$(Platform)\</OutputPath>
-    <IntermediateOutputPath>obj\$(Configuration)\$(Platform)\</IntermediateOutputPath>
-    <DefineConstants>Debug</DefineConstants>
+  <PropertyGroup Condition=" '$(Configuration)|$(TargetPlatform)' == 'Debug|x64' ">
+    <OutputPath>bin\$(Configuration)\$(TargetPlatform)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\$(TargetPlatform)\</IntermediateOutputPath>
+    <DefineConstants>Debug;TargetPlatform=$(TargetPlatform)</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
-    <OutputPath>bin\$(Configuration)\$(Platform)\</OutputPath>
-    <IntermediateOutputPath>obj\$(Configuration)\$(Platform)\</IntermediateOutputPath>
+  <PropertyGroup Condition=" '$(Configuration)|$(TargetPlatform)' == 'Release|x64' ">
+    <OutputPath>bin\$(Configuration)\$(TargetPlatform)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\$(TargetPlatform)\</IntermediateOutputPath>
+    <DefineConstants>TargetPlatform=$(TargetPlatform)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Product.wxs" />

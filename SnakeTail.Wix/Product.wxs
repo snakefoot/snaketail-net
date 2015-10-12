@@ -4,7 +4,7 @@
 	<?define CompanyName="SnakeNest.com" ?>
 	<?define ProductVersion="!(bind.FileVersion.FileId$(var.SnakeTail.TargetName))" ?>
 
-<?if $(var.Platform) = x64 ?>
+<?if $(var.TargetPlatform) = x64 ?>
 	<?define ProductDisplayName = "$(var.ProductName) 64-bit" ?>
 	<?define ProductUpgradeCode = "36F9B700-080E-11E2-B6BB-29996188709B" ?>
 	<?define Win64 = "yes" ?>
@@ -17,7 +17,7 @@
 <?endif ?>
 
 	<Product Id="*" Name="$(var.ProductDisplayName) v$(var.ProductVersion)" Language="1033" Version="$(var.ProductVersion)" Manufacturer="$(var.CompanyName)" UpgradeCode="$(var.ProductUpgradeCode)">
-		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Comments="Windows Installer Package" Description="$(var.ProductDisplayName) v$(var.ProductVersion)" />
+		<Package InstallerVersion="200" Platform='$(var.TargetPlatform)' Compressed="yes" InstallScope="perMachine" Comments="Windows Installer Package" Description="$(var.ProductDisplayName) v$(var.ProductVersion)" />
 
 		<MajorUpgrade DowngradeErrorMessage="A newer version of $(var.ProductDisplayName) is already installed." />
 		<MediaTemplate EmbedCab="yes"/>
