@@ -47,8 +47,10 @@ namespace SnakeTail
             {
                 if (_activeTailForm != null)
                     return _activeTailForm;
-                else
+                else if (MainForm.Instance != null)
                     return MainForm.Instance.ActiveMdiChild as ITailForm;
+                else
+                    return null;
             }
             set
             {
@@ -107,7 +109,8 @@ namespace SnakeTail
                 _activeTailForm.TailWindow.FormClosing -= _activeForm_FormClosing;
             }
             _activeTailForm = null;
-            MainForm.Instance.Focus();
+            if (MainForm.Instance != null)
+                MainForm.Instance.Focus();
         }
 
         protected SearchForm()
@@ -155,8 +158,10 @@ namespace SnakeTail
 
         private void _cancelBtn_Click(object sender, EventArgs e)
         {
-            MainForm.Instance.Focus();
-            Hide();
+            if (MainForm.Instance != null)
+                MainForm.Instance.Focus();
+            if (!IsDisposed)
+                Hide();
         }
 
         private void _searchTextBox_TextChanged(object sender, EventArgs e)
