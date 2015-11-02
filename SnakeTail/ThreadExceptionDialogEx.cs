@@ -248,11 +248,13 @@ namespace SnakeTail
         public long PeakWorkingSet;
         public long PeakVirtualMemorySize;
         public long PeakPagedMemorySize;
+        public long ManagedMemorySize;
 
         public MemoryPerformanceReport()
         {
             try
             {
+                ManagedMemorySize = GC.GetTotalMemory(false);
                 using (System.Diagnostics.Process process = System.Diagnostics.Process.GetCurrentProcess())
                 {
                     PrivateMemorySize = process.PrivateMemorySize64;
