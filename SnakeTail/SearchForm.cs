@@ -14,12 +14,9 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Windows.Forms;
 
 namespace SnakeTail
@@ -61,7 +58,7 @@ namespace SnakeTail
                 _activeTailForm = value;
                 if (Visible)
                 {
-                    SetWindowPos(this.Handle, HWND_TOP, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);  // BringToFront without focus
+                    NativeMethods.SetWindowPos(this.Handle, NativeMethods.HWND_TOP, 0, 0, 0, 0, NativeMethods.SWP_NOACTIVATE | NativeMethods.SWP_NOMOVE | NativeMethods.SWP_NOSIZE);  // BringToFront without focus
                 }
                 if (_activeTailForm != null)
                     _activeTailForm.TailWindow.FormClosing += _activeForm_FormClosing;
@@ -117,24 +114,23 @@ namespace SnakeTail
         {
             InitializeComponent();
             _findNextBtn.Enabled = false;
-            MaximizeBox = false;
-            MinimizeBox = false;
-            ShowInTaskbar = false;
-            FormBorderStyle = FormBorderStyle.FixedToolWindow;
         }
 
-        static IntPtr HWND_TOP = (IntPtr)0;
-        const int SWP_NOACTIVATE = 0x0010;
-        const int SWP_NOSIZE = 0x0001;
-        const int SWP_NOMOVE = 0x0002;
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        static extern int SetWindowPos(IntPtr hWnd,
-          IntPtr hWndInsertAfter,
-          int x,
-          int y,
-          int cx,
-          int cy,
-          UInt32 uFlags);
+        sealed class NativeMethods
+        {
+            public static IntPtr HWND_TOP = (IntPtr)0;
+            public const int SWP_NOACTIVATE = 0x0010;
+            public const int SWP_NOSIZE = 0x0001;
+            public const int SWP_NOMOVE = 0x0002;
+            [DllImport("user32.dll", CharSet = CharSet.Auto)]
+            public static extern int SetWindowPos(IntPtr hWnd,
+              IntPtr hWndInsertAfter,
+              int x,
+              int y,
+              int cx,
+              int cy,
+              UInt32 uFlags);
+        }
 
         protected override bool ShowWithoutActivation
         {

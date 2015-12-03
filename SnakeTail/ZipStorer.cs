@@ -738,10 +738,10 @@ namespace System.IO.Compression
         /// </summary>
         protected virtual void Dispose(bool dispose)
         {
-            if (!dispose)
-                return;
-
-            this.Close();
+            if (dispose)
+            {
+                this.Close();
+            }
         }
 
         public void Dispose()

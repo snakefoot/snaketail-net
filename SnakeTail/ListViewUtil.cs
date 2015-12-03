@@ -29,7 +29,7 @@ namespace SnakeTail
         /// </summary>
         public static void SetVirtualListSizeWithoutRefresh(ListView listView, int count)
         {
-            SendMessage(listView.Handle,
+            NativeMethods.SendMessage(listView.Handle,
                 (uint)ListViewMessages.LVM_SETITEMCOUNT,
                 (IntPtr)count,
                 (IntPtr)(ListViewSetItemCountFlags.LVSICF_NOINVALIDATEALL |
@@ -61,8 +61,11 @@ namespace SnakeTail
             LVM_SETITEMCOUNT = (LVM_FIRST + 47),
         }
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        private static extern IntPtr SendMessage(IntPtr handle, uint messg, IntPtr wparam, IntPtr lparam);
+        sealed class NativeMethods
+        {
+            [DllImport("user32.dll", CharSet = CharSet.Auto)]
+            public static extern IntPtr SendMessage(IntPtr handle, uint messg, IntPtr wparam, IntPtr lparam);
+        }
 
         static ListViewUtil()
         {

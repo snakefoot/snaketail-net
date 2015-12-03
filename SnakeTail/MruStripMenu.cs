@@ -1,8 +1,5 @@
 using System;
-using System.Collections;
-using System.ComponentModel;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
 using System.Threading;
 using Microsoft.Win32;
@@ -18,7 +15,7 @@ namespace JWC
 	/// on construction and store them when instructed by the main program.</para>
 	/// <para>Internally, this class uses zero-based numbering for the items.
 	/// The displayed numbers, however, will start with one.</para></remarks>
-	public class MruStripMenu
+	public class MruStripMenu : IDisposable
 	{
 		private   ClickedHandler    clickedHandler;
 		protected ToolStripMenuItem recentFileMenuItem;
@@ -27,57 +24,6 @@ namespace JWC
 		protected int				maxEntries = 4;
 		protected int				maxShortenPathLength = 96;
 		protected Mutex				mruStripMutex;
-
-		#region MruMenuItem
-
-		/// <summary>
-		/// The menu item which will contain the MRU entry.
-		/// </summary>
-		/// <remarks>The menu may display a shortened or otherwise invalid pathname.
-		/// This class stores the actual filename, preferably as a fully
-		/// resolved labelName, that will be returned in the event handler.</remarks>
-		public class MruMenuItem : ToolStripMenuItem
-		{
-			/// <summary>
-			/// Initializes a new instance of the MruMenuItem class.
-			/// </summary>
-			public MruMenuItem()
-			{
-				Tag = "";
-			}
-
-			/// <summary>
-			/// Initializes an MruMenuItem object.
-			/// </summary>
-			/// <param labelName="filename">The string to actually return in the <paramref labelName="eventHandler">eventHandler</paramref>.</param>
-			/// <param labelName="entryname">The string that will be displayed in the menu.</param>
-			/// <param labelName="eventHandler">The <see cref="EventHandler">EventHandler</see> that 
-			/// handles the <see cref="MenuItem.Click">Click</see> event for this menu item.</param>
-			public MruMenuItem(string filename, string entryname, EventHandler eventHandler)
-			{
-				Tag = filename;
-				Text = entryname;
-                ToolTipText = filename;
-				Click += eventHandler;
-			}
-
-			/// <summary>
-			/// Gets the filename.
-			/// </summary>
-			/// <value>Gets the filename.</value>
-			public string Filename
-			{
-				get
-				{
-					return (string) Tag;
-				}
-				set
-				{
-					Tag = value;
-				}
-			}
-		}
-		#endregion
 
 		#region Construction
 
@@ -162,7 +108,7 @@ namespace JWC
 			this.recentFileMenuItem.Checked = false;
 			this.recentFileMenuItem.Enabled = false;
 
-			MaxEntries = maxEntries;
+            this.maxEntries = maxEntries > 16 ? 16 : maxEntries;
 			this.clickedHandler = clickedHandler;
 
 			if (registryKeyName != null)
@@ -181,8 +127,8 @@ namespace JWC
 
 		protected void OnClick(object sender, System.EventArgs e)
 		{
-			MruMenuItem menuItem = (MruMenuItem) sender;
-			clickedHandler(MenuItems.IndexOf(menuItem) - StartIndex, menuItem.Filename);
+            ToolStripMenuItem menuItem = (ToolStripMenuItem) sender;
+			clickedHandler(MenuItems.IndexOf(menuItem) - StartIndex, menuItem.Tag as string);
 		}
 
 
@@ -283,7 +229,7 @@ namespace JWC
 			//recentFileMenuItem.MenuItems.RemoveAt(0);
 		}
 
-		protected virtual void SetFirstFile(MruMenuItem menuItem)
+		protected virtual void SetFirstFile(ToolStripMenuItem menuItem)
 		{
 		}
 
@@ -291,7 +237,7 @@ namespace JWC
 		{
 			if (number > 0 && numEntries > 1 && number < numEntries)
 			{
-				MruMenuItem menuItem = (MruMenuItem)MenuItems[StartIndex + number];
+                ToolStripMenuItem menuItem = (ToolStripMenuItem)MenuItems[StartIndex + number];
 
 				MenuItems.RemoveAt(StartIndex + number);
 				MenuItems.Insert(StartIndex, menuItem);
@@ -465,7 +411,7 @@ namespace JWC
 				int number = 0;
 				for (int i = StartIndex; i < EndIndex; i++, number++)
 				{
-					if (string.Compare(((MruMenuItem)MenuItems[i]).Filename, filename, true) == 0)
+					if (string.Compare(MenuItems[i].Tag as string, filename, true) == 0)
 					{
 						return number;
 					}
@@ -504,7 +450,7 @@ namespace JWC
 			if (number < 0 || number >= numEntries)
 				throw new ArgumentOutOfRangeException("number");
 
-			return ((MruMenuItem)MenuItems[StartIndex + number]).Filename;
+			return MenuItems[StartIndex + number].Tag as string;
 		}
 
 		public string[] GetFiles()
@@ -514,7 +460,7 @@ namespace JWC
 			int index = StartIndex;
 			for (int i = 0; i < filenames.GetLength(0); i++, index++)
 			{
-				filenames[i] = ((MruMenuItem)MenuItems[index]).Filename;
+				filenames[i] = MenuItems[index].Tag as string;
 			}
 
 			return filenames;
@@ -580,7 +526,8 @@ namespace JWC
 
 			if (numEntries < maxEntries)
 			{
-				MruMenuItem menuItem = new MruMenuItem(filename, FixupEntryname(0, entryname), new System.EventHandler(OnClick));
+                ToolStripMenuItem menuItem = new ToolStripMenuItem(FixupEntryname(0, entryname), null, new System.EventHandler(OnClick));
+                menuItem.Tag = filename;
 				MenuItems.Insert(StartIndex, menuItem);
 				SetFirstFile(menuItem);
 
@@ -595,11 +542,11 @@ namespace JWC
 			}
 			else if (numEntries > 1)
 			{
-				MruMenuItem menuItem = (MruMenuItem) MenuItems[StartIndex + numEntries - 1];
+                ToolStripMenuItem menuItem = (ToolStripMenuItem)MenuItems[StartIndex + numEntries - 1];
 				MenuItems.RemoveAt(StartIndex + numEntries - 1);
 
 				menuItem.Text = FixupEntryname(0, entryname);
-				menuItem.Filename = filename;
+				menuItem.Tag = filename;
                 menuItem.ToolTipText = filename; 
 
 				MenuItems.Insert(StartIndex, menuItem);
@@ -626,7 +573,7 @@ namespace JWC
 					int startIndex = StartIndex;
 					if (number == 0)
 					{
-						SetFirstFile((MruMenuItem)MenuItems[startIndex + 1]);
+						SetFirstFile((ToolStripMenuItem)MenuItems[startIndex + 1]);
 					}
 
 					MenuItems.RemoveAt(startIndex + number);
@@ -682,9 +629,9 @@ namespace JWC
 				int index = FindFilenameMenuIndex(oldFilename);
 				if (index >= 0)
 				{
-					MruMenuItem menuItem = (MruMenuItem)MenuItems[index];
+                    ToolStripMenuItem menuItem = (ToolStripMenuItem)MenuItems[index];
 					menuItem.Text = FixupEntryname(0, newEntryname);
-					menuItem.Filename = newFilename;
+					menuItem.Tag = newFilename;
 					return;
 				}
 			}
@@ -774,7 +721,7 @@ namespace JWC
 					int i = StartIndex;
 					for (; i < EndIndex; i++, number++)
 					{
-						regKey.SetValue("File" + number.ToString(), ((MruMenuItem)MenuItems[i]).Filename);
+						regKey.SetValue("File" + number.ToString(), ((ToolStripMenuItem)MenuItems[i]).Tag as string);
 					}
 
 					for (; number <= 16; number++)
@@ -788,8 +735,23 @@ namespace JWC
 			}
 		}
 
-		#endregion
-	}
+        #region IDisposable Support
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                mruStripMutex.Close();
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+        #endregion
+
+        #endregion
+    }
 
 	/// <summary>
 	/// Represents an inline most recently used (mru) menu.
@@ -885,7 +847,7 @@ namespace JWC
 			MenuItems.Remove(recentFileMenuItem);
 		}
 
-		protected override void SetFirstFile(MruMenuItem menuItem)
+		protected override void SetFirstFile(ToolStripMenuItem menuItem)
 		{
 			firstMenuItem = menuItem;
 		}

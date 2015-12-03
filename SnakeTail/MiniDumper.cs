@@ -9,7 +9,7 @@ namespace SnakeTail
     sealed class MiniDumper
     {
         [Flags]
-        internal enum Typ : uint
+        public enum Typ : uint
         {
             // From dbghelp.h:
             MiniDumpNormal = 0x00000000,
@@ -40,63 +40,59 @@ namespace SnakeTail
         //    BOOL ClientPointers;
         //} MINIDUMP_EXCEPTION_INFORMATION, *PMINIDUMP_EXCEPTION_INFORMATION;
         [StructLayout(LayoutKind.Sequential, Pack = 4)]  // Pack=4 is important! So it works also for x64!
-        struct MiniDumpExceptionInformation
+        struct MiniDumpExceptionInformation : IDisposable
         {
             public uint ThreadId;
-            public IntPtr ExceptioonPointers;
+            public IntPtr ExceptionPointers;
             [MarshalAs(UnmanagedType.Bool)]
             public bool ClientPointers;
+
+            public void Dispose()
+            {
+            }
         }
 
-        //BOOL
-        //WINAPI
-        //MiniDumpWriteDump(
-        //    __in HANDLE hProcess,
-        //    __in DWORD ProcessId,
-        //    __in HANDLE hFile,
-        //    __in MINIDUMP_TYPE DumpType,
-        //    __in_opt PMINIDUMP_EXCEPTION_INFORMATION ExceptionParam,
-        //    __in_opt PMINIDUMP_USER_STREAM_INFORMATION UserStreamParam,
-        //    __in_opt PMINIDUMP_CALLBACK_INFORMATION CallbackParam
-        //    );
-        // Overload requiring MiniDumpExceptionInformation 
-        [DllImport("dbghelp.dll", EntryPoint = "MiniDumpWriteDump", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
-        private static extern bool MiniDumpWriteDump(IntPtr hProcess, uint processId, IntPtr hFile, uint dumpType, ref MiniDumpExceptionInformation expParam, IntPtr userStreamParam, IntPtr callbackParam);
+        sealed class NativeMethods
+        {
+            // Overload requiring MiniDumpExceptionInformation 
+            [DllImport("dbghelp.dll", EntryPoint = "MiniDumpWriteDump", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
+            public static extern bool MiniDumpWriteDump(IntPtr hProcess, uint processId, IntPtr hFile, uint dumpType, ref MiniDumpExceptionInformation expParam, IntPtr userStreamParam, IntPtr callbackParam);
 
-        // Overload supporting MiniDumpExceptionInformation == NULL 
-        [DllImport("dbghelp.dll", EntryPoint = "MiniDumpWriteDump", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
-        private static extern bool MiniDumpWriteDump(IntPtr hProcess, uint processId, IntPtr hFile, uint dumpType, IntPtr expParam, IntPtr userStreamParam, IntPtr callbackParam);
+            // Overload supporting MiniDumpExceptionInformation == NULL 
+            [DllImport("dbghelp.dll", EntryPoint = "MiniDumpWriteDump", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
+            public static extern bool MiniDumpWriteDump(IntPtr hProcess, uint processId, IntPtr hFile, uint dumpType, IntPtr expParam, IntPtr userStreamParam, IntPtr callbackParam);
 
-        [DllImport("kernel32.dll", EntryPoint = "GetCurrentThreadId", ExactSpelling = true)]
-        static extern uint GetCurrentThreadId();
+            [DllImport("kernel32.dll", EntryPoint = "GetCurrentThreadId", ExactSpelling = true)]
+            public static extern uint GetCurrentThreadId();
 
-        [DllImport("kernel32.dll", EntryPoint = "GetCurrentProcess", ExactSpelling = true)]
-        static extern IntPtr GetCurrentProcess();
+            [DllImport("kernel32.dll", EntryPoint = "GetCurrentProcess", ExactSpelling = true)]
+            public static extern IntPtr GetCurrentProcess();
 
-        [DllImport("kernel32.dll", EntryPoint = "GetCurrentProcessId", ExactSpelling = true)]
-        static extern uint GetCurrentProcessId();
+            [DllImport("kernel32.dll", EntryPoint = "GetCurrentProcessId", ExactSpelling = true)]
+            public static extern uint GetCurrentProcessId();
+        }
 
-        public static bool Write(string fileName)
+        internal static bool Write(string fileName)
         {
             return Write(fileName, Typ.MiniDumpWithFullMemory);
         }
-        public static bool Write(string fileName, Typ dumpTyp)
+        internal static bool Write(string fileName, Typ dumpTyp)
         {
             using (var fs = new System.IO.FileStream(fileName, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.None))
             {
                 MiniDumpExceptionInformation exp;
-                exp.ThreadId = GetCurrentThreadId();
+                exp.ThreadId = NativeMethods.GetCurrentThreadId();
                 exp.ClientPointers = false;
-                exp.ExceptioonPointers = System.Runtime.InteropServices.Marshal.GetExceptionPointers();
+                exp.ExceptionPointers = System.Runtime.InteropServices.Marshal.GetExceptionPointers();
                 bool bRet = false;
 				// If program runs as x86 on a x64 machine, then Marshall.GetExceptionPointers can return IntPtr.Zero
-                if (exp.ExceptioonPointers == IntPtr.Zero)
+                if (exp.ExceptionPointers == IntPtr.Zero)
                 {
-                    bRet = MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), fs.SafeFileHandle.DangerousGetHandle(), (uint)dumpTyp, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
+                    bRet = NativeMethods.MiniDumpWriteDump(NativeMethods.GetCurrentProcess(), NativeMethods.GetCurrentProcessId(), fs.SafeFileHandle.DangerousGetHandle(), (uint)dumpTyp, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
                 }
                 else
                 {
-                    bRet = MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), fs.SafeFileHandle.DangerousGetHandle(), (uint)dumpTyp, ref exp, IntPtr.Zero, IntPtr.Zero);                    
+                    bRet = NativeMethods.MiniDumpWriteDump(NativeMethods.GetCurrentProcess(), NativeMethods.GetCurrentProcessId(), fs.SafeFileHandle.DangerousGetHandle(), (uint)dumpTyp, ref exp, IntPtr.Zero, IntPtr.Zero);                    
                 }
                 return bRet;
             }

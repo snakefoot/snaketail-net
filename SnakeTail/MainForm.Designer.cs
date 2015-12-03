@@ -32,6 +32,10 @@ namespace SnakeTail
             {
                 components.Dispose();
             }
+            if (disposing && (_mruMenu != null))
+            {
+                _mruMenu.Dispose();
+            }
             base.Dispose(disposing);
         }
 

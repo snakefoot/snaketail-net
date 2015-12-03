@@ -250,7 +250,7 @@ namespace SnakeTail
         public long PeakPagedMemorySize;
         public long ManagedMemorySize;
 
-        public MemoryPerformanceReport()
+        internal MemoryPerformanceReport()
         {
             try
             {
@@ -394,7 +394,7 @@ namespace SnakeTail
         System.IO.MemoryStream ZipStream = null;
         System.IO.Compression.ZipStorer ZipStore = null;
 
-        public UploadCrashReport()
+        internal UploadCrashReport()
         {
             HttpParams = new System.Collections.Specialized.NameValueCollection();
             HttpParams.Add("AppName", Application.ProductName);
@@ -441,13 +441,13 @@ namespace SnakeTail
 
         protected virtual void Dispose(bool dispose)
         {
-            if (!dispose)
-                return;
-
-            if (ZipStore != null)
-                ZipStore.Dispose();
-            if (ZipStream != null)
-                ZipStream.Dispose();
+            if (dispose)
+            {
+                if (ZipStore != null)
+                    ZipStore.Dispose();
+                if (ZipStream != null)
+                    ZipStream.Dispose();
+            }
         }
 
         public void Dispose()
