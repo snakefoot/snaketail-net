@@ -133,8 +133,8 @@ namespace SnakeTail
             this._eventListView.UseCompatibleStateImageBehavior = false;
             this._eventListView.View = System.Windows.Forms.View.Details;
             this._eventListView.VirtualMode = true;
-            this._eventListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this._eventListView_ItemSelectionChanged);
-            this._eventListView.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this._eventListView_RetrieveVirtualItem);
+            this._eventListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.EventListView_ItemSelectionChanged);
+            this._eventListView.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.EventListView_RetrieveVirtualItem);
             // 
             // _contextMenuStrip
             // 
@@ -142,8 +142,8 @@ namespace SnakeTail
             toolStripSeparator1});
             this._contextMenuStrip.Name = "_contextMenuStrip";
             this._contextMenuStrip.Size = new System.Drawing.Size(61, 10);
-            this._contextMenuStrip.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this._contextMenuStrip_Closed);
-            this._contextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this._contextMenuStrip_Opening);
+            this._contextMenuStrip.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.ContextMenuStrip_Closed);
+            this._contextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.ContextMenuStrip_Opening);
             // 
             // _eventImageList
             // 
@@ -184,7 +184,7 @@ namespace SnakeTail
             this._activeWindowMenuItem.Name = "_activeWindowMenuItem";
             this._activeWindowMenuItem.Size = new System.Drawing.Size(39, 20);
             this._activeWindowMenuItem.Text = "Edit";
-            this._activeWindowMenuItem.DropDownOpening += new System.EventHandler(this._contextMenuStrip_Opening);
+            this._activeWindowMenuItem.DropDownOpening += new System.EventHandler(this.ContextMenuStrip_Opening);
             // 
             // _copyToolStripMenuItem
             // 
@@ -192,7 +192,7 @@ namespace SnakeTail
             this._copyToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
             this._copyToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
             this._copyToolStripMenuItem.Text = "Copy";
-            this._copyToolStripMenuItem.Click += new System.EventHandler(this._copyToolStripMenuItem_Click);
+            this._copyToolStripMenuItem.Click += new System.EventHandler(this.CopyToolStripMenuItem_Click);
             // 
             // findToolStripMenuItem
             // 
@@ -245,21 +245,21 @@ namespace SnakeTail
             this._addFilterToolStripMenuItem.Name = "_addFilterToolStripMenuItem";
             this._addFilterToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
             this._addFilterToolStripMenuItem.Text = "Add Filter";
-            this._addFilterToolStripMenuItem.Click += new System.EventHandler(this._addFilterToolStripMenuItem_Click);
+            this._addFilterToolStripMenuItem.Click += new System.EventHandler(this.AddFilterToolStripMenuItem_Click);
             // 
             // _resetFilterToolStripMenuItem
             // 
             this._resetFilterToolStripMenuItem.Name = "_resetFilterToolStripMenuItem";
             this._resetFilterToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
             this._resetFilterToolStripMenuItem.Text = "Reset Filter";
-            this._resetFilterToolStripMenuItem.Click += new System.EventHandler(this.resetFilterToolStripMenuItem_Click);
+            this._resetFilterToolStripMenuItem.Click += new System.EventHandler(this.ResetFilterToolStripMenuItem_Click);
             // 
             // _filterModeToolStripMenuItem
             // 
             this._filterModeToolStripMenuItem.Name = "_filterModeToolStripMenuItem";
             this._filterModeToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
             this._filterModeToolStripMenuItem.Text = "Filter Mode";
-            this._filterModeToolStripMenuItem.Click += new System.EventHandler(this._filterActiveToolStripMenuItem_Click);
+            this._filterModeToolStripMenuItem.Click += new System.EventHandler(this.FilterActiveToolStripMenuItem_Click);
             // 
             // _eventMessageText
             // 
@@ -273,7 +273,7 @@ namespace SnakeTail
             // 
             // _filterEventLogTimer
             // 
-            this._filterEventLogTimer.Tick += new System.EventHandler(this._filterEventLogTimer_Tick);
+            this._filterEventLogTimer.Tick += new System.EventHandler(this.FilterEventLogTimer_Tick);
             // 
             // EventLogForm
             // 

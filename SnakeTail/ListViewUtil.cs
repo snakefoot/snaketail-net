@@ -61,7 +61,7 @@ namespace SnakeTail
             LVM_SETITEMCOUNT = (LVM_FIRST + 47),
         }
 
-        sealed class NativeMethods
+        static class NativeMethods
         {
             [DllImport("user32.dll", CharSet = CharSet.Auto)]
             public static extern IntPtr SendMessage(IntPtr handle, uint messg, IntPtr wparam, IntPtr lparam);

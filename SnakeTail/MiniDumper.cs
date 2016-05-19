@@ -6,7 +6,7 @@ namespace SnakeTail
     // Credits Jochen Kalmbach @ http://blog.kalmbach-software.de/2008/12/13/writing-minidumps-in-c/
 	// Credits Don Dumitru @ http://blogs.msdn.com/b/dondu/archive/2010/10/24/writing-minidumps-in-c.aspx
 	// Credits Teoman Soygul @ http://nbug.codeplex.com/
-    sealed class MiniDumper
+    static class MiniDumper
     {
         [Flags]
         public enum Typ : uint
@@ -40,19 +40,15 @@ namespace SnakeTail
         //    BOOL ClientPointers;
         //} MINIDUMP_EXCEPTION_INFORMATION, *PMINIDUMP_EXCEPTION_INFORMATION;
         [StructLayout(LayoutKind.Sequential, Pack = 4)]  // Pack=4 is important! So it works also for x64!
-        struct MiniDumpExceptionInformation : IDisposable
+        struct MiniDumpExceptionInformation
         {
             public uint ThreadId;
             public IntPtr ExceptionPointers;
             [MarshalAs(UnmanagedType.Bool)]
             public bool ClientPointers;
-
-            public void Dispose()
-            {
-            }
         }
 
-        sealed class NativeMethods
+        static class NativeMethods
         {
             // Overload requiring MiniDumpExceptionInformation 
             [DllImport("dbghelp.dll", EntryPoint = "MiniDumpWriteDump", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]

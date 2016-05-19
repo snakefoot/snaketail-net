@@ -97,7 +97,7 @@ namespace SnakeTail
             try
             {
                 _eventLog = new EventLog(tailConfig.FilePath);
-                _eventLog.EntryWritten += new EntryWrittenEventHandler(_eventLog_EntryWritten);
+                _eventLog.EntryWritten += new EntryWrittenEventHandler(EventLog_EntryWritten);
                 _eventLog.EndInit();
                 if (_eventLog.Entries.Count == -1)
                     return; // Crazy check just to ensure we have permissions to read the log
@@ -160,7 +160,7 @@ namespace SnakeTail
         {
             if (matchCase)
             {
-                if (0 <= itemText.IndexOf(searchText))
+                if (0 <= itemText.IndexOf(searchText, StringComparison.InvariantCulture))
                 {
                     return true;
                 }
@@ -579,11 +579,11 @@ namespace SnakeTail
             }
         }
 
-        void _eventLog_EntryWritten(object sender, EntryWrittenEventArgs e)
+        void EventLog_EntryWritten(object sender, EntryWrittenEventArgs e)
         {
             if (InvokeRequired)
             {
-                this.Invoke(new EntryWrittenEventHandler(_eventLog_EntryWritten), new object[] { sender, e });
+                this.Invoke(new EntryWrittenEventHandler(EventLog_EntryWritten), new object[] { sender, e });
                 return;
             }
 
@@ -684,7 +684,7 @@ namespace SnakeTail
                 if (entry.Index == 0)
                 {
                     _eventListView.Invalidate();
-                    this.BeginInvoke(new EntryWrittenEventHandler(_eventLog_EntryWritten), new object[] { sender, null });
+                    this.BeginInvoke(new EntryWrittenEventHandler(EventLog_EntryWritten), new object[] { sender, null });
                     return;
                 }
 
@@ -818,7 +818,7 @@ namespace SnakeTail
 
         public delegate void UpdateAction(); 
 
-        private void _eventListView_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
+        private void EventListView_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
             if (_topItemIndexHack)
             {
@@ -848,7 +848,7 @@ namespace SnakeTail
                 else
                 {
                     _eventListView.Invalidate();
-                    this.BeginInvoke(new EntryWrittenEventHandler(_eventLog_EntryWritten), new object[] { sender, null });
+                    this.BeginInvoke(new EntryWrittenEventHandler(EventLog_EntryWritten), new object[] { sender, null });
                 }
             }
             else
@@ -856,14 +856,14 @@ namespace SnakeTail
             {
                 // The EventLog object sometimes get "broken" when pruned, and returns invalid entries
                 _eventListView.Invalidate();
-                this.BeginInvoke(new EntryWrittenEventHandler(_eventLog_EntryWritten), new object[] { sender, null });
+                this.BeginInvoke(new EntryWrittenEventHandler(EventLog_EntryWritten), new object[] { sender, null });
             }
 
             ListViewItem lvi = CreateListViewItem(entry);
             e.Item = lvi;
         }
 
-        private void _eventListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        private void EventListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
             if (e.IsSelected)
             {
@@ -948,7 +948,7 @@ namespace SnakeTail
             return false;
         }
 
-        private void _contextMenuStrip_Opening(object sender, CancelEventArgs e)
+        private void ContextMenuStrip_Opening(object sender, CancelEventArgs e)
         {
             Point mousePosition = MousePosition;
             Point clientPosition = _eventListView.PointToClient(mousePosition);
@@ -957,7 +957,7 @@ namespace SnakeTail
             if (hitTest != null && hitTest.Item != null && hitTest.SubItem != null)
                 subItemIndex = hitTest.Item.SubItems.IndexOf(hitTest.SubItem);
 
-            _contextMenuStrip_Opening(sender, (EventArgs)e);
+            ContextMenuStrip_Opening(sender, (EventArgs)e);
 
             // We steal the items from the main menu (we restore them when closing again)
             ToolStripItem[] items = new ToolStripItem[_activeWindowMenuItem.DropDownItems.Count];
@@ -973,7 +973,7 @@ namespace SnakeTail
                 _addFilterToolStripMenuItem.Text = "Add Filter '" + hitTest.SubItem.Text + "'";
         }
 
-        private void _contextMenuStrip_Closed(object sender, ToolStripDropDownClosedEventArgs e)
+        private void ContextMenuStrip_Closed(object sender, ToolStripDropDownClosedEventArgs e)
         {
             // Restore the items back to the main menu when closing
             ToolStripItem[] items = new ToolStripItem[_contextMenuStrip.Items.Count];
@@ -983,7 +983,7 @@ namespace SnakeTail
             _contextMenuStrip.Items.Add(new ToolStripSeparator());  // Dummy item so menu is shown the next time
         }
 
-        private void _contextMenuStrip_Opening(object sender, EventArgs e)
+        private void ContextMenuStrip_Opening(object sender, EventArgs e)
         {
             _addFilterToolStripMenuItem.Visible = false;
             _filterModeToolStripMenuItem.Checked = _filterActive;
@@ -1011,7 +1011,7 @@ namespace SnakeTail
             newform.BringToFront();
         }
 
-        private void _addFilterToolStripMenuItem_Click(object sender, EventArgs e)
+        private void AddFilterToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
             if (menuItem == null)
@@ -1082,12 +1082,12 @@ namespace SnakeTail
             _eventLog.EnableRaisingEvents = true;
         }
 
-        private void _filterActiveToolStripMenuItem_Click(object sender, EventArgs e)
+        private void FilterActiveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ConfigureColumnFilter(!_filterActive);
         }
 
-        private void resetFilterToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ResetFilterToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ConfigureColumnFilter(false);
             _columnFilters.Clear();
@@ -1101,7 +1101,7 @@ namespace SnakeTail
             _eventLog.EnableRaisingEvents = false;
         }
 
-        private void _filterEventLogTimer_Tick(object sender, EventArgs e)
+        private void FilterEventLogTimer_Tick(object sender, EventArgs e)
         {
             bool listAtBottom = ListAtBottom();
             int listCount = _eventListView.Items.Count;
@@ -1171,7 +1171,7 @@ namespace SnakeTail
                 _filterEventLogTimer.Enabled = false;
         }
 
-        private void _copyToolStripMenuItem_Click(object sender, EventArgs e)
+        private void CopyToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Copy selected rows to clipboard
             StringBuilder selection = new StringBuilder();

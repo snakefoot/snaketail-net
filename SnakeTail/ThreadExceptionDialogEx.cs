@@ -312,7 +312,7 @@ namespace SnakeTail
                     }
                     else
                     {
-                        DialogResult res = MessageBox.Show(message, "New update available", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show(message, "New update available", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     return;
                 }

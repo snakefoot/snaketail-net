@@ -19,7 +19,7 @@ using System.Windows.Forms;
 
 namespace SnakeTail
 {
-    sealed internal class ClipboardHelper
+    static class ClipboardHelper
     {
         public static void CopyToClipboard(string content)
         {

@@ -98,11 +98,6 @@ namespace SnakeTail
             }
         }
 
-        public void SetStatusBar(string text)
-        {
-            SetStatusBar(text, 0, 0);
-        }
-
         public void SetStatusBar(string text, int progressValue, int progressMax)
         {
             _statusProgressBar.Maximum = progressMax;

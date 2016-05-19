@@ -156,11 +156,6 @@ namespace SnakeTail
             }
         }
 
-        public bool FileAtStart
-        {
-            get { return Length > 0 && _lastLineNumber == 0; }
-        }
-
         public long Length
         {
             get { return _fileStream != null ? _fileStream.Length : 0; }

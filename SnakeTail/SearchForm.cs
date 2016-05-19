@@ -116,7 +116,7 @@ namespace SnakeTail
             _findNextBtn.Enabled = false;
         }
 
-        sealed class NativeMethods
+        static class NativeMethods
         {
             public static IntPtr HWND_TOP = (IntPtr)0;
             public const int SWP_NOACTIVATE = 0x0010;
