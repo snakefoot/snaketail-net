@@ -14,8 +14,6 @@
 #endregion
 
 using System;
-using System.ComponentModel;
-using System.Data;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -104,8 +102,8 @@ namespace SnakeTail
             if (_activeTailForm != null)
             {
                 _activeTailForm.TailWindow.FormClosing -= _activeForm_FormClosing;
+                _activeTailForm = null;
             }
-            _activeTailForm = null;
             if (MainForm.Instance != null)
                 MainForm.Instance.Focus();
         }
@@ -118,7 +116,7 @@ namespace SnakeTail
 
         static class NativeMethods
         {
-            public static IntPtr HWND_TOP = (IntPtr)0;
+            public static readonly IntPtr HWND_TOP = (IntPtr)0;
             public const int SWP_NOACTIVATE = 0x0010;
             public const int SWP_NOSIZE = 0x0001;
             public const int SWP_NOMOVE = 0x0002;
