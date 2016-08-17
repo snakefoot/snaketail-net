@@ -1659,6 +1659,26 @@ namespace SnakeTail
                 MessageBox.Show(this, "Failed to copy to clipboard, maybe another application is locking the clipboard.\n\n" + ex.Message);
             }
         }
+
+        private void openContainingFolderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string actualFileName = string.Empty;
+                if (_logTailStream != null)
+                {
+                    actualFileName = _logTailStream.Name;
+                    if (string.IsNullOrEmpty(actualFileName))
+                        actualFileName = _logTailStream.FilePathAbsolute;
+                    if (!string.IsNullOrEmpty(actualFileName))
+                        Process.Start("explorer.exe", "/select," + actualFileName);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, "Failed to open Windows Explorer.\n\n" + ex.Message);
+            }
+        }
     }
 
     class LogFileListView : ListView

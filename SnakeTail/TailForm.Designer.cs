@@ -80,6 +80,7 @@ namespace SnakeTail
             this.gotoNextHighlightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pauseWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyAsPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openContainingFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configureViewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.switchModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.externalToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -188,12 +189,13 @@ namespace SnakeTail
             this.gotoPreviousHighlightToolStripMenuItem,
             this.gotoNextHighlightToolStripMenuItem,
             this.pauseWindowToolStripMenuItem,
-            this.copyAsPathToolStripMenuItem,
             toolStripSeparator2,
             this.configureViewToolStripMenuItem,
             this.switchModeToolStripMenuItem,
             toolStripSeparator3,
             this.externalToolsToolStripMenuItem,
+            this.openContainingFolderToolStripMenuItem,
+            this.copyAsPathToolStripMenuItem,
             toolStripSeparator5,
             this.startServiceToolStripMenuItem,
             this.stopServiceToolStripMenuItem,
@@ -262,6 +264,13 @@ namespace SnakeTail
             this.copyAsPathToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
             this.copyAsPathToolStripMenuItem.Text = "Copy as path";
             this.copyAsPathToolStripMenuItem.Click += new System.EventHandler(this.copyAsPathToolStripMenuItem_Click);
+            // 
+            // openContainingFolderToolStripMenuItem
+            // 
+            this.openContainingFolderToolStripMenuItem.Name = "openContainingFolderToolStripMenuItem";
+            this.openContainingFolderToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
+            this.openContainingFolderToolStripMenuItem.Text = "Open Containing Folder";
+            this.openContainingFolderToolStripMenuItem.Click += new System.EventHandler(this.openContainingFolderToolStripMenuItem_Click);
             // 
             // configureViewToolStripMenuItem
             // 
@@ -444,5 +453,6 @@ namespace SnakeTail
         private System.Windows.Forms.ToolStripMenuItem previousBookmarkToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem clearBookmarksToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyAsPathToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openContainingFolderToolStripMenuItem;
     }
 }
