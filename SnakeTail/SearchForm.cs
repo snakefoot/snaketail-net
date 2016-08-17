@@ -49,7 +49,7 @@ namespace SnakeTail
             }
             set
             {
-                if (_activeTailForm != null)
+                if (_activeTailForm != null && _activeTailForm.TailWindow != null && !_activeTailForm.TailWindow.IsDisposed)
                 {
                     _activeTailForm.TailWindow.FormClosing -= _activeForm_FormClosing;
                 }
@@ -66,7 +66,12 @@ namespace SnakeTail
         public void StartSearch(ITailForm activeTailForm)
         {
             if (!Visible)
-                Show(MainForm.Instance);
+            {
+                if (activeTailForm != null && activeTailForm.TailWindow != null && activeTailForm.TailWindow.MdiParent == null)
+                    Show(activeTailForm.TailWindow);
+                else
+                    Show(MainForm.Instance);
+            }
             ActiveTailForm = activeTailForm;
             BringToFront();
             _searchTextBox.SelectAll();
@@ -99,7 +104,7 @@ namespace SnakeTail
 
         void _activeForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (_activeTailForm != null)
+            if (_activeTailForm != null && _activeTailForm.TailWindow != null)
             {
                 _activeTailForm.TailWindow.FormClosing -= _activeForm_FormClosing;
                 _activeTailForm = null;
@@ -152,7 +157,9 @@ namespace SnakeTail
 
         private void _cancelBtn_Click(object sender, EventArgs e)
         {
-            if (MainForm.Instance != null)
+            if (_activeTailForm != null && _activeTailForm.TailWindow != null && !_activeTailForm.TailWindow.IsDisposed && _activeTailForm.TailWindow.MdiParent == null)
+                _activeTailForm.TailWindow.Focus();
+            else if (MainForm.Instance != null)
                 MainForm.Instance.Focus();
             if (!IsDisposed)
                 Hide();

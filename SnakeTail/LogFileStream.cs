@@ -28,7 +28,7 @@ namespace SnakeTail
         FileStream _fileStream = null;
         StreamReader _fileReader = null;
         ThreadPoolQueue _threadPool = null;
-        DateTime _lastFileCheck = DateTime.Now;
+        DateTime _lastFileCheck = DateTime.UtcNow;
         int _lastLineNumber = 0;
         string _lastFileCheckError = "";
         long _lastFileCheckLength = 0;
@@ -58,11 +58,11 @@ namespace SnakeTail
         public void Reset()
         {
             FileReloadedEvent = null;
-        }
+         }
 
         public void CheckLogFile(bool forceReload)
         {
-            _lastFileCheck = DateTime.Now;
+            _lastFileCheck = DateTime.UtcNow;
 
             try
             {
@@ -225,7 +225,7 @@ namespace SnakeTail
 
         public void Dispose()
         {
-            FileReloadedEvent = null;
+            Reset();
 
             if (_threadPool != null)
             {
@@ -238,7 +238,9 @@ namespace SnakeTail
 
         void CloseFile(bool publishEvent)
         {
-            _lastFileCheckError = "";
+            _lastFileCheckError = string.Empty;
+            _lastFileCheck = DateTime.UtcNow;
+            _lastFileCheckLength = 0;
             _lastLineNumber = 0;
 
             bool closedFile = false;
@@ -391,7 +393,7 @@ namespace SnakeTail
             if (_fileReader == null || _fileStream == null)
             {
                 // Check if file is available (once a second)
-                if (_lastFileCheck != DateTime.Now)
+                if (_lastFileCheck != DateTime.UtcNow)
                     CheckLogFile(true);
 
                 if (lineNumber == 1)
@@ -416,13 +418,13 @@ namespace SnakeTail
                 if (_fileReader.EndOfStream)
                 {
                     // Check if file has been renamed/truncated (once every 10 seconds)
-                    if (DateTime.Now.Subtract(_lastFileCheck) >= _fileCheckFrequency)
+                    if (DateTime.UtcNow.Subtract(_lastFileCheck) >= _fileCheckFrequency)
                         CheckLogFile(false);
                     return null;
                 }
 
                 string line = null;
-                for (int i = 0; i < lineNumber && !_fileReader.EndOfStream; ++i)
+                for (int i = 0; i < lineNumber; ++i)
                 {
                     line = _fileReader.ReadLine();
                     if (line == null)
@@ -431,7 +433,7 @@ namespace SnakeTail
                     _lastLineNumber++;
                 }
 
-                _lastFileCheck = DateTime.Now;
+                _lastFileCheck = DateTime.UtcNow;
                 return line;
             }
             catch (System.UnauthorizedAccessException ex)

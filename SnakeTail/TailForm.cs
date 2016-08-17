@@ -336,6 +336,8 @@ namespace SnakeTail
                 _bookmarks.Clear();
                 _tailListView.Invalidate();
             }
+
+            SetStatusBar(null);
         }
 
         void UpdateFormTitle(bool force)
@@ -408,6 +410,33 @@ namespace SnakeTail
             SetStatusBar(text, 0, 0);
         }
 
+        private static string ConvertFileSize(long fileSize)
+        {
+            string[] sizes = { "B", "KB", "MB", "GB" };
+            double len = fileSize;
+            int order = 0;
+            while (len >= 1024 && ++order < sizes.Length)
+            {
+                len = len / 1024;
+            }
+            if (order == 0)
+                return string.Format("{0:0} {1}", len, sizes[order]);
+            else if (order == 1)
+                return string.Format("{0:0.0} {1}", len, sizes[order]);
+            else
+                return string.Format("{0:0.00} {1}", len, sizes[order]);
+        }
+
+        private string GenerateDefaultStatusText()
+        {
+            long fileSize = _logTailStream != null ? _logTailStream.Position : 0;
+            string text = Paused ? "Paused" : "Ready";
+            if (fileSize > 0)
+                return string.Format("{0} ({1})", text, ConvertFileSize(fileSize));
+            else
+                return text;
+        }
+
         public void SetStatusBar(string text, int progressValue, int progressMax)
         {
             if (_statusStrip.Visible)
@@ -420,7 +449,7 @@ namespace SnakeTail
                     _statusProgressBar.Visible = true;
 
                 if (text == null)
-                    _statusTextBar.Text = Paused ? "Paused" : "Ready";
+                    _statusTextBar.Text = GenerateDefaultStatusText();
                 else
                     _statusTextBar.Text = text;
 
@@ -429,8 +458,11 @@ namespace SnakeTail
             }
             else if (MainForm.Instance != null)
             {
-                if (text == null && Paused)
-                    MainForm.Instance.SetStatusBar("Paused", progressValue, progressMax);
+                if (text == null)
+                {
+                    if (MainForm.Instance.ActiveMdiChild == this)
+                        MainForm.Instance.SetStatusBar(GenerateDefaultStatusText(), progressValue, progressMax);
+                }
                 else
                     MainForm.Instance.SetStatusBar(text, progressValue, progressMax);
             }
@@ -1103,6 +1135,8 @@ namespace SnakeTail
                 if (listAtBottom && _tailListView.VirtualListSize > 0)
                     _tailListView.EnsureVisible(_tailListView.VirtualListSize - 1);
             }
+
+            SetStatusBar(null);
         }
 
         private void CheckExternalToolResults()
@@ -1380,13 +1414,13 @@ namespace SnakeTail
 
         private void TailForm_Activated(object sender, EventArgs e)
         {
-            SetStatusBar(null);
             SearchForm.Instance.ActiveTailForm = this;
             TabPage parentTab = this.Tag as TabPage;
             if (parentTab != null)
                 parentTab.ImageIndex = -1;
             _tailListView.Invalidate();
             _tailListView.Update();
+            SetStatusBar(null);
         }
 
         private void TailForm_Resize(object sender, EventArgs e)
