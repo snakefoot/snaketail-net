@@ -31,13 +31,13 @@
 	<Program_Info>
 		<Program_Name>SnakeTail</Program_Name>
 		<Program_Version>1.9.4</Program_Version>
-		<Program_Release_Month>8</Program_Release_Month>
+		<Program_Release_Month>08</Program_Release_Month>
 		<Program_Release_Day>17</Program_Release_Day>
 		<Program_Release_Year>2016</Program_Release_Year>
 		<Program_Type>Freeware</Program_Type>
 		<Program_Release_Status>New Release</Program_Release_Status>
 		<Program_Install_Support>No Install Support</Program_Install_Support>
-		<Program_OS_Support>Win8 x32,Win8 x64,Win7 x32,Win7 x64,WinVista,WinVista x64,WinXP,Win2000</Program_OS_Support>
+		<Program_OS_Support>Win7 x32,Win7 x64,WinVista,WinVista x64,WinXP,Win2000</Program_OS_Support>
 		<Program_Language>English</Program_Language>
 		<Program_Change_Info />
 		<Program_Specific_Category>Utilities</Program_Specific_Category>
