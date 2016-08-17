@@ -369,21 +369,6 @@ namespace SnakeTail
                 _loghitCounter = 0;
             }
 
-            string logSizeText = GetFileSizeStatusText();
-            if (!string.IsNullOrEmpty(logSizeText))
-            {
-                if (_taskMonitor != null || sb != null)
-                {
-                    sb = sb != null ? sb : new StringBuilder(title);
-                    sb.Append("LogSize=");
-                    sb.Append(logSizeText);
-                }
-                else
-                {
-                    title = string.Format("{0} LogSize={1}", title, logSizeText);
-                }
-            }
-
             if (_taskMonitor != null)
             {
                 sb = sb != null ? sb : new StringBuilder(title);
@@ -410,7 +395,21 @@ namespace SnakeTail
                     sb.Append(" (").Append(ex.Message).Append(")");
                 }
             }
- 
+
+            string logSizeText = GetFileSizeStatusText();
+            if (!string.IsNullOrEmpty(logSizeText))
+            {
+                if (sb != null)
+                {
+                    sb.Append(" LogSize=");
+                    sb.Append(logSizeText);
+                }
+                else
+                {
+                    title = string.Format("{0} LogSize={1}", title, logSizeText);
+                }
+            }
+
             _lastFormTitleUpdate = DateTime.Now;
 
             if (sb != null)
