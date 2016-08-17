@@ -79,11 +79,11 @@ namespace SnakeTail
             this.gotoPreviousHighlightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gotoNextHighlightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pauseWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.copyAsPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openContainingFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configureViewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.switchModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.externalToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openContainingFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyAsPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.startServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stopServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pauseServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -258,20 +258,6 @@ namespace SnakeTail
             this.pauseWindowToolStripMenuItem.Text = "Pause Window";
             this.pauseWindowToolStripMenuItem.Click += new System.EventHandler(this.pauseWindowToolStripMenuItem_Click);
             // 
-            // copyAsPathToolStripMenuItem
-            // 
-            this.copyAsPathToolStripMenuItem.Name = "copyAsPathToolStripMenuItem";
-            this.copyAsPathToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
-            this.copyAsPathToolStripMenuItem.Text = "Copy as path";
-            this.copyAsPathToolStripMenuItem.Click += new System.EventHandler(this.copyAsPathToolStripMenuItem_Click);
-            // 
-            // openContainingFolderToolStripMenuItem
-            // 
-            this.openContainingFolderToolStripMenuItem.Name = "openContainingFolderToolStripMenuItem";
-            this.openContainingFolderToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
-            this.openContainingFolderToolStripMenuItem.Text = "Open Containing Folder";
-            this.openContainingFolderToolStripMenuItem.Click += new System.EventHandler(this.openContainingFolderToolStripMenuItem_Click);
-            // 
             // configureViewToolStripMenuItem
             // 
             this.configureViewToolStripMenuItem.Name = "configureViewToolStripMenuItem";
@@ -291,6 +277,20 @@ namespace SnakeTail
             this.externalToolsToolStripMenuItem.Name = "externalToolsToolStripMenuItem";
             this.externalToolsToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
             this.externalToolsToolStripMenuItem.Text = "External Tools";
+            // 
+            // openContainingFolderToolStripMenuItem
+            // 
+            this.openContainingFolderToolStripMenuItem.Name = "openContainingFolderToolStripMenuItem";
+            this.openContainingFolderToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
+            this.openContainingFolderToolStripMenuItem.Text = "Open Containing Folder";
+            this.openContainingFolderToolStripMenuItem.Click += new System.EventHandler(this.openContainingFolderToolStripMenuItem_Click);
+            // 
+            // copyAsPathToolStripMenuItem
+            // 
+            this.copyAsPathToolStripMenuItem.Name = "copyAsPathToolStripMenuItem";
+            this.copyAsPathToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
+            this.copyAsPathToolStripMenuItem.Text = "Copy as path";
+            this.copyAsPathToolStripMenuItem.Click += new System.EventHandler(this.copyAsPathToolStripMenuItem_Click);
             // 
             // startServiceToolStripMenuItem
             // 

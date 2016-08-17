@@ -108,12 +108,14 @@ namespace SnakeTail
                 _statusProgressBar.Visible = true;
 
             if (text == null)
-                _statusTextBar.Text = "Ready";
-            else
-                _statusTextBar.Text = text;
+                text = "Ready";
 
-            _statusStrip.Invalidate();
-            _statusStrip.Update();
+            if (_statusTextBar.Text != text || progressMax != 0 || progressValue != 0)
+            {
+                _statusTextBar.Text = text;
+                _statusStrip.Invalidate();
+                _statusStrip.Update();
+            }
         }
 
         private void MainForm_MdiChildActivate(object sender, EventArgs e)
@@ -195,6 +197,7 @@ namespace SnakeTail
                     if (_MDITabControl.SelectedTab == null || this.ActiveMdiChild == _MDITabControl.SelectedTab.Tag)
                     {
                         _MDITabControl.Visible = false;
+                        SetStatusBar(null, 0, 0);
                     }
                 }
             }
@@ -341,10 +344,10 @@ namespace SnakeTail
 
         private void _MDITabControl_MouseClick(object sender, MouseEventArgs e)
         {
-            var tabControl = sender as TabControl;
-            TabPage tabPageCurrent = null;
             if (e.Button == MouseButtons.Middle)
             {
+                var tabControl = sender as TabControl;
+                TabPage tabPageCurrent = null;
                 for (var i = 0; i < tabControl.TabCount; i++)
                 {
                     if (!tabControl.GetTabRect(i).Contains(e.Location))

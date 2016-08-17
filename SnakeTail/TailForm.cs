@@ -353,11 +353,11 @@ namespace SnakeTail
                 if (parentTab.Text != title)
                     parentTab.Text = title;
 
-                string fileStreamPath = _logTailStream.Name;
+                string fileStreamPath = _logTailStream != null ? _logTailStream.Name : string.Empty;
                 if (!String.IsNullOrEmpty(fileStreamPath))
                     parentTab.ToolTipText = fileStreamPath;
                 else
-                    parentTab.ToolTipText = _logTailStream.FilePathAbsolute;
+                    parentTab.ToolTipText = _logTailStream != null ? _logTailStream.FilePathAbsolute : string.Empty;
             }
 
             StringBuilder sb = null;
@@ -365,8 +365,23 @@ namespace SnakeTail
             if (_loghitCounter != -1)
             {
                 sb = sb != null ? sb : new StringBuilder(title);
-                sb.Append(" Hits:").Append(_loghitCounter);
+                sb.Append(" Hits=").Append(_loghitCounter);
                 _loghitCounter = 0;
+            }
+
+            string logSizeText = GetFileSizeStatusText();
+            if (!string.IsNullOrEmpty(logSizeText))
+            {
+                if (_taskMonitor != null || sb != null)
+                {
+                    sb = sb != null ? sb : new StringBuilder(title);
+                    sb.Append("LogSize=");
+                    sb.Append(logSizeText);
+                }
+                else
+                {
+                    title = string.Format("{0} LogSize={1}", title, logSizeText);
+                }
             }
 
             if (_taskMonitor != null)
@@ -379,10 +394,10 @@ namespace SnakeTail
                     Process process = _taskMonitor.Process;
                     if (process != null)
                     {
-                        sb.AppendFormat(" CPU: {0:F0}", cpuUtilization);
+                        sb.AppendFormat(" CPU={0:F0}", cpuUtilization);
 
                         process.Refresh();
-                        sb.Append(" RAM: ").Append(process.PrivateMemorySize64 / (1024 * 1024));
+                        sb.Append(" RAM=").Append(process.PrivateMemorySize64 / (1024 * 1024));
                         sb.Append(_taskMonitor.ServiceRunning ? " (Started)" : " (Stopped)");
                     }
                     else
@@ -395,7 +410,7 @@ namespace SnakeTail
                     sb.Append(" (").Append(ex.Message).Append(")");
                 }
             }
-
+ 
             _lastFormTitleUpdate = DateTime.Now;
 
             if (sb != null)
@@ -403,6 +418,8 @@ namespace SnakeTail
 
             if (Text != title)
                 Text = title;
+
+            SetStatusBar(null);
         }
 
         public void SetStatusBar(string text)
@@ -427,14 +444,13 @@ namespace SnakeTail
                 return string.Format("{0:0.00} {1}", len, sizes[order]);
         }
 
-        private string GenerateDefaultStatusText()
+        private string GetFileSizeStatusText()
         {
             long fileSize = _logTailStream != null ? _logTailStream.Position : 0;
-            string text = Paused ? "Paused" : "Ready";
             if (fileSize > 0)
-                return string.Format("{0} ({1})", text, ConvertFileSize(fileSize));
+                return ConvertFileSize(fileSize);
             else
-                return text;
+                return string.Empty;
         }
 
         public void SetStatusBar(string text, int progressValue, int progressMax)
@@ -448,20 +464,19 @@ namespace SnakeTail
                 else
                     _statusProgressBar.Visible = true;
 
-                if (text == null)
-                    _statusTextBar.Text = GenerateDefaultStatusText();
-                else
+                if (text != _statusTextBar.Text || progressValue != 0 || progressMax != 0)
+                {
                     _statusTextBar.Text = text;
-
-                _statusStrip.Invalidate();
-                _statusStrip.Update();
+                    _statusStrip.Invalidate();
+                    _statusStrip.Update();
+                }
             }
             else if (MainForm.Instance != null)
             {
                 if (text == null)
                 {
                     if (MainForm.Instance.ActiveMdiChild == this)
-                        MainForm.Instance.SetStatusBar(GenerateDefaultStatusText(), progressValue, progressMax);
+                        MainForm.Instance.SetStatusBar(Paused ? "Paused" : "Ready", progressValue, progressMax);
                 }
                 else
                     MainForm.Instance.SetStatusBar(text, progressValue, progressMax);
@@ -1135,8 +1150,6 @@ namespace SnakeTail
                 if (listAtBottom && _tailListView.VirtualListSize > 0)
                     _tailListView.EnsureVisible(_tailListView.VirtualListSize - 1);
             }
-
-            SetStatusBar(null);
         }
 
         private void CheckExternalToolResults()
@@ -1421,6 +1434,7 @@ namespace SnakeTail
             _tailListView.Invalidate();
             _tailListView.Update();
             SetStatusBar(null);
+            UpdateFormTitle(true);
         }
 
         private void TailForm_Resize(object sender, EventArgs e)
