@@ -297,8 +297,16 @@ namespace SnakeTail
                 mdiForm.LoadConfig(tailConfig, configPath);
                 if (mdiForm.IsDisposed)
                     continue;
-                
-                _mruMenu.AddFile(filename);
+
+                try
+                {
+                    string combinedName = Path.GetDirectoryName(Path.Combine(configPath, filename));
+                    new DirectoryInfo(combinedName);
+                    _mruMenu.AddFile(combinedName);
+                }
+                catch
+                {
+                }
 
                 mdiForm.MdiParent = this;
                 mdiForm.Show();
