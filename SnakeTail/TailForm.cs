@@ -632,8 +632,6 @@ namespace SnakeTail
                             searchFileCache.PrepareCache(i, i + searchFileCache.Items.Count / 2, true);
                             searchFileCache.FillCache(_logFileStream, i + searchFileCache.Items.Count / 2);
                             lvi = searchFileCache.LookupCache(i);
-                            if (lvi == null)
-                                return -1;
                         }
                         lineText = lvi.Text;
                     }
