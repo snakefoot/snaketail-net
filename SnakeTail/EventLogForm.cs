@@ -1336,6 +1336,7 @@ namespace SnakeTail
                     _eventLogPropertyType = _eventLogReaderAssembly.GetType("System.Diagnostics.Eventing.Reader.EventProperty");
 
                     _eventLogReaderThread = new System.Threading.Thread(new System.Threading.ParameterizedThreadStart(ThreadProc));
+                    _eventLogReaderThread.IsBackground = true;
                     _eventLogReaderThread.Start(eventLog.Log);
                 }
                 catch (Exception ex)
@@ -1517,6 +1518,7 @@ namespace SnakeTail
                 _eventLogReaderReadForward = readForward;
                 _eventLogReaderReadDelay = TimeSpan.FromMilliseconds(0);
                 _eventLogReaderThread = new System.Threading.Thread(new System.Threading.ParameterizedThreadStart(ThreadProc));
+                _eventLogReaderThread.IsBackground = true;
                 _eventLogReaderThread.Start(eventLog.Log);
             }
             else
