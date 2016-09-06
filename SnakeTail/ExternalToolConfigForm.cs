@@ -94,8 +94,14 @@ namespace SnakeTail
             OpenFileDialog fileDialog = new OpenFileDialog();
             fileDialog.Multiselect = true;
             fileDialog.Title = "Find Tool Location";
-            if (!String.IsNullOrEmpty(_cmdEdt.Text))
-                fileDialog.InitialDirectory = System.IO.Path.GetDirectoryName(_cmdEdt.Text);
+            try
+            {
+                if (!String.IsNullOrEmpty(_cmdEdt.Text))
+                    fileDialog.InitialDirectory = System.IO.Path.GetDirectoryName(_cmdEdt.Text);
+            }
+            catch (System.ArgumentException)
+            {
+            }
             fileDialog.Filter = "Executable Files|*.exe|All Files|*.*";
             if (fileDialog.ShowDialog(this) != DialogResult.OK)
                 return;

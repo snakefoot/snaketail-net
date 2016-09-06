@@ -601,39 +601,79 @@ namespace SnakeTail
 
         private int SearchForTextForward(string searchText, bool matchCase, bool lineHighlights, int startIndex, int endIndex, ref LogFileCache searchFileCache)
         {
-            for (int i = startIndex; i < endIndex; ++i)
-            {
-                if (i % _logFileCache.Items.Count == 0)
-                    SetStatusBar("Searching...", i, endIndex);
+            int i = 0;
 
-                string lineText = null;
-                if (searchFileCache == null)
+            try
+            {
+                for (i = startIndex; i < endIndex; ++i)
                 {
-                    ListViewItem lvi = _logFileCache.LookupCache(i);
-                    if (lvi != null)
-                        lineText = lvi.Text;
-                    else
+                    if (i % _logFileCache.Items.Count == 0)
+                        SetStatusBar("Searching...", i, endIndex);
+
+                    string lineText = null;
+                    if (searchFileCache == null)
                     {
-                        // Copy the current cache position, in case the search hit is the next line
-                        searchFileCache = new LogFileCache(_logFileCache.Items.Count);
-                        searchFileCache.Items = _logFileCache.Items.GetRange(0, _logFileCache.Items.Count);
-                        searchFileCache.FirstIndex = _logFileCache.FirstIndex;
+                        ListViewItem lvi = _logFileCache.LookupCache(i);
+                        if (lvi != null)
+                            lineText = lvi.Text;
+                        else
+                        {
+                            // Copy the current cache position, in case the search hit is the next line
+                            searchFileCache = new LogFileCache(_logFileCache.Items.Count);
+                            searchFileCache.Items = _logFileCache.Items.GetRange(0, _logFileCache.Items.Count);
+                            searchFileCache.FirstIndex = _logFileCache.FirstIndex;
+                        }
                     }
+                    if (searchFileCache != null)
+                    {
+                        ListViewItem lvi = searchFileCache.LookupCache(i);
+                        if (lvi == null)
+                        {
+                            searchFileCache.PrepareCache(i, i + searchFileCache.Items.Count / 2, true);
+                            searchFileCache.FillCache(_logFileStream, i + searchFileCache.Items.Count / 2);
+                            lvi = searchFileCache.LookupCache(i);
+                            if (lvi == null)
+                                return -1;
+                        }
+                        lineText = lvi.Text;
+                    }
+
+                    if (MatchTextSearch(i, lineText, searchText, matchCase, lineHighlights))
+                        return i;
                 }
+            }
+            catch (Exception ex)
+            {
+                string exceptionDetails = ex.Message + "\r\n";
                 if (searchFileCache != null)
                 {
-                    ListViewItem lvi = searchFileCache.LookupCache(i);
-                    if (lvi == null)
-                    {
-                        searchFileCache.PrepareCache(i, i + searchFileCache.Items.Count / 2, true);
-                        searchFileCache.FillCache(_logFileStream, i + searchFileCache.Items.Count / 2);
-                        lvi = searchFileCache.LookupCache(i);
-                    }
-                    lineText = lvi.Text;
+                    exceptionDetails += "SearchFileCache = ";
+                    if (searchFileCache.Items != null)
+                        exceptionDetails += "Items = " + searchFileCache.Items.Count.ToString() + ", ";
+                    else
+                        exceptionDetails = "Items = null, ";
                 }
-
-                if (MatchTextSearch(i, lineText, searchText, matchCase, lineHighlights))
-                    return i;
+                else
+                {
+                    exceptionDetails += "SearchFileCache = null, ";
+                }
+                if (_logFileCache != null)
+                {
+                    exceptionDetails += "LogFileCache = ";
+                    if (searchFileCache.Items != null)
+                        exceptionDetails += "Items = " + searchFileCache.Items.Count.ToString() + ", ";
+                    else
+                        exceptionDetails = "Items = null, ";
+                }
+                else
+                {
+                    exceptionDetails += "LogFileCache = null, ";
+                }
+                exceptionDetails += "VirtualListSize = " + _tailListView.VirtualListSize.ToString() + ", ";
+                exceptionDetails += "StartIndex = " + startIndex.ToString() + ", ";
+                exceptionDetails += "EndIndex = " + endIndex.ToString() + ", ";
+                exceptionDetails += "CurrentIndex = " + i.ToString() + ", ";
+                throw new InvalidOperationException(exceptionDetails, ex);
             }
             return -1;
         }
