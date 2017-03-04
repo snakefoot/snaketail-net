@@ -95,8 +95,21 @@ namespace SnakeTail
         {
             try
             {
+                var eventLog = _eventLog;
+                _eventLog = null;
+                if (eventLog != null)
+                {
+                    eventLog.EntryWritten -= EventLog_EntryWritten;
+                    eventLog.Dispose();
+                }
+            }
+            catch
+            { }
+
+            try
+            {
                 _eventLog = new EventLog(tailConfig.FilePath);
-                _eventLog.EntryWritten += new EntryWrittenEventHandler(EventLog_EntryWritten);
+                _eventLog.EntryWritten += EventLog_EntryWritten;
                 _eventLog.EndInit();
                 if (_eventLog.Entries.Count == -1)
                     return; // Crazy check just to ensure we have permissions to read the log

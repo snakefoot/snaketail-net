@@ -40,6 +40,7 @@ namespace SnakeTail
             }
             if (disposing && (_eventLog != null))
             {
+                _eventLog.EntryWritten -= EventLog_EntryWritten;
                 _eventLog.Dispose();
             }
         }
