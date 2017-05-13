@@ -99,6 +99,11 @@ namespace SnakeTail
 
         public void SetStatusBar(string text, int progressValue, int progressMax)
         {
+            if(progressValue < _statusProgressBar.Minimum)
+            {
+                // Make sure progressValue is withing range even for empty files
+                progressValue = _statusProgressBar.Minimum;
+            }
             _statusProgressBar.Maximum = progressMax;
             _statusProgressBar.Value = progressValue;
             if (progressMax == 0 && progressValue == 0)
