@@ -61,13 +61,14 @@ namespace SnakeTail
             System.Windows.Forms.ColumnHeader toolShortcutColumnHeader;
             this._tabControl = new System.Windows.Forms.TabControl();
             this._tabPageView = new System.Windows.Forms.TabPage();
-            this._bookmarkBackColorBtn = new System.Windows.Forms.Button();
             this._bookmarkTextColorBtn = new System.Windows.Forms.Button();
+            this._textColorBtn = new System.Windows.Forms.Button();
+            this._bookmarkBackColorBtn = new System.Windows.Forms.Button();
             this._displayIconChk = new System.Windows.Forms.CheckBox();
             this._windowIconEdt = new System.Windows.Forms.TextBox();
             this._windowTitleEdt = new System.Windows.Forms.TextBox();
             this._backColorBtn = new System.Windows.Forms.Button();
-            this._textColorBtn = new System.Windows.Forms.Button();
+            this._textFontBtn = new System.Windows.Forms.Button();
             this._tabPageFile = new System.Windows.Forms.TabPage();
             this._titleMatchFilenameChk = new System.Windows.Forms.CheckBox();
             this._browseBtn = new System.Windows.Forms.Button();
@@ -254,15 +255,16 @@ namespace SnakeTail
             // 
             // _tabPageView
             // 
-            this._tabPageView.Controls.Add(this._bookmarkBackColorBtn);
             this._tabPageView.Controls.Add(this._bookmarkTextColorBtn);
+            this._tabPageView.Controls.Add(this._textColorBtn);
+            this._tabPageView.Controls.Add(this._bookmarkBackColorBtn);
             this._tabPageView.Controls.Add(this._displayIconChk);
             this._tabPageView.Controls.Add(label2);
             this._tabPageView.Controls.Add(this._windowIconEdt);
             this._tabPageView.Controls.Add(label1);
             this._tabPageView.Controls.Add(this._windowTitleEdt);
             this._tabPageView.Controls.Add(this._backColorBtn);
-            this._tabPageView.Controls.Add(this._textColorBtn);
+            this._tabPageView.Controls.Add(this._textFontBtn);
             this._tabPageView.Location = new System.Drawing.Point(4, 22);
             this._tabPageView.Name = "_tabPageView";
             this._tabPageView.Padding = new System.Windows.Forms.Padding(3);
@@ -271,25 +273,35 @@ namespace SnakeTail
             this._tabPageView.Text = "View";
             this._tabPageView.UseVisualStyleBackColor = true;
             // 
+            // _bookmarkTextColorBtn
+            // 
+            this._bookmarkTextColorBtn.Location = new System.Drawing.Point(199, 69);
+            this._bookmarkTextColorBtn.Name = "_bookmarkTextColorBtn";
+            this._bookmarkTextColorBtn.Size = new System.Drawing.Size(125, 23);
+            this._bookmarkTextColorBtn.TabIndex = 18;
+            this._bookmarkTextColorBtn.Text = "Bookmark Text Color";
+            this._bookmarkTextColorBtn.UseVisualStyleBackColor = true;
+            // 
+            // _textColorBtn
+            // 
+            this._textColorBtn.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this._textColorBtn.Location = new System.Drawing.Point(11, 69);
+            this._textColorBtn.Name = "_textColorBtn";
+            this._textColorBtn.Size = new System.Drawing.Size(125, 23);
+            this._textColorBtn.TabIndex = 17;
+            this._textColorBtn.Text = "Text Color";
+            this._textColorBtn.UseVisualStyleBackColor = true;
+            this._textColorBtn.Click += new System.EventHandler(this._textColorBtn_Click);
+            // 
             // _bookmarkBackColorBtn
             // 
-            this._bookmarkBackColorBtn.Location = new System.Drawing.Point(188, 98);
+            this._bookmarkBackColorBtn.Location = new System.Drawing.Point(199, 98);
             this._bookmarkBackColorBtn.Name = "_bookmarkBackColorBtn";
             this._bookmarkBackColorBtn.Size = new System.Drawing.Size(125, 23);
             this._bookmarkBackColorBtn.TabIndex = 16;
             this._bookmarkBackColorBtn.Text = "Bookmark Background";
             this._bookmarkBackColorBtn.UseVisualStyleBackColor = true;
             this._bookmarkBackColorBtn.Click += new System.EventHandler(this._bookmarkBackColorBtn_Click);
-            // 
-            // _bookmarkTextColorBtn
-            // 
-            this._bookmarkTextColorBtn.Location = new System.Drawing.Point(188, 69);
-            this._bookmarkTextColorBtn.Name = "_bookmarkTextColorBtn";
-            this._bookmarkTextColorBtn.Size = new System.Drawing.Size(125, 23);
-            this._bookmarkTextColorBtn.TabIndex = 15;
-            this._bookmarkTextColorBtn.Text = "Bookmark Text Color";
-            this._bookmarkTextColorBtn.UseVisualStyleBackColor = true;
-            this._bookmarkTextColorBtn.Click += new System.EventHandler(this._bookmarkTextColorBtn_Click);
             // 
             // _displayIconChk
             // 
@@ -317,7 +329,7 @@ namespace SnakeTail
             // 
             // _backColorBtn
             // 
-            this._backColorBtn.Location = new System.Drawing.Point(11, 98);
+            this._backColorBtn.Location = new System.Drawing.Point(11, 127);
             this._backColorBtn.Name = "_backColorBtn";
             this._backColorBtn.Size = new System.Drawing.Size(125, 23);
             this._backColorBtn.TabIndex = 4;
@@ -325,15 +337,15 @@ namespace SnakeTail
             this._backColorBtn.UseVisualStyleBackColor = true;
             this._backColorBtn.Click += new System.EventHandler(this._backColorBtn_Click);
             // 
-            // _textColorBtn
+            // _textFontBtn
             // 
-            this._textColorBtn.Location = new System.Drawing.Point(11, 69);
-            this._textColorBtn.Name = "_textColorBtn";
-            this._textColorBtn.Size = new System.Drawing.Size(125, 23);
-            this._textColorBtn.TabIndex = 3;
-            this._textColorBtn.Text = "Text Color and Font";
-            this._textColorBtn.UseVisualStyleBackColor = true;
-            this._textColorBtn.Click += new System.EventHandler(this._textColorBtn_Click);
+            this._textFontBtn.Location = new System.Drawing.Point(11, 98);
+            this._textFontBtn.Name = "_textFontBtn";
+            this._textFontBtn.Size = new System.Drawing.Size(125, 23);
+            this._textFontBtn.TabIndex = 3;
+            this._textFontBtn.Text = "Text Font";
+            this._textFontBtn.UseVisualStyleBackColor = true;
+            this._textFontBtn.Click += new System.EventHandler(this._textFontBtn_Click);
             // 
             // _tabPageFile
             // 
@@ -691,7 +703,7 @@ namespace SnakeTail
         private System.Windows.Forms.TextBox _windowIconEdt;
         private System.Windows.Forms.TextBox _windowTitleEdt;
         private System.Windows.Forms.Button _backColorBtn;
-        private System.Windows.Forms.Button _textColorBtn;
+        private System.Windows.Forms.Button _textFontBtn;
         private System.Windows.Forms.TabPage _tabPageFile;
         private System.Windows.Forms.ComboBox _fileEncodingCmb;
         private System.Windows.Forms.TextBox _filePathEdt;
@@ -720,11 +732,9 @@ namespace SnakeTail
         private System.Windows.Forms.Button _moveDownKeywordBtn;
         private System.Windows.Forms.Button _moveUpKeywordBtn;
         private System.Windows.Forms.Button _applyAllBtn;
-        private System.Windows.Forms.Button _bookmarkTextColorBtn;
         private System.Windows.Forms.Button _bookmarkBackColorBtn;
         private System.Windows.Forms.Button _saveDefaultBtn;
-
-
-
+        private System.Windows.Forms.Button _bookmarkTextColorBtn;
+        private System.Windows.Forms.Button _textColorBtn;
     }
 }
