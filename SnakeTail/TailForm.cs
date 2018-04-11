@@ -96,6 +96,7 @@ namespace SnakeTail
         List<TailKeywordConfig> _keywordHighlight;
         int _loghitCounter = -1;
         bool _displayTabIcon = false;
+        bool _displayLineNumbers = false;
         List<ExternalToolConfig> _externalTools;
         Color _bookmarkTextColor = Color.Yellow;    // Default bookmark text color
         Color _bookmarkBackColor = Color.DarkGreen; // Default bookmark background color
@@ -285,6 +286,7 @@ namespace SnakeTail
             UpdateFormTitle(true);
 
             _displayTabIcon = tailConfig.DisplayTabIcon;
+            _displayLineNumbers = tailConfig.DisplayLineNumbers;
 
             if (!string.IsNullOrEmpty(tailConfig.IconFile))
             {
@@ -547,6 +549,7 @@ namespace SnakeTail
                 tailConfig.ServiceName = "";
 
             tailConfig.DisplayTabIcon = _displayTabIcon;
+            tailConfig.DisplayLineNumbers = _displayLineNumbers;
         }
 
         public void CopySelectionToClipboard()
@@ -1547,6 +1550,8 @@ namespace SnakeTail
                                     }
                                     if (configFormApply._checkBoxFont.Checked)
                                         configFileOther.FontInvariant = configFile.FontInvariant;
+                                    if (configFormApply._checkBoxLineNumbers.Checked)
+                                        configFileOther.DisplayLineNumbers = configFile.DisplayLineNumbers;
                                     if (configFormApply._checkboxKeywords.Checked)
                                         configFileOther.KeywordHighlight = configFile.KeywordHighlight;
                                     if (configFormApply._checkboxTools.Checked)

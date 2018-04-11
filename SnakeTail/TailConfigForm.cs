@@ -63,6 +63,7 @@ namespace SnakeTail
             _windowTitleEdt.Text = TailFileConfig.Title;
             _windowIconEdt.Text = TailFileConfig.IconFile;
             _displayIconChk.Checked = TailFileConfig.DisplayTabIcon;
+            _displayLineNumbersChk.Checked = TailFileConfig.DisplayLineNumbers;
 
             if (_displayFileTab)
             {
@@ -121,6 +122,7 @@ namespace SnakeTail
             TailFileConfig.Title = _windowTitleEdt.Text;
             TailFileConfig.IconFile = _windowIconEdt.Text;
             TailFileConfig.DisplayTabIcon = _displayIconChk.Checked;
+            TailFileConfig.DisplayLineNumbers = _displayLineNumbersChk.Checked;
 
             if (_displayFileTab)
             {
