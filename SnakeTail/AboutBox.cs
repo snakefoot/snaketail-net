@@ -34,7 +34,7 @@ namespace SnakeTail
             this.labelCompanyName.Text = AssemblyCompany;
             this.textBoxDescription.Text = AssemblyDescription;
 
-            this.logoPictureBox.Image = Properties.Resources.SnakeIcon.ToBitmap();
+            this.logoPictureBox.Image = new Icon(Properties.Resources.SnakeIcon, new Size(64, 64)).ToBitmap();
         }
 
         #region Assembly Attribute Accessors
