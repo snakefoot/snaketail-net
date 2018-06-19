@@ -22,7 +22,7 @@ namespace SnakeTail
     static class Program
     {
         static volatile bool applicationCrashed = false;
-        public static string PadUrl = "http://snakenest.com/snaketail.pad.xml";
+        public static readonly string PadUrl = "http://snakenest.com/snaketail.pad.xml";
 
         /// <summary>
         /// The main entry point for the application.
@@ -46,10 +46,10 @@ namespace SnakeTail
                 return;
             applicationCrashed = true;
 
-            if (e.ExceptionObject as Exception != null)
+            if (e.ExceptionObject is Exception)
                 SendCrashReport(e.ExceptionObject as Exception);
             else
-                SendCrashReport(new Exception("Unknown Exception"));
+                SendCrashReport(new Exception(string.Format("Unknown Exception - {0}", e.ExceptionObject)));
 
             applicationCrashed = false;
         }
@@ -72,7 +72,7 @@ namespace SnakeTail
 
             ThreadExceptionDialogEx dlg = new ThreadExceptionDialogEx(ex);
             dlg.SendReportEvent += updateChecker.SendReport;
-            if (MainForm.Instance != null)
+            if (MainForm.Instance != null && !MainForm.Instance.IsDisposed)
                 dlg.ShowDialog(MainForm.Instance);
             else
                 dlg.ShowDialog();
