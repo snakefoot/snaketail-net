@@ -288,6 +288,8 @@ namespace SnakeTail
             req.Proxy = proxy;
             req.PreAuthenticate = true;
             //HACK: end add proxy
+            req.Accept = "text/html,application/xml";
+            req.UserAgent = "Mozilla/5.0";  // Fix HTTP Error 406 Not acceptable - Security incident detected
 
             XmlDocument xmlDoc = new XmlDocument();
             using (WebResponse response = req.GetResponse())
@@ -468,6 +470,8 @@ namespace SnakeTail
             wr.Proxy = proxy;
             wr.PreAuthenticate = true;
             //HACK: end add proxy
+            wr.Accept = "text/html,application/xml";
+            wr.UserAgent = "Mozilla/5.0";   // Fix HTTP Error 406 Not acceptable - Security incident detected
             wr.ContentType = "multipart/form-data; boundary=" + boundary;
             wr.Method = "POST";
 
