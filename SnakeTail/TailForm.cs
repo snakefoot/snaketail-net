@@ -96,11 +96,17 @@ namespace SnakeTail
         List<TailKeywordConfig> _keywordHighlight;
         int _loghitCounter = -1;
         bool _displayTabIcon = false;
+        bool _displayLineNumbers = false;
         List<ExternalToolConfig> _externalTools;
         Color _bookmarkTextColor = Color.Yellow;    // Default bookmark text color
         Color _bookmarkBackColor = Color.DarkGreen; // Default bookmark background color
         List<int> _bookmarks = new List<int>();
         ThreadPoolQueue _threadPoolQueue = null;
+
+        const int MAX_LINE_WIDTH = 1000;
+        const int LINE_NUMBER_WIDTH = 10; // Support maximum Int32 representable number 2^32 (~2 billion)
+        const string LINE_NUMBER_SEPARATOR = ": "; // Divider between line number and line content
+        readonly int MAX_LINE_WIDTH_WITH_LINE_NUMBER = MAX_LINE_WIDTH - (LINE_NUMBER_WIDTH + LINE_NUMBER_SEPARATOR.Length);
 
         public TailForm()
         {
@@ -285,6 +291,7 @@ namespace SnakeTail
             UpdateFormTitle(true);
 
             _displayTabIcon = tailConfig.DisplayTabIcon;
+            _displayLineNumbers = tailConfig.DisplayLineNumbers;
 
             if (!string.IsNullOrEmpty(tailConfig.IconFile))
             {
@@ -547,6 +554,7 @@ namespace SnakeTail
                 tailConfig.ServiceName = "";
 
             tailConfig.DisplayTabIcon = _displayTabIcon;
+            tailConfig.DisplayLineNumbers = _displayLineNumbers;
         }
 
         public void CopySelectionToClipboard()
@@ -940,10 +948,28 @@ namespace SnakeTail
             e.DrawFocusRectangle(e.Bounds);
 
             TextFormatFlags flags = TextFormatFlags.Left | TextFormatFlags.ExpandTabs | TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix;
-            if (e.Item.Text.Length > 1000)
-                TextRenderer.DrawText(e.Graphics, e.Item.Text.Substring(0, 1000), e.Item.ListView.Font, e.Bounds, e.SubItem.ForeColor, flags);
-            else
-                TextRenderer.DrawText(e.Graphics, e.Item.Text, e.Item.ListView.Font, e.Bounds, e.SubItem.ForeColor, flags);
+            // Integer line number (+1 for non-zero index)
+            string text = ConstructLineForRendering(e.Item.Text, e.ItemIndex + 1);
+            TextRenderer.DrawText(e.Graphics, text, e.Item.ListView.Font, e.Bounds, e.SubItem.ForeColor, flags);
+        }
+
+        /// <summary>
+        /// Constructs a single line for drawing purposes
+        /// Optionally allows display of line number prefix
+        /// </summary>
+        /// <param name="rawText">A single line for rendering</param>
+        /// <param name="lineNumber">Line number in monitored file (1-indexed)</param>
+        /// <param name="bDisplayLineNumber">Include line number in text rendering string</param>
+        /// <returns></returns>
+        private string ConstructLineForRendering(string rawText, int lineNumber)
+        {
+            int maxLength = _displayLineNumbers ? MAX_LINE_WIDTH_WITH_LINE_NUMBER : MAX_LINE_WIDTH;
+            string truncText = rawText.Length > maxLength ? rawText.Substring(0, maxLength) : rawText;
+
+            if (_displayLineNumbers)
+                // Left pad 10, coverage of 2^32 potential line numbers (~2 billion for Int32)
+                return string.Format("{0,10:N0}{1}{2}", lineNumber, LINE_NUMBER_SEPARATOR, truncText); 
+            return truncText;
         }
 
         private bool MatchesBookmark(int lineNumber)
@@ -1547,6 +1573,8 @@ namespace SnakeTail
                                     }
                                     if (configFormApply._checkBoxFont.Checked)
                                         configFileOther.FontInvariant = configFile.FontInvariant;
+                                    if (configFormApply._checkBoxLineNumbers.Checked)
+                                        configFileOther.DisplayLineNumbers = configFile.DisplayLineNumbers;
                                     if (configFormApply._checkboxKeywords.Checked)
                                         configFileOther.KeywordHighlight = configFile.KeywordHighlight;
                                     if (configFormApply._checkboxTools.Checked)

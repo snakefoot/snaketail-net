@@ -96,6 +96,7 @@ namespace SnakeTail
             this._cancelBtn = new System.Windows.Forms.Button();
             this._applyAllBtn = new System.Windows.Forms.Button();
             this._saveDefaultBtn = new System.Windows.Forms.Button();
+            this._displayLineNumbersChk = new System.Windows.Forms.CheckBox();
             label2 = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -254,6 +255,7 @@ namespace SnakeTail
             // 
             // _tabPageView
             // 
+            this._tabPageView.Controls.Add(this._displayLineNumbersChk);
             this._tabPageView.Controls.Add(this._bookmarkBackColorBtn);
             this._tabPageView.Controls.Add(this._bookmarkTextColorBtn);
             this._tabPageView.Controls.Add(this._displayIconChk);
@@ -652,6 +654,16 @@ namespace SnakeTail
             this._saveDefaultBtn.UseVisualStyleBackColor = true;
             this._saveDefaultBtn.Click += new System.EventHandler(this._saveDefaultBtn_Click);
             // 
+            // _displayLineNumbersChk
+            // 
+            this._displayLineNumbersChk.AutoSize = true;
+            this._displayLineNumbersChk.Location = new System.Drawing.Point(11, 161);
+            this._displayLineNumbersChk.Name = "_displayLineNumbersChk";
+            this._displayLineNumbersChk.Size = new System.Drawing.Size(122, 17);
+            this._displayLineNumbersChk.TabIndex = 17;
+            this._displayLineNumbersChk.Text = "Display line numbers";
+            this._displayLineNumbersChk.UseVisualStyleBackColor = true;
+            // 
             // TailConfigForm
             // 
             this.AcceptButton = this._acceptBtn;
@@ -723,8 +735,6 @@ namespace SnakeTail
         private System.Windows.Forms.Button _bookmarkTextColorBtn;
         private System.Windows.Forms.Button _bookmarkBackColorBtn;
         private System.Windows.Forms.Button _saveDefaultBtn;
-
-
-
+        private System.Windows.Forms.CheckBox _displayLineNumbersChk;
     }
 }
