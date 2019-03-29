@@ -111,7 +111,6 @@ namespace SnakeTail
                 _tabControl.TabPages.Remove(_tabPageKeyWords);
                 _tabControl.TabPages.Remove(_tabPageExtTools);
                 _applyAllBtn.Visible = false;
-                _bookmarkTextColorBtn.Visible = false;
                 _bookmarkBackColorBtn.Visible = false;
             }
         }
@@ -167,16 +166,23 @@ namespace SnakeTail
 
         private void _textColorBtn_Click(object sender, EventArgs e)
         {
+            ColorDialog colorDlg = new ColorDialog();
+            if (TailFileConfig.FormTextColor != null)
+                colorDlg.Color = TailFileConfig.FormTextColor.Value;
+            if (colorDlg.ShowDialog(this) == DialogResult.OK)
+            {
+                TailFileConfig.FormTextColor = colorDlg.Color;
+            }
+        }
+
+        private void _textFontBtn_Click(object sender, EventArgs e)
+        {
             FontDialog fdlgText = new FontDialog();
             if (TailFileConfig.FormFont != null)
                 fdlgText.Font = TailFileConfig.FormFont;
-            if (TailFileConfig.FormTextColor != null)
-                fdlgText.Color = TailFileConfig.FormTextColor.Value;
-            fdlgText.ShowColor = true;
             if (fdlgText.ShowDialog(this) == DialogResult.OK)
             {
                 TailFileConfig.FormFont = fdlgText.Font;
-                TailFileConfig.FormTextColor = fdlgText.Color;
             }
         }
 
@@ -201,7 +207,6 @@ namespace SnakeTail
                 TailFileConfig.FormBookmarkTextColor = colorDlg.Color;
             }
         }
-
 
         private void _bookmarkBackColorBtn_Click(object sender, EventArgs e)
         {
@@ -365,5 +370,6 @@ namespace SnakeTail
             tailConfig.TailFiles.Add(TailFileConfig);
             MainForm.Instance.SaveConfig(tailConfig, string.Empty);
         }
+
     }
 }
