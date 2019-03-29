@@ -112,6 +112,7 @@ namespace SnakeTail
                 _tabControl.TabPages.Remove(_tabPageExtTools);
                 _applyAllBtn.Visible = false;
                 _bookmarkBackColorBtn.Visible = false;
+                _bookmarkTextColorBtn.Visible = false;
             }
         }
 

@@ -275,17 +275,18 @@ namespace SnakeTail
             // 
             // _bookmarkTextColorBtn
             // 
-            this._bookmarkTextColorBtn.Location = new System.Drawing.Point(199, 69);
+            this._bookmarkTextColorBtn.Location = new System.Drawing.Point(199, 98);
             this._bookmarkTextColorBtn.Name = "_bookmarkTextColorBtn";
             this._bookmarkTextColorBtn.Size = new System.Drawing.Size(125, 23);
             this._bookmarkTextColorBtn.TabIndex = 18;
             this._bookmarkTextColorBtn.Text = "Bookmark Text Color";
             this._bookmarkTextColorBtn.UseVisualStyleBackColor = true;
+            this._bookmarkTextColorBtn.Click += new System.EventHandler(this._bookmarkTextColorBtn_Click);
             // 
             // _textColorBtn
             // 
             this._textColorBtn.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this._textColorBtn.Location = new System.Drawing.Point(11, 69);
+            this._textColorBtn.Location = new System.Drawing.Point(11, 98);
             this._textColorBtn.Name = "_textColorBtn";
             this._textColorBtn.Size = new System.Drawing.Size(125, 23);
             this._textColorBtn.TabIndex = 17;
@@ -295,7 +296,7 @@ namespace SnakeTail
             // 
             // _bookmarkBackColorBtn
             // 
-            this._bookmarkBackColorBtn.Location = new System.Drawing.Point(199, 98);
+            this._bookmarkBackColorBtn.Location = new System.Drawing.Point(199, 127);
             this._bookmarkBackColorBtn.Name = "_bookmarkBackColorBtn";
             this._bookmarkBackColorBtn.Size = new System.Drawing.Size(125, 23);
             this._bookmarkBackColorBtn.TabIndex = 16;
@@ -339,7 +340,7 @@ namespace SnakeTail
             // 
             // _textFontBtn
             // 
-            this._textFontBtn.Location = new System.Drawing.Point(11, 98);
+            this._textFontBtn.Location = new System.Drawing.Point(11, 69);
             this._textFontBtn.Name = "_textFontBtn";
             this._textFontBtn.Size = new System.Drawing.Size(125, 23);
             this._textFontBtn.TabIndex = 3;
