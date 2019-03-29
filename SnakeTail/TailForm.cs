@@ -1692,6 +1692,11 @@ namespace SnakeTail
 
         private void copyAsPathToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            CopyPath();
+        }
+
+        public void CopyPath()
+        {
             string actualFileName = string.Empty;
             if (_logTailStream != null)
             {
@@ -1710,6 +1715,11 @@ namespace SnakeTail
         }
 
         private void openContainingFolderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenExplorer();
+        }
+
+        public void OpenExplorer()
         {
             try
             {

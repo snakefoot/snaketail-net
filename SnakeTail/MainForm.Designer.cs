@@ -13,6 +13,8 @@
  */
 #endregion
 
+using System;
+
 namespace SnakeTail
 {
     partial class MainForm
@@ -87,9 +89,15 @@ namespace SnakeTail
             this._trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this._trayIconContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this._rightClickTab = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this._location = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
+            this._close = new System.Windows.Forms.ToolStripMenuItem();
+            this._explorer = new System.Windows.Forms.ToolStripMenuItem();
             this._statusStrip.SuspendLayout();
             this._mainMenu.SuspendLayout();
             this._trayIconContextMenuStrip.SuspendLayout();
+            this._rightClickTab.SuspendLayout();
             this.SuspendLayout();
             // 
             // _statusStrip
@@ -154,15 +162,15 @@ namespace SnakeTail
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.ShortcutKeys = (System.Windows.Forms.Keys)(System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O);
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openToolStripMenuItem.Text = "Open &File...";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // openEventLogToolStripMenuItem
             // 
             this.openEventLogToolStripMenuItem.Name = "openEventLogToolStripMenuItem";
-            this.openEventLogToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.openEventLogToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openEventLogToolStripMenuItem.Text = "Open &EventLog...";
             this.openEventLogToolStripMenuItem.Click += new System.EventHandler(this.openEventLogToolStripMenuItem_Click);
             // 
@@ -171,35 +179,35 @@ namespace SnakeTail
             this.closeItemToolStripMenuItem.Enabled = false;
             this.closeItemToolStripMenuItem.Name = "closeItemToolStripMenuItem";
             this.closeItemToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F4)));
-            this.closeItemToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.closeItemToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.closeItemToolStripMenuItem.Text = "&Close";
             this.closeItemToolStripMenuItem.Click += new System.EventHandler(this.closeItemToolStripMenuItem_Click);
             // 
             // loadSessionToolStripMenuItem
             // 
             this.loadSessionToolStripMenuItem.Name = "loadSessionToolStripMenuItem";
-            this.loadSessionToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.loadSessionToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.loadSessionToolStripMenuItem.Text = "&Open Session...";
             this.loadSessionToolStripMenuItem.Click += new System.EventHandler(this.loadSessionToolStripMenuItem_Click);
             // 
             // saveSessionToolStripMenuItem
             // 
             this.saveSessionToolStripMenuItem.Name = "saveSessionToolStripMenuItem";
-            this.saveSessionToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.saveSessionToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveSessionToolStripMenuItem.Text = "&Save Session...";
             this.saveSessionToolStripMenuItem.Click += new System.EventHandler(this.saveSessionToolStripMenuItem_Click);
             // 
             // closeSessionToolStripMenuItem
             // 
             this.closeSessionToolStripMenuItem.Name = "closeSessionToolStripMenuItem";
-            this.closeSessionToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.closeSessionToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.closeSessionToolStripMenuItem.Text = "C&lose Session";
             this.closeSessionToolStripMenuItem.Click += new System.EventHandler(this.closeAllToolStripMenuItem_Click);
             // 
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(161, 6);
+            this.toolStripSeparator5.Size = new System.Drawing.Size(177, 6);
             // 
             // recentFilesToolStripMenuItem
             // 
@@ -209,7 +217,7 @@ namespace SnakeTail
             this.clearListToolStripMenuItem,
             this.saveRecentFilesToRegistryToolStripMenuItem});
             this.recentFilesToolStripMenuItem.Name = "recentFilesToolStripMenuItem";
-            this.recentFilesToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.recentFilesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.recentFilesToolStripMenuItem.Text = "&Recent Files";
             // 
             // recentFile1ToolStripMenuItem
@@ -240,19 +248,19 @@ namespace SnakeTail
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(161, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(177, 6);
             // 
             // minimizeToTrayToolStripMenuItem
             // 
             this.minimizeToTrayToolStripMenuItem.Name = "minimizeToTrayToolStripMenuItem";
-            this.minimizeToTrayToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.minimizeToTrayToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.minimizeToTrayToolStripMenuItem.Text = "&Minimize to tray";
             this.minimizeToTrayToolStripMenuItem.Click += new System.EventHandler(this.minimizeToTrayToolStripMenuItem_Click);
             // 
             // alwaysOnTopToolStripMenuItem
             // 
             this.alwaysOnTopToolStripMenuItem.Name = "alwaysOnTopToolStripMenuItem";
-            this.alwaysOnTopToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.alwaysOnTopToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.alwaysOnTopToolStripMenuItem.Text = "Al&ways on top";
             this.alwaysOnTopToolStripMenuItem.Click += new System.EventHandler(this.alwaysOnTopToolStripMenuItem_Click);
             // 
@@ -260,7 +268,7 @@ namespace SnakeTail
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -276,7 +284,7 @@ namespace SnakeTail
             // 
             this.noActiveWindowToolStripMenuItem.Enabled = false;
             this.noActiveWindowToolStripMenuItem.Name = "noActiveWindowToolStripMenuItem";
-            this.noActiveWindowToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.noActiveWindowToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.noActiveWindowToolStripMenuItem.Text = "No active window";
             // 
             // windowToolStripMenuItem
@@ -406,6 +414,42 @@ namespace SnakeTail
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(57, 6);
             // 
+            // _rightClickTab
+            // 
+            this._rightClickTab.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._explorer,
+            this._location,
+            this.toolStripSeparator7,
+            this._close});
+            this._rightClickTab.Name = "_rightClickTab";
+            this._rightClickTab.Size = new System.Drawing.Size(181, 98);
+            // 
+            // _location
+            // 
+            this._location.Name = "_location";
+            this._location.Size = new System.Drawing.Size(148, 22);
+            this._location.Text = "Copy Path";
+            this._location.Click += new System.EventHandler(this._locationContextClick);
+            // 
+            // toolStripSeparator7
+            // 
+            this.toolStripSeparator7.Name = "toolStripSeparator7";
+            this.toolStripSeparator7.Size = new System.Drawing.Size(145, 6);
+            // 
+            // _close
+            // 
+            this._close.Name = "_close";
+            this._close.Size = new System.Drawing.Size(148, 22);
+            this._close.Text = "&Close";
+            this._close.Click += new System.EventHandler(this._closeContextClick);
+            // 
+            // _explorer
+            // 
+            this._explorer.Name = "_explorer";
+            this._explorer.Size = new System.Drawing.Size(148, 22);
+            this._explorer.Text = "Open Explorer";
+            this._explorer.Click += new System.EventHandler(this._explorerContextClick);
+            // 
             // MainForm
             // 
             this.AllowDrop = true;
@@ -430,6 +474,7 @@ namespace SnakeTail
             this._mainMenu.ResumeLayout(false);
             this._mainMenu.PerformLayout();
             this._trayIconContextMenuStrip.ResumeLayout(false);
+            this._rightClickTab.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -476,6 +521,11 @@ namespace SnakeTail
         private System.Windows.Forms.ToolStripMenuItem saveRecentFilesToRegistryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem alwaysOnTopToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeItemToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip _rightClickTab;
+        private System.Windows.Forms.ToolStripMenuItem _location;
+        private System.Windows.Forms.ToolStripMenuItem _close;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
+        private System.Windows.Forms.ToolStripMenuItem _explorer;
     }
 }
 
