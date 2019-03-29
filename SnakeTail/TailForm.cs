@@ -98,7 +98,7 @@ namespace SnakeTail
         bool _displayTabIcon = false;
         List<ExternalToolConfig> _externalTools;
         Color _bookmarkTextColor = Color.Yellow;    // Default bookmark text color
-        Color _bookmarkBackColor = Color.DarkGreen; // Default bookmark background color
+        Color _bookmarkBackColor = Color.Green;     // Default bookmark background color
         List<int> _bookmarks = new List<int>();
         ThreadPoolQueue _threadPoolQueue = null;
 
