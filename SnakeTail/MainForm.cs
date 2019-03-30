@@ -362,10 +362,11 @@ namespace SnakeTail
             else if (e.Button == MouseButtons.Right)
             {
                 var enablePath = tabPageCurrent.Tag is TailForm;
-                _explorer.Enabled = enablePath;
-                _location.Enabled = enablePath;
+                _openFolderTabContext.Visible = enablePath;
+                _copyPathTabContext.Visible = enablePath;
+                _separatorTabContext.Visible = enablePath;
 
-                _rightClickTab.Show(sender as TabControl, e.Location);
+                _tabContextMenuStrip.Show(sender as TabControl, e.Location);
             }
         }
 
@@ -912,7 +913,7 @@ namespace SnakeTail
             }
         }
 
-        private TabPage GetSelectedTab(object sender)
+        private TForm GetSelectedTabForm<TForm>(object sender) where TForm : Form
         {
             ToolStripItem item = (sender as ToolStripItem);
             if (item != null)
@@ -925,8 +926,11 @@ namespace SnakeTail
                     if (tabControl != null)
                     {
                         var relativeToScreen = tabControl.PointToClient(owner.Bounds.Location);
-
-                        return GetTabPageFromLocation(tabControl, relativeToScreen);
+                        var tabPageCurrent = GetTabPageFromLocation(tabControl, relativeToScreen);
+                        if (tabPageCurrent != null)
+                        {
+                            return tabPageCurrent.Tag as TForm;
+                        }                                
                     }
                 }
             }
@@ -945,43 +949,30 @@ namespace SnakeTail
             return null;
         }
 
-        private void _locationContextClick(object sender, EventArgs e)
+        private void _copyFolderPathClick(object sender, EventArgs e)
         {
-            var tabPageCurrent = GetSelectedTab(sender);
-            if (tabPageCurrent != null)
+            TailForm tailForm = GetSelectedTabForm<TailForm>(sender);
+            if (tailForm != null)
             {
-                var tailForm = (tabPageCurrent.Tag as TailForm);
-                if (tailForm != null)
-                {
-                    tailForm.CopyPath();
-                }
+                tailForm.CopyPath();
             }
         }
 
         private void _closeContextClick(object sender, EventArgs e)
         {
-            var tabPageCurrent = GetSelectedTab(sender);
-
-            if (tabPageCurrent != null)
+            Form form = GetSelectedTabForm<Form>(sender);
+            if (form != null)
             {
-                var form = (tabPageCurrent.Tag as Form);
-                if (form != null)
-                {
-                    form.Close();
-                }
+                form.Close();
             }
         }
 
-        private void _explorerContextClick(object sender, EventArgs e)
+        private void _openContainingFolderClick(object sender, EventArgs e)
         {
-            var tabPageCurrent = GetSelectedTab(sender);
-            if (tabPageCurrent != null)
+            TailForm tailForm = GetSelectedTabForm<TailForm>(sender);
+            if (tailForm != null)
             {
-                var form = (tabPageCurrent.Tag as TailForm);
-                if (form != null)
-                {
-                    form.OpenExplorer();
-                }
+                tailForm.OpenExplorer();
             }
         }
     }
