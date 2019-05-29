@@ -62,6 +62,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Management" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Drawing" />
@@ -84,6 +85,12 @@
       <DependentUpon>ExternalToolConfigForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ListViewUtil.cs" />
+    <Compile Include="LogLineDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LogLineDialog.Designer.cs">
+      <DependentUpon>LogLineDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="MiniDumper.cs" />
     <Compile Include="MruStripMenu.cs" />
     <Compile Include="StopwatchProfiler.cs" />
@@ -132,6 +139,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="KeywordConfigForm.resx">
       <DependentUpon>KeywordConfigForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LogLineDialog.resx">
+      <DependentUpon>LogLineDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

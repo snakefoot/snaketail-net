@@ -101,6 +101,7 @@ namespace SnakeTail
         Color _bookmarkBackColor = Color.Green;     // Default bookmark background color
         List<int> _bookmarks = new List<int>();
         ThreadPoolQueue _threadPoolQueue = null;
+        LogLineDialog _logLineDialog = new LogLineDialog();
 
         public TailForm()
         {
@@ -1736,6 +1737,16 @@ namespace SnakeTail
             catch (Exception ex)
             {
                 MessageBox.Show(this, "Failed to open Windows Explorer.\n\n" + ex.Message);
+            }
+        }
+
+        private void _tailListView_ItemActivate(object sender, EventArgs e)
+        {
+            ListView.SelectedIndexCollection selectedIndexCollection = _tailListView.SelectedIndices;
+            if (selectedIndexCollection.Count == 1)
+            {
+                _logLineDialog.lineText.Text = _tailListView.Items[selectedIndexCollection[0]].Text;
+                _logLineDialog.ShowDialog();
             }
         }
     }
