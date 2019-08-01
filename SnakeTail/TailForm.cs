@@ -737,8 +737,6 @@ namespace SnakeTail
         {
             // First use the visual cache, when that have failed, then revert to search from the beginning
             // and find the last match
-
-
             for (int i = startIndex; i >= endIndex; --i)
             {
                 if (i % _logFileCache.Items.Count == 0)
