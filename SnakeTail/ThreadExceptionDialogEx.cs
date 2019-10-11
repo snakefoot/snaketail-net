@@ -181,10 +181,8 @@ namespace SnakeTail
                 innerException = innerException.InnerException;
             }
             ExceptionDetails = exceptionReport.ToString();
-
-            StackTrace = exception.StackTrace;
-
             ExceptionSource = exception.Source;
+            StackTrace = exception.ToString();
         }
     }
 

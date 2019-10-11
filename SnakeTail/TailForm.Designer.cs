@@ -84,6 +84,7 @@ namespace SnakeTail
             this.externalToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openContainingFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyAsPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.reopenFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.startServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stopServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pauseServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -96,7 +97,6 @@ namespace SnakeTail
             this._tailListView = new SnakeTail.LogFileListView();
             this.hiddenItem = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.lineItem = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.reopenFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -294,6 +294,14 @@ namespace SnakeTail
             this.copyAsPathToolStripMenuItem.Text = "Copy as path";
             this.copyAsPathToolStripMenuItem.Click += new System.EventHandler(this.copyAsPathToolStripMenuItem_Click);
             // 
+            // reopenFileToolStripMenuItem
+            // 
+            this.reopenFileToolStripMenuItem.Name = "reopenFileToolStripMenuItem";
+            this.reopenFileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
+            this.reopenFileToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
+            this.reopenFileToolStripMenuItem.Text = "Reopen File";
+            this.reopenFileToolStripMenuItem.Click += new System.EventHandler(this.reopenFileToolStripMenuItem_Click);
+            // 
             // startServiceToolStripMenuItem
             // 
             this.startServiceToolStripMenuItem.Name = "startServiceToolStripMenuItem";
@@ -397,14 +405,6 @@ namespace SnakeTail
             // hiddenItem
             // 
             this.hiddenItem.Width = 0;
-            // 
-            // reopenFileToolStripMenuItem
-            // 
-            this.reopenFileToolStripMenuItem.Name = "reopenFileToolStripMenuItem";
-            this.reopenFileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.reopenFileToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
-            this.reopenFileToolStripMenuItem.Text = "Reopen File";
-            this.reopenFileToolStripMenuItem.Click += new System.EventHandler(this.reopenFileToolStripMenuItem_Click);
             // 
             // TailForm
             // 
