@@ -299,9 +299,15 @@ namespace SnakeTail
 
                 try
                 {
-                    string combinedName = Path.GetDirectoryName(Path.Combine(configPath, filename));
-                    new DirectoryInfo(combinedName);
-                    _mruMenu.AddFile(combinedName);
+                    if (string.IsNullOrEmpty(configPath))
+                    {
+                        new DirectoryInfo(Path.GetDirectoryName(filename));
+                        _mruMenu.AddFile(filename);
+                    }
+                    else
+                    {
+                        _mruMenu.AddFile(Path.Combine(configPath, filename));
+                    }
                 }
                 catch
                 {
