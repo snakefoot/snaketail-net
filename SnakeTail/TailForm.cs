@@ -1745,6 +1745,13 @@ namespace SnakeTail
                 MessageBox.Show(this, "Failed to open Windows Explorer.\n\n" + ex.Message);
             }
         }
+
+        private void reopenFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TailFileConfig configFileOther = new TailFileConfig();
+            SaveConfig(configFileOther);
+            LoadConfig(configFileOther, _configPath);
+        }
     }
 
     class LogFileListView : ListView
