@@ -939,7 +939,6 @@ namespace SnakeTail
 
         private TabPage GetTabPageFromLocation(TabControl tabControl, Point point)
         {
-            TabPage tabPageCurrent = null;
             for (var i = 0; i < tabControl.TabCount; i++)
             {
                 if (!tabControl.GetTabRect(i).Contains(point))

@@ -584,7 +584,7 @@ namespace SnakeTail
             else
             if (matchCase)
             {
-                if (0 <= lineText.IndexOf(searchText))
+                if (lineText.Contains(searchText))
                 {
                     return true;
                 }

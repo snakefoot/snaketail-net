@@ -67,10 +67,7 @@ namespace SnakeTail
 
             if (index >= FirstIndex && index < FirstIndex + Items.Count)
             {
-                if (Items[index - FirstIndex] != null)
-                    return Items[index - FirstIndex];
-                else
-                    return null;
+                return Items[index - FirstIndex];
             }
             else
             {
