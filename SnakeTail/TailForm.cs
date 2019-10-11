@@ -1092,6 +1092,9 @@ namespace SnakeTail
 
         private bool IsItemVisible(int index)
         {
+            if (_tailListView.VirtualListSize == 0)
+                return false;
+
             ListViewItem topItem = _tailListView.TopItem;
             if (topItem == null || topItem.Index > index)
                 return false;

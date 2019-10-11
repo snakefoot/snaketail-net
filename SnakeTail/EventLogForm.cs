@@ -557,6 +557,9 @@ namespace SnakeTail
             try
             {
                 _topItemIndexHack = true;
+                if (_eventListView.VirtualListSize == 0)
+                    return false;
+
                 ListViewItem topItem = _eventListView.TopItem;
                 if (topItem == null || topItem.Index > index)
                     return false;
