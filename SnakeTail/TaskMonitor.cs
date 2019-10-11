@@ -26,6 +26,7 @@ namespace SnakeTail
     class TaskMonitor : IDisposable
     {
         public string ServiceName { get; set; }
+        public string ServiceMachineName { get; set; }
         public System.ServiceProcess.ServiceController ServiceController { get { return _serviceController; } }
 
         System.ServiceProcess.ServiceController _serviceController;
@@ -156,11 +157,17 @@ namespace SnakeTail
             }
         }
 
-        public TaskMonitor(string serviceName)
+        public TaskMonitor(string serviceName, string serviceMachineName)
         {
             ServiceName = serviceName;
-            if (serviceName.IndexOf('.') == -1)
-                _serviceController = new System.ServiceProcess.ServiceController(ServiceName);
+            ServiceMachineName = serviceMachineName;
+            if (serviceName.IndexOf('.') == -1 || !string.IsNullOrEmpty(serviceMachineName))
+            {
+                if (string.IsNullOrEmpty(ServiceMachineName))
+                    _serviceController = new System.ServiceProcess.ServiceController(ServiceName);
+                else
+                    _serviceController = new System.ServiceProcess.ServiceController(ServiceName, ServiceMachineName);
+            }
         }
 
         public bool ServiceRunning
@@ -245,7 +252,9 @@ namespace SnakeTail
 
             try
             {
-                ProcessStartInfo startInfo = new ProcessStartInfo("sc.exe", "start " + ServiceName);
+                ProcessStartInfo startInfo = string.IsNullOrEmpty(ServiceMachineName) ?
+                    new ProcessStartInfo("sc.exe", "start " + ServiceName) :
+                    new ProcessStartInfo("sc.exe", "\\\\" + ServiceMachineName + " start " + ServiceName);
                 if (!IsAdministrator)
                     startInfo.Verb = "runas";
                 startInfo.WindowStyle = ProcessWindowStyle.Hidden;
@@ -264,7 +273,9 @@ namespace SnakeTail
 
             try
             {
-                ProcessStartInfo startInfo = new ProcessStartInfo("sc.exe", "stop " + ServiceName);
+                ProcessStartInfo startInfo = string.IsNullOrEmpty(ServiceMachineName) ?
+                    new ProcessStartInfo("sc.exe", "stop " + ServiceName) :
+                    new ProcessStartInfo("sc.exe", "\\\\" + ServiceMachineName + " stop " + ServiceName);
                 if (!IsAdministrator)
                     startInfo.Verb = "runas";
                 startInfo.WindowStyle = ProcessWindowStyle.Hidden;
@@ -283,7 +294,9 @@ namespace SnakeTail
 
             try
             {
-                ProcessStartInfo startInfo = new ProcessStartInfo("sc.exe", "pause " + ServiceName);
+                ProcessStartInfo startInfo = string.IsNullOrEmpty(ServiceMachineName) ?
+                    new ProcessStartInfo("sc.exe", "pause " + ServiceName) :
+                    new ProcessStartInfo("sc.exe", "\\\\" + ServiceMachineName + " pause " + ServiceName);
                 if (!IsAdministrator)
                     startInfo.Verb = "runas";
                 startInfo.WindowStyle = ProcessWindowStyle.Hidden;
@@ -300,9 +313,11 @@ namespace SnakeTail
             if (_serviceController == null)
                 return;
 
-             try
+            try
             {
-                ProcessStartInfo startInfo = new ProcessStartInfo("sc.exe", "continue " + ServiceName);
+                ProcessStartInfo startInfo = string.IsNullOrEmpty(ServiceMachineName) ?
+                    new ProcessStartInfo("sc.exe", "continue " + ServiceName) :
+                    new ProcessStartInfo("sc.exe", "\\\\" + ServiceMachineName + " continue " + ServiceName);
                 if (!IsAdministrator)
                     startInfo.Verb = "runas";
                 startInfo.WindowStyle = ProcessWindowStyle.Hidden;

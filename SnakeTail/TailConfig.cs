@@ -189,6 +189,7 @@ namespace SnakeTail
         public System.Drawing.Size WindowSize { get; set; }
         public System.Drawing.Point WindowPosition { get; set; }
         public string ServiceName { get; set; }
+        public string ServiceMachineName { get; set; }
         public string IconFile { get; set; }
         public bool DisplayTabIcon { get; set; }
         public bool ColumnFilterActive { get; set; }

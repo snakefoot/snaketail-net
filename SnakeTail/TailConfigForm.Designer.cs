@@ -59,6 +59,7 @@ namespace SnakeTail
             System.Windows.Forms.ColumnHeader keywordRegexColumnHeader;
             System.Windows.Forms.ColumnHeader keywordAlertColumnHeader;
             System.Windows.Forms.ColumnHeader toolShortcutColumnHeader;
+            System.Windows.Forms.Label label11;
             this._tabControl = new System.Windows.Forms.TabControl();
             this._tabPageView = new System.Windows.Forms.TabPage();
             this._bookmarkTextColorBtn = new System.Windows.Forms.Button();
@@ -97,6 +98,7 @@ namespace SnakeTail
             this._cancelBtn = new System.Windows.Forms.Button();
             this._applyAllBtn = new System.Windows.Forms.Button();
             this._saveDefaultBtn = new System.Windows.Forms.Button();
+            this._windowServiceHostEdt = new System.Windows.Forms.TextBox();
             label2 = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -113,6 +115,7 @@ namespace SnakeTail
             keywordRegexColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             keywordAlertColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             toolShortcutColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            label11 = new System.Windows.Forms.Label();
             this._tabControl.SuspendLayout();
             this._tabPageView.SuspendLayout();
             this._tabPageFile.SuspendLayout();
@@ -249,7 +252,7 @@ namespace SnakeTail
             this._tabControl.Location = new System.Drawing.Point(6, 6);
             this._tabControl.Name = "_tabControl";
             this._tabControl.SelectedIndex = 0;
-            this._tabControl.Size = new System.Drawing.Size(367, 233);
+            this._tabControl.Size = new System.Drawing.Size(428, 233);
             this._tabControl.TabIndex = 8;
             this._tabControl.SelectedIndexChanged += new System.EventHandler(this._tabControl_SelectedIndexChanged);
             // 
@@ -350,6 +353,8 @@ namespace SnakeTail
             // 
             // _tabPageFile
             // 
+            this._tabPageFile.Controls.Add(label11);
+            this._tabPageFile.Controls.Add(this._windowServiceHostEdt);
             this._tabPageFile.Controls.Add(this._titleMatchFilenameChk);
             this._tabPageFile.Controls.Add(this._browseBtn);
             this._tabPageFile.Controls.Add(label10);
@@ -370,7 +375,7 @@ namespace SnakeTail
             this._tabPageFile.Location = new System.Drawing.Point(4, 22);
             this._tabPageFile.Name = "_tabPageFile";
             this._tabPageFile.Padding = new System.Windows.Forms.Padding(3);
-            this._tabPageFile.Size = new System.Drawing.Size(359, 207);
+            this._tabPageFile.Size = new System.Drawing.Size(420, 207);
             this._tabPageFile.TabIndex = 1;
             this._tabPageFile.Text = "Log File";
             this._tabPageFile.UseVisualStyleBackColor = true;
@@ -626,7 +631,7 @@ namespace SnakeTail
             // 
             this._acceptBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this._acceptBtn.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this._acceptBtn.Location = new System.Drawing.Point(209, 245);
+            this._acceptBtn.Location = new System.Drawing.Point(272, 245);
             this._acceptBtn.Name = "_acceptBtn";
             this._acceptBtn.Size = new System.Drawing.Size(75, 23);
             this._acceptBtn.TabIndex = 14;
@@ -638,7 +643,7 @@ namespace SnakeTail
             // 
             this._cancelBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this._cancelBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this._cancelBtn.Location = new System.Drawing.Point(290, 245);
+            this._cancelBtn.Location = new System.Drawing.Point(353, 245);
             this._cancelBtn.Name = "_cancelBtn";
             this._cancelBtn.Size = new System.Drawing.Size(75, 23);
             this._cancelBtn.TabIndex = 15;
@@ -665,13 +670,29 @@ namespace SnakeTail
             this._saveDefaultBtn.UseVisualStyleBackColor = true;
             this._saveDefaultBtn.Click += new System.EventHandler(this._saveDefaultBtn_Click);
             // 
+            // _windowServiceHostEdt
+            // 
+            this._windowServiceHostEdt.Location = new System.Drawing.Point(303, 162);
+            this._windowServiceHostEdt.Name = "_windowServiceHostEdt";
+            this._windowServiceHostEdt.Size = new System.Drawing.Size(100, 20);
+            this._windowServiceHostEdt.TabIndex = 17;
+            // 
+            // label11
+            // 
+            label11.AutoSize = true;
+            label11.Location = new System.Drawing.Point(209, 165);
+            label11.Name = "label11";
+            label11.Size = new System.Drawing.Size(88, 13);
+            label11.TabIndex = 18;
+            label11.Text = "Remote Machine";
+            // 
             // TailConfigForm
             // 
             this.AcceptButton = this._acceptBtn;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this._cancelBtn;
-            this.ClientSize = new System.Drawing.Size(377, 271);
+            this.ClientSize = new System.Drawing.Size(440, 271);
             this.Controls.Add(this._saveDefaultBtn);
             this.Controls.Add(this._applyAllBtn);
             this.Controls.Add(this._cancelBtn);
@@ -737,5 +758,6 @@ namespace SnakeTail
         private System.Windows.Forms.Button _saveDefaultBtn;
         private System.Windows.Forms.Button _bookmarkTextColorBtn;
         private System.Windows.Forms.Button _textColorBtn;
+        private System.Windows.Forms.TextBox _windowServiceHostEdt;
     }
 }

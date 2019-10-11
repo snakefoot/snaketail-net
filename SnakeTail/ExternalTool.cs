@@ -39,6 +39,7 @@ namespace SnakeTail
             SessionName,
             SessionPath,
             ViewName,
+            ServiceMachineName,
         };
 
         public static string GetParameterSymbol(ParameterName parameterName)

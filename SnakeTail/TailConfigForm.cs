@@ -86,6 +86,7 @@ namespace SnakeTail
                 _titleMatchFilenameChk.Checked = TailFileConfig.TitleMatchFilename;
 
                 _windowServiceEdt.Text = TailFileConfig.ServiceName;
+                _windowServiceHostEdt.Text = TailFileConfig.ServiceMachineName;
 
                 if (TailFileConfig.KeywordHighlight != null)
                 {
@@ -130,7 +131,9 @@ namespace SnakeTail
 
                 TailFileConfig.FileCacheSize = Int32.Parse(_fileCacheSizeEdt.Text);
 
-                TailFileConfig.ServiceName = _windowServiceEdt.Text;
+                TailFileConfig.ServiceName = (_windowServiceEdt.Text ?? string.Empty).Trim();
+
+                TailFileConfig.ServiceMachineName = (_windowServiceHostEdt.Text ?? string.Empty).Trim();
 
                 TailFileConfig.FileCheckInterval = Int32.Parse(_fileReopenCheckIntervalEdt.Text);
 

@@ -271,7 +271,7 @@ namespace SnakeTail
                 _taskMonitor = null;
             }
             if (!string.IsNullOrEmpty(tailConfig.ServiceName))
-                _taskMonitor = new TaskMonitor(tailConfig.ServiceName);
+                _taskMonitor = new TaskMonitor(tailConfig.ServiceName, tailConfig.ServiceMachineName);
 
             _formTitleMatchFilename = tailConfig.TitleMatchFilename;
             if (_formTitleMatchFilename)
@@ -542,9 +542,15 @@ namespace SnakeTail
             }
 
             if (_taskMonitor != null)
+            {
                 tailConfig.ServiceName = _taskMonitor.ServiceName;
+                tailConfig.ServiceMachineName = _taskMonitor.ServiceMachineName;
+            }
             else
+            {
                 tailConfig.ServiceName = "";
+                tailConfig.ServiceMachineName = "";
+            }
 
             tailConfig.DisplayTabIcon = _displayTabIcon;
         }
@@ -1363,6 +1369,7 @@ namespace SnakeTail
             fileParameters[ExternalTool.ParameterName.FileDirectory] = Path.GetDirectoryName(fileParameters[ExternalTool.ParameterName.FilePath]);
             fileParameters[ExternalTool.ParameterName.FileName] = Path.GetFileName(fileParameters[ExternalTool.ParameterName.FilePath]);
             fileParameters[ExternalTool.ParameterName.ServiceName] = _taskMonitor != null ? _taskMonitor.ServiceName : string.Empty;
+            fileParameters[ExternalTool.ParameterName.ServiceMachineName] = _taskMonitor != null ? _taskMonitor.ServiceMachineName : string.Empty;
             fileParameters[ExternalTool.ParameterName.SessionDirectory] = _configPath;
             fileParameters[ExternalTool.ParameterName.SessionPath] = MainForm.Instance.CurrenTailConfig;
             fileParameters[ExternalTool.ParameterName.SessionFileName] = Path.GetFileName(fileParameters[ExternalTool.ParameterName.SessionPath]);
