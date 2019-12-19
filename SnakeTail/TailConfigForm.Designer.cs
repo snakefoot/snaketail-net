@@ -71,6 +71,7 @@ namespace SnakeTail
             this._backColorBtn = new System.Windows.Forms.Button();
             this._textFontBtn = new System.Windows.Forms.Button();
             this._tabPageFile = new System.Windows.Forms.TabPage();
+            this._windowServiceHostEdt = new System.Windows.Forms.TextBox();
             this._titleMatchFilenameChk = new System.Windows.Forms.CheckBox();
             this._browseBtn = new System.Windows.Forms.Button();
             this._fileChangeCheckIntervalEdt = new System.Windows.Forms.TextBox();
@@ -98,7 +99,6 @@ namespace SnakeTail
             this._cancelBtn = new System.Windows.Forms.Button();
             this._applyAllBtn = new System.Windows.Forms.Button();
             this._saveDefaultBtn = new System.Windows.Forms.Button();
-            this._windowServiceHostEdt = new System.Windows.Forms.TextBox();
             label2 = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -243,6 +243,15 @@ namespace SnakeTail
             toolShortcutColumnHeader.Text = "Shortcut Key";
             toolShortcutColumnHeader.Width = 89;
             // 
+            // label11
+            // 
+            label11.AutoSize = true;
+            label11.Location = new System.Drawing.Point(209, 165);
+            label11.Name = "label11";
+            label11.Size = new System.Drawing.Size(88, 13);
+            label11.TabIndex = 18;
+            label11.Text = "Remote Machine";
+            // 
             // _tabControl
             // 
             this._tabControl.Controls.Add(this._tabPageView);
@@ -271,7 +280,7 @@ namespace SnakeTail
             this._tabPageView.Location = new System.Drawing.Point(4, 22);
             this._tabPageView.Name = "_tabPageView";
             this._tabPageView.Padding = new System.Windows.Forms.Padding(3);
-            this._tabPageView.Size = new System.Drawing.Size(359, 207);
+            this._tabPageView.Size = new System.Drawing.Size(420, 207);
             this._tabPageView.TabIndex = 0;
             this._tabPageView.Text = "View";
             this._tabPageView.UseVisualStyleBackColor = true;
@@ -380,6 +389,13 @@ namespace SnakeTail
             this._tabPageFile.Text = "Log File";
             this._tabPageFile.UseVisualStyleBackColor = true;
             // 
+            // _windowServiceHostEdt
+            // 
+            this._windowServiceHostEdt.Location = new System.Drawing.Point(303, 162);
+            this._windowServiceHostEdt.Name = "_windowServiceHostEdt";
+            this._windowServiceHostEdt.Size = new System.Drawing.Size(100, 20);
+            this._windowServiceHostEdt.TabIndex = 17;
+            // 
             // _titleMatchFilenameChk
             // 
             this._titleMatchFilenameChk.AutoSize = true;
@@ -466,14 +482,14 @@ namespace SnakeTail
             this._tabPageKeyWords.Location = new System.Drawing.Point(4, 22);
             this._tabPageKeyWords.Name = "_tabPageKeyWords";
             this._tabPageKeyWords.Padding = new System.Windows.Forms.Padding(3);
-            this._tabPageKeyWords.Size = new System.Drawing.Size(359, 207);
+            this._tabPageKeyWords.Size = new System.Drawing.Size(420, 207);
             this._tabPageKeyWords.TabIndex = 2;
             this._tabPageKeyWords.Text = "Keyword Highlight";
             this._tabPageKeyWords.UseVisualStyleBackColor = true;
             // 
             // _moveDownKeywordBtn
             // 
-            this._moveDownKeywordBtn.Location = new System.Drawing.Point(276, 147);
+            this._moveDownKeywordBtn.Location = new System.Drawing.Point(339, 147);
             this._moveDownKeywordBtn.Name = "_moveDownKeywordBtn";
             this._moveDownKeywordBtn.Size = new System.Drawing.Size(75, 23);
             this._moveDownKeywordBtn.TabIndex = 11;
@@ -483,7 +499,7 @@ namespace SnakeTail
             // 
             // _moveUpKeywordBtn
             // 
-            this._moveUpKeywordBtn.Location = new System.Drawing.Point(276, 118);
+            this._moveUpKeywordBtn.Location = new System.Drawing.Point(339, 118);
             this._moveUpKeywordBtn.Name = "_moveUpKeywordBtn";
             this._moveUpKeywordBtn.Size = new System.Drawing.Size(75, 23);
             this._moveUpKeywordBtn.TabIndex = 10;
@@ -493,7 +509,7 @@ namespace SnakeTail
             // 
             // _delWordBtn
             // 
-            this._delWordBtn.Location = new System.Drawing.Point(276, 64);
+            this._delWordBtn.Location = new System.Drawing.Point(339, 64);
             this._delWordBtn.Name = "_delWordBtn";
             this._delWordBtn.Size = new System.Drawing.Size(75, 23);
             this._delWordBtn.TabIndex = 4;
@@ -503,7 +519,7 @@ namespace SnakeTail
             // 
             // _edtWordBtn
             // 
-            this._edtWordBtn.Location = new System.Drawing.Point(276, 35);
+            this._edtWordBtn.Location = new System.Drawing.Point(339, 35);
             this._edtWordBtn.Name = "_edtWordBtn";
             this._edtWordBtn.Size = new System.Drawing.Size(75, 23);
             this._edtWordBtn.TabIndex = 3;
@@ -513,7 +529,7 @@ namespace SnakeTail
             // 
             // _addWordBtn
             // 
-            this._addWordBtn.Location = new System.Drawing.Point(276, 6);
+            this._addWordBtn.Location = new System.Drawing.Point(339, 6);
             this._addWordBtn.Name = "_addWordBtn";
             this._addWordBtn.Size = new System.Drawing.Size(75, 23);
             this._addWordBtn.TabIndex = 2;
@@ -536,7 +552,7 @@ namespace SnakeTail
             this._keywordListView.Location = new System.Drawing.Point(6, 6);
             this._keywordListView.MultiSelect = false;
             this._keywordListView.Name = "_keywordListView";
-            this._keywordListView.Size = new System.Drawing.Size(264, 195);
+            this._keywordListView.Size = new System.Drawing.Size(327, 195);
             this._keywordListView.TabIndex = 0;
             this._keywordListView.UseCompatibleStateImageBehavior = false;
             this._keywordListView.View = System.Windows.Forms.View.Details;
@@ -553,14 +569,14 @@ namespace SnakeTail
             this._tabPageExtTools.Location = new System.Drawing.Point(4, 22);
             this._tabPageExtTools.Name = "_tabPageExtTools";
             this._tabPageExtTools.Padding = new System.Windows.Forms.Padding(3);
-            this._tabPageExtTools.Size = new System.Drawing.Size(359, 207);
+            this._tabPageExtTools.Size = new System.Drawing.Size(420, 207);
             this._tabPageExtTools.TabIndex = 3;
             this._tabPageExtTools.Text = "External Tools";
             this._tabPageExtTools.UseVisualStyleBackColor = true;
             // 
             // _moveDownToolBtn
             // 
-            this._moveDownToolBtn.Location = new System.Drawing.Point(276, 147);
+            this._moveDownToolBtn.Location = new System.Drawing.Point(339, 147);
             this._moveDownToolBtn.Name = "_moveDownToolBtn";
             this._moveDownToolBtn.Size = new System.Drawing.Size(75, 23);
             this._moveDownToolBtn.TabIndex = 10;
@@ -570,7 +586,7 @@ namespace SnakeTail
             // 
             // _moveUpToolBtn
             // 
-            this._moveUpToolBtn.Location = new System.Drawing.Point(276, 118);
+            this._moveUpToolBtn.Location = new System.Drawing.Point(339, 118);
             this._moveUpToolBtn.Name = "_moveUpToolBtn";
             this._moveUpToolBtn.Size = new System.Drawing.Size(75, 23);
             this._moveUpToolBtn.TabIndex = 9;
@@ -580,7 +596,7 @@ namespace SnakeTail
             // 
             // _delToolBtn
             // 
-            this._delToolBtn.Location = new System.Drawing.Point(276, 64);
+            this._delToolBtn.Location = new System.Drawing.Point(339, 64);
             this._delToolBtn.Name = "_delToolBtn";
             this._delToolBtn.Size = new System.Drawing.Size(75, 23);
             this._delToolBtn.TabIndex = 8;
@@ -590,7 +606,7 @@ namespace SnakeTail
             // 
             // _editToolBtn
             // 
-            this._editToolBtn.Location = new System.Drawing.Point(276, 35);
+            this._editToolBtn.Location = new System.Drawing.Point(339, 35);
             this._editToolBtn.Name = "_editToolBtn";
             this._editToolBtn.Size = new System.Drawing.Size(75, 23);
             this._editToolBtn.TabIndex = 7;
@@ -600,7 +616,7 @@ namespace SnakeTail
             // 
             // _addToolBtn
             // 
-            this._addToolBtn.Location = new System.Drawing.Point(276, 6);
+            this._addToolBtn.Location = new System.Drawing.Point(339, 6);
             this._addToolBtn.Name = "_addToolBtn";
             this._addToolBtn.Size = new System.Drawing.Size(75, 23);
             this._addToolBtn.TabIndex = 6;
@@ -621,7 +637,7 @@ namespace SnakeTail
             this._extToolsListView.Location = new System.Drawing.Point(6, 6);
             this._extToolsListView.MultiSelect = false;
             this._extToolsListView.Name = "_extToolsListView";
-            this._extToolsListView.Size = new System.Drawing.Size(264, 195);
+            this._extToolsListView.Size = new System.Drawing.Size(327, 195);
             this._extToolsListView.TabIndex = 5;
             this._extToolsListView.UseCompatibleStateImageBehavior = false;
             this._extToolsListView.View = System.Windows.Forms.View.Details;
@@ -669,22 +685,6 @@ namespace SnakeTail
             this._saveDefaultBtn.Text = "Save as default";
             this._saveDefaultBtn.UseVisualStyleBackColor = true;
             this._saveDefaultBtn.Click += new System.EventHandler(this._saveDefaultBtn_Click);
-            // 
-            // _windowServiceHostEdt
-            // 
-            this._windowServiceHostEdt.Location = new System.Drawing.Point(303, 162);
-            this._windowServiceHostEdt.Name = "_windowServiceHostEdt";
-            this._windowServiceHostEdt.Size = new System.Drawing.Size(100, 20);
-            this._windowServiceHostEdt.TabIndex = 17;
-            // 
-            // label11
-            // 
-            label11.AutoSize = true;
-            label11.Location = new System.Drawing.Point(209, 165);
-            label11.Name = "label11";
-            label11.Size = new System.Drawing.Size(88, 13);
-            label11.TabIndex = 18;
-            label11.Text = "Remote Machine";
             // 
             // TailConfigForm
             // 
