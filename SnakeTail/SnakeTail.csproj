@@ -8,7 +8,7 @@
     <LangVersion>3.0</LangVersion>
     <PlatformTarget>AnyCPU</PlatformTarget>
 
-    <Version>1.9.6</Version>
+    <Version>1.9.7</Version>
     <Title>SnakeTail</Title>
     <Description>Windows Tail Utility to Monitor Trace Log Files</Description>
     <Company>SnakeNest.com</Company>
