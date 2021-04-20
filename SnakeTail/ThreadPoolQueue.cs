@@ -30,7 +30,7 @@ namespace SnakeTail
         Queue<KeyValuePair<WaitCallback, object>> _requests;
         IAsyncResult _pendingReplyResult;
 
-        public ThreadPoolQueue(int workItemCapacity = 0)
+        public ThreadPoolQueue(int workItemCapacity)
         {
             _requests = new Queue<KeyValuePair<WaitCallback, object>>(workItemCapacity);
         }
@@ -38,7 +38,7 @@ namespace SnakeTail
         /// <summary>
         /// Executes the request, if no other request is pending
         /// </summary>
-        public bool ExecuteRequest(WaitCallback request, object state = null)
+        public bool ExecuteRequest(WaitCallback request, object state)
         {
             KeyValuePair<WaitCallback, object>? nextPendingRequest = null;
             lock (_syncLock)
@@ -66,7 +66,7 @@ namespace SnakeTail
         /// <summary>
         /// Queues the request, and starts execution if no request is currently active
         /// </summary>
-        public bool QueueRequest(WaitCallback request, object state = null)
+        public bool QueueRequest(WaitCallback request, object state)
         {
             KeyValuePair<WaitCallback, object>? nextPendingRequest = null;
             lock (_syncLock)

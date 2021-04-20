@@ -16,10 +16,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Management.Instrumentation;
 using System.ServiceProcess;
 using System.Security.Principal;
-using System.Text;
 
 namespace SnakeTail
 {

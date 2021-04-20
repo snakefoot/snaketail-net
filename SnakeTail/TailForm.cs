@@ -209,7 +209,7 @@ namespace SnakeTail
                     {
                         keyword.ExternalToolConfig = _externalTools.Find((externalTool) => string.Compare(externalTool.Name, keyword.ExternalToolName) == 0);
                         if (_threadPoolQueue == null)
-                            _threadPoolQueue = new ThreadPoolQueue();   // Prepare the threadpool for use
+                            _threadPoolQueue = new ThreadPoolQueue(0);   // Prepare the threadpool for use
                     }
                 }
             }
@@ -954,9 +954,6 @@ namespace SnakeTail
 
         private bool MatchesBookmark(int lineNumber)
         {
-            if (_bookmarkBackColor == null || _bookmarkTextColor == null)
-                return false;
-
             if (_bookmarks.Count == 0)
                 return false;
 

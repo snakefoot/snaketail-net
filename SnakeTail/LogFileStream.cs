@@ -46,7 +46,7 @@ namespace SnakeTail
                 _fileCheckFrequency = TimeSpan.FromSeconds(fileCheckFrequency);
             _fileCheckPattern = fileCheckPattern;
             if (_fileCheckPattern)
-                _threadPool = new ThreadPoolQueue();
+                _threadPool = new ThreadPoolQueue(0);
             LoadFile(_filePathAbsolute, _fileEncoding, _fileCheckPattern);
         }
 
