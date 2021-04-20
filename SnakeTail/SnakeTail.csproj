@@ -60,6 +60,9 @@
     <Prefer32Bit>false</Prefer32Bit>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>App.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Management" />
@@ -205,6 +208,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.manifest" />
     <None Include="Icons\log.ico" />
     <Content Include="Icons\bullet ball glass green.ico" />
     <Content Include="Icons\bullet ball glass yellow.ico" />
