@@ -82,7 +82,7 @@ External tools can be configured and bound to a custom shortcut key. They can al
 
 Use-case Examples:
 
-- **Play a sound on keyword match:** Using keyword highlight rules to trigger external tool on `ERROR`.
+- **Play a sound on keyword match:** Configure an external media player to play a WAV file when a keyword such as `ERROR` is detected.
 - **Open the log in another application:** Bind a shortcut key to launch a text editor or diff tool on the current file.
 - **Truncate or delete the active log file:** Bind a shortcut key to a tool that clears the file currently being tailed.
 - **Run diagnostics on demand:** Bind a shortcut key to a script that collects information from the system being monitored.
