@@ -26,6 +26,7 @@ namespace SnakeTail
     {
         public TailFileConfig TailFileConfig { get; private set; }
         bool _displayFileTab;
+        const string AutoDetectEncoding = "Auto Detect (BOM)";
 
         public TailConfigForm(TailFileConfig tailFileConfig, bool displayFileTab)
         {
@@ -68,11 +69,12 @@ namespace SnakeTail
             {
                 _filePathEdt.Text = TailFileConfig.FilePath;
 
+                _fileEncodingCmb.Items.Add(AutoDetectEncoding);
                 _fileEncodingCmb.Items.Add(Encoding.Default);
                 _fileEncodingCmb.Items.Add(Encoding.UTF8);
                 _fileEncodingCmb.Items.Add(Encoding.ASCII);
                 _fileEncodingCmb.Items.Add(Encoding.Unicode);
-                _fileEncodingCmb.SelectedItem = TailFileConfig.EnumFileEncoding;
+                _fileEncodingCmb.SelectedItem = (object)TailFileConfig.EnumFileEncoding ?? AutoDetectEncoding;
 
                 _fileCacheSizeEdt.Text = TailFileConfig.FileCacheSize.ToString();
 
@@ -127,7 +129,7 @@ namespace SnakeTail
             {
                 TailFileConfig.FilePath = _filePathEdt.Text;
 
-                TailFileConfig.EnumFileEncoding = (Encoding)_fileEncodingCmb.SelectedItem;
+                TailFileConfig.EnumFileEncoding = _fileEncodingCmb.SelectedItem as Encoding;
 
                 TailFileConfig.FileCacheSize = Int32.Parse(_fileCacheSizeEdt.Text);
 
@@ -288,7 +290,7 @@ namespace SnakeTail
             OpenFileDialog fileDialog = new OpenFileDialog();
             fileDialog.Multiselect = true;
             fileDialog.Title = "Open Log File";
-            fileDialog.Filter = "Text Files|*.txt|Log Files|*.log|All Files|*.*";
+            fileDialog.Filter = "Text Files|*.txt|Log Files|*.log|GZip Files|*.gz|All Files|*.*";
             fileDialog.InitialDirectory = System.IO.Path.GetDirectoryName(_filePathEdt.Text);
             fileDialog.FileName = System.IO.Path.GetFileName(_filePathEdt.Text);
             if (fileDialog.ShowDialog(this) != DialogResult.OK)

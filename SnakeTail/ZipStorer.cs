@@ -360,7 +360,8 @@ namespace System.IO.Compression
             // check signature
             byte[] signature = new byte[4];
             this.ZipFileStream.Seek(_zfe.HeaderOffset, SeekOrigin.Begin);
-            this.ZipFileStream.Read(signature, 0, 4);
+            if (this.ZipFileStream.Read(signature, 0, 4) != 4)
+                return false;
             if (BitConverter.ToUInt32(signature, 0) != 0x04034b50)
                 return false;
 
@@ -453,11 +454,12 @@ namespace System.IO.Compression
             byte[] buffer = new byte[2];
 
             this.ZipFileStream.Seek(_headerOffset + 26, SeekOrigin.Begin);
-            this.ZipFileStream.Read(buffer, 0, 2);
+            if (this.ZipFileStream.Read(buffer, 0, 2) != 2)
+                throw new InvalidDataException("Cannot read filename size from local header");
             ushort filenameSize = BitConverter.ToUInt16(buffer, 0);
-            this.ZipFileStream.Read(buffer, 0, 2);
+            if (this.ZipFileStream.Read(buffer, 0, 2) != 2)
+                throw new InvalidDataException("Cannot read extra size from local header");
             ushort extraSize = BitConverter.ToUInt16(buffer, 0);
-
             return (uint)(30 + filenameSize + extraSize + _headerOffset);
         }
         /* Local file header:
@@ -718,7 +720,8 @@ namespace System.IO.Compression
                         this.ExistingFiles = entries;
                         this.CentralDirImage = new byte[centralSize];
                         this.ZipFileStream.Seek(centralDirOffset, SeekOrigin.Begin);
-                        this.ZipFileStream.Read(this.CentralDirImage, 0, centralSize);
+                        if (this.ZipFileStream.Read(this.CentralDirImage, 0, centralSize) != centralSize)
+                            return false;
 
                         // Leave the pointer at the begining of central dir, to append new files
                         this.ZipFileStream.Seek(centralDirOffset, SeekOrigin.Begin);

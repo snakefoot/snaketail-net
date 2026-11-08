@@ -1,12 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30907.101
+# Visual Studio Version 18
+VisualStudioVersion = 18.11.12328.437 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SnakeTail", "SnakeTail\SnakeTail.csproj", "{003BAF38-EE59-46AB-A90E-46B51791CDEA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{80966EFE-C60E-4324-92D9-C169D50BEFE9}"
 	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
 		snaketail.pad.xml = snaketail.pad.xml
 	EndProjectSection
 EndProject

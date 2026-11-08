@@ -15,7 +15,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 
 namespace SnakeTail
@@ -47,7 +46,7 @@ namespace SnakeTail
 
         public void SetLastCacheMiss(int index, ListViewItem item)
         {
-            // Hvis vi bliver spurgt til elementer lige efter sidste element, saa flyt cache fremad
+            // If asked for the element right after the last element, then move the cache forward
             if (FirstIndex + Items.Count == index)
             {
                 PrepareCache(FirstIndex + 1, index, true);
@@ -78,17 +77,18 @@ namespace SnakeTail
         public int FillTailCache(LogFileStream logFileStream)
         {
             int lineCount = 0;
-            int readLines = 0;
+            int readLines;
 
-            // Quickly fast forward to near the file bottom
+            // Read through the file, while keeping the last lines in a ring buffer
+            var tailLines = new string[Items.Count];
             do
             {
                 readLines = lineCount;
-                lineCount = logFileStream.SkipLines(Items.Count);
+                lineCount = logFileStream.FastForward(tailLines);
                 readLines = lineCount - readLines;
                 if (LoadingFileEvent != null)
                     LoadingFileEvent(logFileStream, EventArgs.Empty);
-            } while (readLines == Items.Count);
+            } while (readLines == tailLines.Length);
 
             // We are almost finished with loading the file
             if (LoadingFileEvent != null)
@@ -97,18 +97,14 @@ namespace SnakeTail
             if (lineCount <= 0)
                 return 0;
 
-            // Read the last lines of the file into the cache
-            bool continueReading = false;
-            PrepareCache(lineCount, lineCount, true);
-            do
+            // Move the last lines of the file from the ring buffer into the cache
+            FirstIndex = Math.Max(0, lineCount - tailLines.Length);
+            for (int i = FirstIndex; i < lineCount; ++i)
             {
-                int lastCacheIndex = FillCache(logFileStream, FirstIndex + Items.Count);
-                System.Diagnostics.Debug.Assert(lastCacheIndex != -1 || logFileStream.Length == 0);
-                continueReading = (lastCacheIndex == Items.Count - 1);
-                lineCount = FirstIndex + lastCacheIndex + 1;
-                if (continueReading)
-                    PrepareCache(lineCount + Items.Count / 2, lineCount + Items.Count / 2, true);
-            } while (continueReading);
+                var item = new ListViewItem(tailLines[i % tailLines.Length]);
+                item.SubItems.Add("");
+                Items[i - FirstIndex] = item;
+            }
 
             return lineCount;
         }
@@ -164,10 +160,7 @@ namespace SnakeTail
             if (FillCacheEvent != null)
                 FillCacheEvent(null, EventArgs.Empty);
 
-            if (lastItem != Items.Count - 1)
-                return lastItem;
-            else
-                return Items.Count - 1;
+            return lastItem;
         }
 
         // The startindex is the important part
@@ -241,5 +234,5 @@ namespace SnakeTail
 
             return false;// Cache needs to be filled
         }
-    };
+    }
 }

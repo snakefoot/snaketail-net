@@ -133,6 +133,13 @@ namespace SnakeTail
             LoadConfig(tailConfig, "");
         }
 
+        static LogFileStream CreateLogFileStream(string configPath, string filePath, Encoding fileEncoding, int fileCheckInterval, bool fileCheckPattern)
+        {
+            if (filePath != null && filePath.EndsWith(".gz", StringComparison.OrdinalIgnoreCase))
+                return new LogFileGZipStream(configPath, filePath, fileEncoding, fileCheckInterval, fileCheckPattern);
+            return new LogFileStream(configPath, filePath, fileEncoding, fileCheckInterval, fileCheckPattern);
+        }
+
         public void LoadConfig(TailFileConfig tailConfig, string configPath)
         {
             _configPath = configPath;
@@ -223,13 +230,13 @@ namespace SnakeTail
             {
                 if (_logFileStream != null)
                     _logFileStream.Dispose();
-                _logFileStream = new LogFileStream(configPath, tailConfig.FilePath, fileEncoding, tailConfig.FileCheckInterval, tailConfig.FileCheckPattern);
+                _logFileStream = CreateLogFileStream(configPath, tailConfig.FilePath, fileEncoding, tailConfig.FileCheckInterval, tailConfig.FileCheckPattern);
             }
             if (_logTailStream == null || _logTailStream.FilePath != tailConfig.FilePath || _logTailStream.FileEncoding != fileEncoding || _logTailStream.FileCheckInterval != tailConfig.FileCheckInterval || _logTailStream.FileCheckPattern != tailConfig.FileCheckPattern)
             {
                 if (_logTailStream != null)
                     _logTailStream.Dispose();
-                _logTailStream = new LogFileStream(configPath, tailConfig.FilePath, fileEncoding, tailConfig.FileCheckInterval, tailConfig.FileCheckPattern);
+                _logTailStream = CreateLogFileStream(configPath, tailConfig.FilePath, fileEncoding, tailConfig.FileCheckInterval, tailConfig.FileCheckPattern);
                 if (_logTailStream.Length > 500 * 1024 * 1024)
                 {
                     if (MessageBox.Show(this, String.Format("The file is very large, sure you want to open it?\n\nFile Name: {0}\nFile Size: {1} Megabytes", _logTailStream.FilePath, _logTailStream.Length / 1024 / 1024), "Large file detected", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
@@ -1166,7 +1173,8 @@ namespace SnakeTail
             if (_displayTabIcon)
             {
                 TabPage parentTab = this.Tag as TabPage;
-                if (parentTab != null && parentTab.Parent != null && parentTab.Parent.Visible && !parentTab.Visible)
+                TabControl tabControl = parentTab != null ? parentTab.Parent as TabControl : null;
+                if (tabControl != null && tabControl.SelectedTab != parentTab)
                 {
                     if (warningIcon)
                         parentTab.ImageIndex = 1;

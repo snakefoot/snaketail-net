@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net20</TargetFramework>
+    <TargetFramework>net35</TargetFramework>
     <OutputType>WinExe</OutputType>
     <IncludeSymbols>true</IncludeSymbols>
     <DebugType>full</DebugType>

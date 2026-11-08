@@ -34,6 +34,7 @@ namespace SnakeTail
 
         private TailFileConfig _defaultTailConfig = null;
         private string _currenTailConfig = null;
+        private MdiLayoutMode _mdiLayout = MdiLayoutMode.None;
 
         private string _mruRegKey = "SOFTWARE\\SnakeNest.com\\SnakeTail\\MRU";
         private JWC.MruStripMenu _mruMenu;
@@ -82,9 +83,9 @@ namespace SnakeTail
                 int filesOpened = 0;
                 for (int i = 1; i < args.Length; ++i)
                 {
-                    if (args[1].EndsWith(".xml", StringComparison.CurrentCultureIgnoreCase))
+                    if (args[i].EndsWith(".xml", StringComparison.CurrentCultureIgnoreCase))
                     {
-                        if (LoadSession(args[1]))
+                        if (LoadSession(args[i]))
                             ++filesOpened;
                     }
                     else
@@ -212,7 +213,7 @@ namespace SnakeTail
             OpenFileDialog fileDialog = new OpenFileDialog();
             fileDialog.Multiselect = true;
             fileDialog.Title = "Open Log File";
-            fileDialog.Filter = "Default Filter|*.txt;*.text;*.log*;*.xlog|Log Files|*.log*;*.xlog|Text Files|*.txt;*.text|All Files|*.*";
+            fileDialog.Filter = "Default Filter|*.txt;*.text;*.log*;*.xlog;*.gz|Log Files|*.log*;*.xlog|Text Files|*.txt;*.text|GZip Files|*.gz|All Files|*.*";
             if (fileDialog.ShowDialog(this) != DialogResult.OK)
                 return;
 
@@ -270,6 +271,18 @@ namespace SnakeTail
                 {
                     _defaultTailConfig = tailConfig.TailFiles[0];
                     _defaultTailConfig.Title = null;
+
+                    if (!tailConfig.MinimizedToTray && MdiChildren.Length == 0)
+                    {
+                        // Only position the main window when nothing is open, so a loaded session or manual layout is not overridden
+                        if (!tailConfig.WindowSize.IsEmpty)
+                        {
+                            Size = tailConfig.WindowSize;
+                            DesktopLocation = tailConfig.WindowPosition;
+                        }
+                        if (tailConfig.MainWindowState == FormWindowState.Maximized)
+                            WindowState = FormWindowState.Maximized;
+                    }
                 }
                 else
                 {
@@ -376,19 +389,41 @@ namespace SnakeTail
             }
         }
 
+        private void ApplyMdiLayout(MdiLayoutMode layoutMode)
+        {
+            _mdiLayout = layoutMode;
+            switch (layoutMode)
+            {
+                case MdiLayoutMode.Cascade:
+                    LayoutMdi(MdiLayout.Cascade);
+                    break;
+                case MdiLayoutMode.TileHorizontal:
+                    LayoutMdi(MdiLayout.TileHorizontal);
+                    break;
+                case MdiLayoutMode.TileVertical:
+                    LayoutMdi(MdiLayout.TileVertical);
+                    break;
+            }
+        }
+
         private void cascadeWindowsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            LayoutMdi(MdiLayout.Cascade);
+            ApplyMdiLayout(MdiLayoutMode.Cascade);
         }
 
         private void tileWindowsHorizontallyToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            LayoutMdi(MdiLayout.TileHorizontal);
+            ApplyMdiLayout(MdiLayoutMode.TileHorizontal);
         }
 
         private void tileWindowsVerticallyToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            LayoutMdi(MdiLayout.TileVertical);
+            ApplyMdiLayout(MdiLayoutMode.TileVertical);
+        }
+
+        private void maximizeWindowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            WindowState = WindowState == FormWindowState.Maximized ? FormWindowState.Normal : FormWindowState.Maximized;
         }
 
         private void minimizeAllToolStripMenuItem_Click(object sender, EventArgs e)
@@ -416,6 +451,7 @@ namespace SnakeTail
             if (SearchForm.Instance.Visible)
                 SearchForm.Instance.Close();
             _currenTailConfig = null;
+            _mdiLayout = MdiLayoutMode.None;
             UpdateTitle();
         }
 
@@ -466,8 +502,19 @@ namespace SnakeTail
                 tailConfig.SelectedTab = _MDITabControl.SelectedIndex;
             else
                 tailConfig.SelectedTab = -1;
-            tailConfig.WindowSize = Size;
-            tailConfig.WindowPosition = DesktopLocation;
+            if (WindowState == FormWindowState.Normal)
+            {
+                tailConfig.WindowSize = Size;
+                tailConfig.WindowPosition = DesktopLocation;
+            }
+            else
+            {
+                tailConfig.WindowSize = RestoreBounds.Size;
+                tailConfig.WindowPosition = RestoreBounds.Location;
+            }
+
+            tailConfig.MainWindowState = WindowState == FormWindowState.Maximized ? FormWindowState.Maximized : FormWindowState.Normal;
+            tailConfig.MdiLayout = _MDITabControl.Visible ? MdiLayoutMode.None : _mdiLayout;
             tailConfig.MinimizedToTray = _trayIcon.Visible;
             tailConfig.AlwaysOnTop = TopMost;
 
@@ -592,7 +639,11 @@ namespace SnakeTail
             {
                 Size = tailConfig.WindowSize;
                 DesktopLocation = tailConfig.WindowPosition;
+                if (tailConfig.MainWindowState == FormWindowState.Maximized)
+                    WindowState = FormWindowState.Maximized;
             }
+
+            _mdiLayout = MdiLayoutMode.None;
 
             UpdateTitle();
 
@@ -659,6 +710,15 @@ namespace SnakeTail
                 _MDITabControl.SelectedIndex = tailConfig.SelectedTab;
                 _MDITabControl.Visible = true;
                 (_MDITabControl.SelectedTab.Tag as Form).WindowState = FormWindowState.Maximized;
+            }
+            else if (tailConfig.MdiLayout != MdiLayoutMode.None && MdiChildren.Length > 0)
+            {
+                foreach (Form childForm in MdiChildren)
+                {
+                    if (childForm.WindowState == FormWindowState.Maximized)
+                        childForm.WindowState = FormWindowState.Normal;
+                }
+                ApplyMdiLayout(tailConfig.MdiLayout);
             }
 
             if (tailConfig.MinimizedToTray)
@@ -730,6 +790,12 @@ namespace SnakeTail
         private void windowToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
         {
             enableTabsToolStripMenuItem.Checked = _MDITabControl.Visible;
+            maximizeWindowToolStripMenuItem.Checked = WindowState == FormWindowState.Maximized;
+
+            MdiLayoutMode activeLayout = _MDITabControl.Visible ? MdiLayoutMode.None : _mdiLayout;
+            cascadeWindowsToolStripMenuItem.Checked = activeLayout == MdiLayoutMode.Cascade;
+            tileWindowsHorizontallyToolStripMenuItem.Checked = activeLayout == MdiLayoutMode.TileHorizontal;
+            tileWindowsVerticallyToolStripMenuItem.Checked = activeLayout == MdiLayoutMode.TileVertical;
         }
 
         private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)

@@ -74,6 +74,8 @@ namespace SnakeTail
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.noActiveWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.maximizeWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.enableTabsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cascadeWindowsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tileWindowsHorizontallyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -290,6 +292,8 @@ namespace SnakeTail
             // windowToolStripMenuItem
             // 
             this.windowToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.maximizeWindowToolStripMenuItem,
+            this.toolStripSeparator7,
             this.enableTabsToolStripMenuItem,
             this.cascadeWindowsToolStripMenuItem,
             this.tileWindowsHorizontallyToolStripMenuItem,
@@ -304,57 +308,69 @@ namespace SnakeTail
             this.windowToolStripMenuItem.DropDownOpening += new System.EventHandler(this.windowToolStripMenuItem_DropDownOpening);
             this.windowToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.windowToolStripMenuItem_DropDownItemClicked);
             // 
+            // maximizeWindowToolStripMenuItem
+            // 
+            this.maximizeWindowToolStripMenuItem.Name = "maximizeWindowToolStripMenuItem";
+            this.maximizeWindowToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.maximizeWindowToolStripMenuItem.Text = "Maximize Window";
+            this.maximizeWindowToolStripMenuItem.Click += new System.EventHandler(this.maximizeWindowToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator7
+            // 
+            this.toolStripSeparator7.Name = "toolStripSeparator7";
+            this.toolStripSeparator7.Size = new System.Drawing.Size(208, 6);
+            // 
             // enableTabsToolStripMenuItem
             // 
             this.enableTabsToolStripMenuItem.Name = "enableTabsToolStripMenuItem";
-            this.enableTabsToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.enableTabsToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
             this.enableTabsToolStripMenuItem.Text = "Show Tabs";
             this.enableTabsToolStripMenuItem.Click += new System.EventHandler(this.enableTabsToolStripMenuItem_Click);
             // 
             // cascadeWindowsToolStripMenuItem
             // 
             this.cascadeWindowsToolStripMenuItem.Name = "cascadeWindowsToolStripMenuItem";
-            this.cascadeWindowsToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.cascadeWindowsToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
             this.cascadeWindowsToolStripMenuItem.Text = "Cascade Windows";
             this.cascadeWindowsToolStripMenuItem.Click += new System.EventHandler(this.cascadeWindowsToolStripMenuItem_Click);
             // 
             // tileWindowsHorizontallyToolStripMenuItem
             // 
             this.tileWindowsHorizontallyToolStripMenuItem.Name = "tileWindowsHorizontallyToolStripMenuItem";
-            this.tileWindowsHorizontallyToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.tileWindowsHorizontallyToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
             this.tileWindowsHorizontallyToolStripMenuItem.Text = "Tile Windows Horizontally";
             this.tileWindowsHorizontallyToolStripMenuItem.Click += new System.EventHandler(this.tileWindowsHorizontallyToolStripMenuItem_Click);
             // 
             // tileWindowsVerticallyToolStripMenuItem
             // 
             this.tileWindowsVerticallyToolStripMenuItem.Name = "tileWindowsVerticallyToolStripMenuItem";
-            this.tileWindowsVerticallyToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.tileWindowsVerticallyToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
             this.tileWindowsVerticallyToolStripMenuItem.Text = "Tile Windows Vertically";
             this.tileWindowsVerticallyToolStripMenuItem.Click += new System.EventHandler(this.tileWindowsVerticallyToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(209, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(208, 6);
             // 
             // minimizeAllToolStripMenuItem
             // 
             this.minimizeAllToolStripMenuItem.Name = "minimizeAllToolStripMenuItem";
-            this.minimizeAllToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.minimizeAllToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
             this.minimizeAllToolStripMenuItem.Text = "Minimize All";
             this.minimizeAllToolStripMenuItem.Click += new System.EventHandler(this.minimizeAllToolStripMenuItem_Click);
             // 
             // closeAllToolStripMenuItem
             // 
             this.closeAllToolStripMenuItem.Name = "closeAllToolStripMenuItem";
-            this.closeAllToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.closeAllToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
             this.closeAllToolStripMenuItem.Text = "Close All";
             this.closeAllToolStripMenuItem.Click += new System.EventHandler(this.closeAllToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(209, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(208, 6);
             // 
             // helpToolStripMenuItem
             // 
@@ -487,6 +503,8 @@ namespace SnakeTail
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem windowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem maximizeWindowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
         private System.Windows.Forms.ToolStripMenuItem enableTabsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cascadeWindowsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tileWindowsHorizontallyToolStripMenuItem;

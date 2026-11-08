@@ -794,7 +794,8 @@ namespace SnakeTail
             if (_displayTabIcon)
             {
                 TabPage parentTab = this.Tag as TabPage;
-                if (parentTab != null && parentTab.Parent != null && parentTab.Parent.Visible && !parentTab.Visible)
+                TabControl tabControl = parentTab != null ? parentTab.Parent as TabControl : null;
+                if (tabControl != null && tabControl.SelectedTab != parentTab)
                     parentTab.ImageIndex = 0;
             }
         }

@@ -14,7 +14,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -22,18 +21,18 @@ namespace SnakeTail
 {
     class LogFileStream : IDisposable
     {
-        string _filePath = "";
-        string _filePathAbsolute = "";
-        Encoding _fileEncoding = Encoding.Default;
-        FileStream _fileStream = null;
-        StreamReader _fileReader = null;
+        private readonly string _filePath;
+        private readonly string _filePathAbsolute;
+        private readonly Encoding _fileEncoding = null;  // Fallback when the file has no BOM (null = default encoding)
+        protected FileStream _fileStream = null;
+        protected StreamReader _fileReader = null;
         ThreadPoolQueue _threadPool = null;
         DateTime _lastFileCheck = DateTime.UtcNow;
         int _lastLineNumber = 0;
         string _lastFileCheckError = "";
         long _lastFileCheckLength = 0;
         TimeSpan _fileCheckFrequency = TimeSpan.FromSeconds(10);
-        bool _fileCheckPattern = false;
+        private readonly bool _fileCheckPattern;
 
         public event EventHandler FileReloadedEvent;
 
@@ -174,6 +173,12 @@ namespace SnakeTail
         public Encoding FileEncoding
         {
             get { return _fileEncoding; }
+        }
+
+        // The encoding in use, which the StreamReader has detected from the BOM or the default encoding.
+        Encoding ActiveEncoding
+        {
+            get { return _fileReader != null ? _fileReader.CurrentEncoding : (_fileEncoding ?? Encoding.Default); }
         }
 
         public string FilePath
@@ -352,7 +357,8 @@ namespace SnakeTail
                 return false;
             }
 
-            _fileReader = new StreamReader(_fileStream, fileEncoding, true, 65536);
+            Encoding readerEncoding = fileEncoding ?? Encoding.Default;
+            _fileReader = CreateFileReader(_fileStream, readerEncoding);
 
             try
             {
@@ -377,6 +383,12 @@ namespace SnakeTail
                 _lastFileCheckError = "Read file operation was aborted. File is currently not available.";
                 return false;
             }
+            catch (InvalidDataException ex)
+            {
+                CloseFile(true);
+                _lastFileCheckError = "Invalid file data - " + ex.Message;
+                return false;
+            }
             catch (System.IO.IOException ex)
             {
                 CloseFile(true);
@@ -386,6 +398,20 @@ namespace SnakeTail
 
             _lastLineNumber = 0;
             return true;
+        }
+
+        protected virtual StreamReader CreateFileReader(FileStream fileStream, Encoding fileEncoding)
+        {
+            // StreamReader detects the BOM, which takes precedence over the specified encoding
+            return new StreamReader(fileStream, fileEncoding, true, 65536);
+        }
+
+        protected virtual void RewindFile(Encoding fileEncoding)
+        {
+            // StreamReader only handles
+            // The old reader must not be disposed, as that would close the FileStream
+            _fileStream.Seek(0, SeekOrigin.Begin);
+            _fileReader = CreateFileReader(_fileStream, fileEncoding);
         }
 
         public string ReadLine(int lineNumber)
@@ -406,8 +432,7 @@ namespace SnakeTail
             {
                 if (lineNumber <= _lastLineNumber)
                 {
-                    _fileStream.Seek(0, SeekOrigin.Begin);
-                    _fileReader.DiscardBufferedData();
+                    RewindFile(_fileReader.CurrentEncoding);
                     _lastLineNumber = 0;
                 }
                 else
@@ -443,6 +468,13 @@ namespace SnakeTail
                     return "Cannot read file: " + _filePathAbsolute + " (" + ex.Message + ")";
                 return null;
             }
+            catch (InvalidDataException ex)
+            {
+                CloseFile(true);
+                if (lineNumber == 1)
+                    return "Cannot read file: " + _filePathAbsolute + " (Invalid file data - " + ex.Message + ")";
+                return null;
+            }
             catch (System.IO.IOException ex)
             {
                 CloseFile(true);
@@ -452,20 +484,21 @@ namespace SnakeTail
             }
         }
 
-        public int SkipLines(long lineCount)
+        // Reads up to tailLines.Length lines without caching them. The lines are stored in tailLines (ring buffer), so it holds the last lines read
+        public int FastForward(string[] tailLines)
         {
-            // Quickly fast forward to near the file bottom
             try
             {
-                long fileLength = Length - lineCount * 80 * (FileEncoding.IsSingleByte ? 1 : 2);
-                long filePosiion = Position;
-                for(int i = 0; i < lineCount && filePosiion < fileLength && !_fileReader.EndOfStream; ++i)
+                if (_fileReader == null || _fileStream == null)
+                    return -1;
+
+                for (int i = 0; i < tailLines.Length; ++i)
                 {
                     string line = ReadLine(_lastLineNumber + 1);
                     if (line == null)
-                        return _lastLineNumber;
+                        break;
 
-                    filePosiion += line.Length * (FileEncoding.IsSingleByte ? 1 : 2);
+                    tailLines[(_lastLineNumber - 1) % tailLines.Length] = line;
                 }
 
                 return _lastLineNumber;
@@ -486,6 +519,12 @@ namespace SnakeTail
             {
                 CloseFile(true);
                 _lastFileCheckError = "Read file operation was aborted. File is currently not available.";
+                return -1;
+            }
+            catch (InvalidDataException ex)
+            {
+                CloseFile(true);
+                _lastFileCheckError = "Invalid file data - " + ex.Message;
                 return -1;
             }
             catch (System.IO.IOException ex)

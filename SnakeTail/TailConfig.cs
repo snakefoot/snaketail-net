@@ -22,6 +22,14 @@ using System.Xml.Serialization;
 
 namespace SnakeTail
 {
+    public enum MdiLayoutMode
+    {
+        None,
+        Cascade,
+        TileHorizontal,
+        TileVertical,
+    }
+
     public class TailConfig
     {
         List<TailFileConfig> _tailFiles = new List<TailFileConfig>();
@@ -32,6 +40,8 @@ namespace SnakeTail
         public System.Drawing.Point WindowPosition { get; set; }
         public bool MinimizedToTray { get; set; }
         public bool AlwaysOnTop { get; set; }
+        public System.Windows.Forms.FormWindowState MainWindowState { get; set; }
+        public MdiLayoutMode MdiLayout { get; set; }
     }
 
     public class TailKeywordConfig
@@ -235,6 +245,9 @@ namespace SnakeTail
         {
             get
             {
+                if (string.IsNullOrEmpty(FileEncoding))
+                    return null;    // Probe the file encoding
+                else
                 if (FileEncoding == Encoding.UTF8.ToString())
                     return Encoding.UTF8;
                 else
@@ -248,7 +261,7 @@ namespace SnakeTail
             }
             set
             {
-                FileEncoding = value.ToString();
+                FileEncoding = value != null ? value.ToString() : null;
             }
         }
 
