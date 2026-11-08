@@ -27,29 +27,31 @@ Tail utility for monitoring text log files and Windows EventLog
 - Low memory usage independent of log file size
 - Low cpu usage even when more than 100 lines/sec
 - Works well over remote desktop
-- Supports Windows 2000, XP, 2003, Vista, Win2k8, Win7
-- Requires .NET 2.0
+- Supports Windows 2000, XP, 2003, Vista, Win2k8, Win7, Win8, Win10, Win11
+- Requires .NET 3.5 or later
 - GNU GPL License v3
 
 ## Default configuration for new files
 
-When a file is opened (Ex. by drag drop from Windows Explorer), then SnakeTail uses a default configuration for the new window. Create it by configuring one window the way you like it (colors, highlight rules, window icon, etc.), and then save the session as `SnakeTail.xml`.
+It is possible to setup a default configuration for new files, so that every time a new file is opened, it will use the same colors, highlight rules, window icon, etc.
 
-SnakeTail looks for the default session `SnakeTail.xml` file in the following locations:
+SnakeTail resolves default session config by scanning for `SnakeTail.xml` file at the following locations:
 
 1. Application Path/SnakeTail.xml (Same folder as `SnakeTail.exe`)
 2. Current User AppData/Roaming/SnakeTail/SnakeTail.xml (Windows Folder: `%APPDATA%\SnakeTail`)
 3. Current User AppData/Local/SnakeTail/SnakeTail.xml (Windows Folder: `%LOCALAPPDATA%\SnakeTail`)
 4. Common AppData/SnakeTail/SnakeTail.xml (Windows Folder: `%ProgramData%\SnakeTail`)
 
-The `SnakeTail` folder might not exist, and must then be created manually. The environment variables can be pasted into Windows Run (`Win+R`) or the Windows Explorer address bar to open the folder.
+The `SnakeTail` folder might not exist, and must then be created manually.
 
-Use-cases:
+Use-case Examples:
 
 - **Personal defaults:** Save the file in the user profile (Roaming or Local), so all new tail windows get your preferred colors and highlight rules.
 - **Shared defaults:** Save the file in Common AppData, so all users on the machine get the same defaults.
 - **Portable setup:** Save the file next to the application, so the defaults follow the application when copied to another machine or USB drive.
 - **Standard log highlighting:** Add highlight rules for keywords like `ERROR` and `WARN`, so every new log file is instantly colored without further setup.
+
+The option **File > Restore Session on Startup** automatically saves the open files to the default `SnakeTail.xml` (resolved from the locations above, or created in `%APPDATA%\SnakeTail` when none exists), and restores the session at the next startup. Files given on the command line (or "Open with") are opened on top of the restored session, while a custom session `.xml` opens separately.
 
 ## Keyword highlight
 
@@ -64,7 +66,7 @@ Keyword rules (plain text or regular expression, optionally case sensitive) are 
 
 Alert Highlight enables jumping with `ALT+KeyUp` / `ALT+KeyDown` between important events in the log, and using `Display tab icon on log change` it will highlight not-selected tabs with warning/alert icon.
 
-Possible Use-cases for Alert Highlight:
+Use-case Examples:
 
 - **Find the errors quickly:** Use Line Coloring + Alert Highlight on `ERROR` and `Exception`, and jump between the highlighted lines using `ALT+KeyUp` / `ALT+KeyDown` instead of scrolling through the log.
 - **Play a sound on errors:** Combine with sound notification using External Tool, together with easily jumping between the highlighted lines.
@@ -78,7 +80,7 @@ The rules are evaluated in list order, so put the most specific rules first.
 
 External tools can be configured and bound to a custom shortcut key. They can also be launched automatically when a keyword matches (Trigger execute on highlight).
 
-Possible Use-cases:
+Use-case Examples:
 
 - **Play a sound on keyword match:** Using keyword highlight rules to trigger external tool on `ERROR`.
 - **Open the log in another application:** Bind a shortcut key to launch a text editor or diff tool on the current file.

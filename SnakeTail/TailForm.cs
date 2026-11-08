@@ -512,7 +512,7 @@ namespace SnakeTail
             }
         }
 
-        public void SaveConfig(TailFileConfig tailConfig)
+        public void SaveConfig(TailFileConfig tailConfig, bool savingDefaultConfig)
         {
             tailConfig.FormFont = _tailListView.Font;
             tailConfig.FormBackColor = _tailListView.BackColor;
@@ -527,13 +527,13 @@ namespace SnakeTail
 
             tailConfig.FileCacheSize = _logFileCache.Items.Count;
             tailConfig.EnumFileEncoding = _logTailStream.FileEncoding;
-            tailConfig.FilePath = _logTailStream.FilePath;
+            tailConfig.FilePath = savingDefaultConfig ? Path.GetFullPath(_logTailStream.FilePathAbsolute) : _logTailStream.FilePath;
             tailConfig.FileCheckInterval = _logTailStream.FileCheckInterval;
             tailConfig.FileChangeCheckInterval = _tailTimer.Interval;
             tailConfig.FileCheckPattern = _logTailStream.FileCheckPattern;
             tailConfig.TitleMatchFilename = _formTitleMatchFilename;
             tailConfig.Title = _formTitle;
-            tailConfig.IconFile = _formIconFile;
+            tailConfig.IconFile = savingDefaultConfig && !string.IsNullOrEmpty(_formIconFile) ? Path.GetFullPath(Path.Combine(_configPath, _formIconFile)) : _formIconFile;
             tailConfig.Modeless = MdiParent == null;
             tailConfig.WindowState = WindowState;
             if (WindowState == FormWindowState.Minimized)
@@ -1219,7 +1219,7 @@ namespace SnakeTail
         {
             TailForm newform = new TailForm();
             TailFileConfig tailConfig = new TailFileConfig();
-            SaveConfig(tailConfig);
+            SaveConfig(tailConfig, false);
             if (this.MdiParent == null)
             {
                 newform.MdiParent = MainForm.Instance;
@@ -1525,52 +1525,70 @@ namespace SnakeTail
         private void configureViewToolStripMenuItem_Click(object sender, EventArgs e)
         {
             TailFileConfig configFile = new TailFileConfig();
-            SaveConfig(configFile);
+            SaveConfig(configFile, false);
             TailConfigForm configForm = new TailConfigForm(configFile, true);
             switch (configForm.ShowDialog(this))
             {
                 case DialogResult.OK:
                     {
                         LoadConfig(configForm.TailFileConfig, _configPath);
-                        break;
+                        configFile = new TailFileConfig();
+                        SaveConfig(configFile, false);
+                        if (MainForm.Instance != null)
+                            MainForm.Instance.SaveDefaultSession();
                     }
+                    break;
 
                 case DialogResult.Retry:
                     {
                         // Apply Config To All
                         LoadConfig(configForm.TailFileConfig, _configPath);
                         configFile = new TailFileConfig();
-                        SaveConfig(configFile);
+                        SaveConfig(configFile, false);
                         TailConfigApplyAllForm configFormApply = new TailConfigApplyAllForm();
                         if (configFormApply.ShowDialog(this) == DialogResult.OK)
                         {
-                            // Then we loop through all forms (includes free floating)
-                            foreach (Form childForm in Application.OpenForms)
-                            {
-                                TailForm tailForm = childForm as TailForm;
-                                if (tailForm != null && tailForm != this)
-                                {
-                                    TailFileConfig configFileOther = new TailFileConfig();
-                                    tailForm.SaveConfig(configFileOther);
-                                    if (configFormApply._checkBoxColors.Checked)
-                                    {
-                                        configFileOther.FormBackColor = configFile.FormBackColor;
-                                        configFileOther.FormTextColor = configFile.FormTextColor;
-                                        configFileOther.FormBookmarkBackColor = configFile.FormBookmarkBackColor;
-                                        configFileOther.FormBookmarkTextColor = configFile.FormBookmarkTextColor;
-                                    }
-                                    if (configFormApply._checkBoxFont.Checked)
-                                        configFileOther.FontInvariant = configFile.FontInvariant;
-                                    if (configFormApply._checkboxKeywords.Checked)
-                                        configFileOther.KeywordHighlight = configFile.KeywordHighlight;
-                                    if (configFormApply._checkboxTools.Checked)
-                                        configFileOther.ExternalTools = configFile.ExternalTools;
-                                    tailForm.LoadConfig(configFileOther, _configPath);
-                                }
-                            }
+                            ApplySharedConfigToTailForms(
+                                this,
+                                configFile,
+                                configFormApply._checkBoxColors.Checked,
+                                configFormApply._checkBoxFont.Checked,
+                                configFormApply._checkboxKeywords.Checked,
+                                configFormApply._checkboxTools.Checked);
                         }
-                        break;
+                        if (MainForm.Instance != null)
+                            MainForm.Instance.SaveDefaultSession();
                     }
+                    break;
+            }
+        }
+
+        public static void ApplySharedConfigToTailForms(TailForm exclude, TailFileConfig configFile, bool colors, bool font, bool keywords, bool tools)
+        {
+            // Then we loop through all forms (includes free floating)
+            foreach (Form childForm in Application.OpenForms)
+            {
+                TailForm tailForm = childForm as TailForm;
+                if (tailForm == null || ReferenceEquals(tailForm, exclude))
+                    continue;
+
+                TailFileConfig otherConfig = new TailFileConfig();
+                tailForm.SaveConfig(otherConfig, false);
+                if (colors)
+                {
+                    otherConfig.FormBackColor = configFile.FormBackColor;
+                    otherConfig.FormTextColor = configFile.FormTextColor;
+                    otherConfig.FormBookmarkBackColor = configFile.FormBookmarkBackColor;
+                    otherConfig.FormBookmarkTextColor = configFile.FormBookmarkTextColor;
+                }
+                if (font)
+                    otherConfig.FontInvariant = configFile.FontInvariant;
+                if (keywords)
+                    otherConfig.KeywordHighlight = configFile.KeywordHighlight;
+                if (tools)
+                    otherConfig.ExternalTools = configFile.ExternalTools;
+
+                tailForm.LoadConfig(otherConfig, tailForm._configPath);
             }
         }
 
@@ -1756,7 +1774,7 @@ namespace SnakeTail
         private void reopenFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             TailFileConfig configFileOther = new TailFileConfig();
-            SaveConfig(configFileOther);
+            SaveConfig(configFileOther, false);
             LoadConfig(configFileOther, _configPath);
         }
     }

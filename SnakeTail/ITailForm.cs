@@ -25,7 +25,7 @@ namespace SnakeTail
 
         bool SearchForText(string searchText, bool matchCase, bool searchForward, bool keywordHighlights, bool wrapAround);
 
-        void SaveConfig(TailFileConfig config);
+        void SaveConfig(TailFileConfig config, bool savingDefaultConfig);
 
         void LoadConfig(TailFileConfig config, string configPath);
     }

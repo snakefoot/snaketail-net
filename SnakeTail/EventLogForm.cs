@@ -54,7 +54,7 @@ namespace SnakeTail
 
         public Form TailWindow { get { return this; } }
 
-        public void SaveConfig(TailFileConfig tailConfig)
+        public void SaveConfig(TailFileConfig tailConfig, bool savingDefaultConfig)
         {
             tailConfig.BackColor = ColorTranslator.ToHtml(_eventListView.BackColor);
             tailConfig.TextColor = ColorTranslator.ToHtml(_eventListView.ForeColor);
@@ -1011,7 +1011,7 @@ namespace SnakeTail
         {
             EventLogForm newform = new EventLogForm();
             TailFileConfig tailConfig = new TailFileConfig();
-            SaveConfig(tailConfig);
+            SaveConfig(tailConfig, false);
             if (this.MdiParent == null)
             {
                 newform.MdiParent = MainForm.Instance;
@@ -1268,7 +1268,7 @@ namespace SnakeTail
         private void _configTextToolStripMenuItem_Click(object sender, EventArgs e)
         {
             TailFileConfig configFile = new TailFileConfig();
-            SaveConfig(configFile);
+            SaveConfig(configFile, false);
             TailConfigForm configForm = new TailConfigForm(configFile, false);
             if (configForm.ShowDialog(this) == DialogResult.OK)
                 LoadConfig(configForm.TailFileConfig, null);

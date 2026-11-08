@@ -78,6 +78,17 @@ namespace SnakeTail
         private void MainForm_Shown(object sender, EventArgs e)
         {
             string[] args = Environment.GetCommandLineArgs();
+            bool customSession = false;
+            for (int i = 1; i < args.Length; ++i)
+            {
+                if (args[i].EndsWith(".xml", StringComparison.CurrentCultureIgnoreCase))
+                    customSession = true;
+            }
+
+            // Fallback to auto-restored session, when no custom session specified
+            if (!customSession)
+                RestoreAutoSession();
+
             if (args.Length > 1)
             {
                 int filesOpened = 0;
@@ -213,7 +224,7 @@ namespace SnakeTail
             OpenFileDialog fileDialog = new OpenFileDialog();
             fileDialog.Multiselect = true;
             fileDialog.Title = "Open Log File";
-            fileDialog.Filter = "Default Filter|*.txt;*.text;*.log*;*.xlog;*.gz|Log Files|*.log*;*.xlog|Text Files|*.txt;*.text|GZip Files|*.gz|All Files|*.*";
+            fileDialog.Filter = "Default Filter|*.txt;*.text;*.log*;*.xlog;*.gz|Log Files|*.log*;*.xlog;*log.gz|Text Files|*.txt;*.text|GZip Files|*.gz|All Files|*.*";
             if (fileDialog.ShowDialog(this) != DialogResult.OK)
                 return;
 
@@ -262,31 +273,19 @@ namespace SnakeTail
         {
             if (_defaultTailConfig == null)
             {
-                TailConfig tailConfig = null;
-                string defaultPath = GetDefaultConfigPath();
-                if (!string.IsNullOrEmpty(defaultPath))
-                    tailConfig = LoadSessionFile(defaultPath);
+                TailConfig defaultConfig = LoadDefaultConfig();
+                _defaultTailConfig = ExtractDefaultTailConfig(defaultConfig);
 
-                if (tailConfig != null && tailConfig.TailFiles.Count > 0)
+                if (defaultConfig != null && defaultConfig.TailFiles.Count > 0 && !defaultConfig.MinimizedToTray && MdiChildren.Length == 0)
                 {
-                    _defaultTailConfig = tailConfig.TailFiles[0];
-                    _defaultTailConfig.Title = null;
-
-                    if (!tailConfig.MinimizedToTray && MdiChildren.Length == 0)
+                    // Only position the main window when nothing is open, so a loaded session or manual layout is not overridden
+                    if (!defaultConfig.WindowSize.IsEmpty)
                     {
-                        // Only position the main window when nothing is open, so a loaded session or manual layout is not overridden
-                        if (!tailConfig.WindowSize.IsEmpty)
-                        {
-                            Size = tailConfig.WindowSize;
-                            DesktopLocation = tailConfig.WindowPosition;
-                        }
-                        if (tailConfig.MainWindowState == FormWindowState.Maximized)
-                            WindowState = FormWindowState.Maximized;
+                        Size = defaultConfig.WindowSize;
+                        DesktopLocation = defaultConfig.WindowPosition;
                     }
-                }
-                else
-                {
-                    _defaultTailConfig = new TailFileConfig();
+                    if (defaultConfig.MainWindowState == FormWindowState.Maximized)
+                        WindowState = FormWindowState.Maximized;
                 }
             }
 
@@ -331,6 +330,10 @@ namespace SnakeTail
                 ++filesOpened;
                 Application.DoEvents();
             }
+
+            if (filesOpened > 0 && autoRestoreSessionToolStripMenuItem.Checked)
+                SaveDefaultSession();
+
             return filesOpened;
         }
 
@@ -344,7 +347,11 @@ namespace SnakeTail
             mdiForm.MdiParent = this;
             mdiForm.LoadFile(openEventLogDlg.EventLogFile);
             if (!mdiForm.IsDisposed)
+            {
                 mdiForm.Show();
+                if (autoRestoreSessionToolStripMenuItem.Checked)
+                    SaveDefaultSession();
+            }
         }
 
         private void _MDITabControl_SelectedIndexChanged(object sender, EventArgs e)
@@ -495,7 +502,7 @@ namespace SnakeTail
             }
         }
 
-        private void SaveSession(string filepath)
+        private TailConfig CreateSessionConfig(bool savingDefaultConfig)
         {
             TailConfig tailConfig = new TailConfig();
             if (_MDITabControl.Visible)
@@ -517,6 +524,7 @@ namespace SnakeTail
             tailConfig.MdiLayout = _MDITabControl.Visible ? MdiLayoutMode.None : _mdiLayout;
             tailConfig.MinimizedToTray = _trayIcon.Visible;
             tailConfig.AlwaysOnTop = TopMost;
+            tailConfig.AutoRestoreSession = savingDefaultConfig && autoRestoreSessionToolStripMenuItem.Checked;
 
             List<Form> childForms = new List<Form>();
 
@@ -542,12 +550,19 @@ namespace SnakeTail
                 if (tailForm != null)
                 {
                     TailFileConfig tailFile = new TailFileConfig();
-                    tailForm.SaveConfig(tailFile);
+                    tailForm.SaveConfig(tailFile, savingDefaultConfig);
                     tailConfig.TailFiles.Add(tailFile);
                 }
             }
 
-            SaveConfig(tailConfig, filepath);
+            return tailConfig;
+        }
+
+        private void SaveSession(string filepath)
+        {
+            TailConfig tailConfig = CreateSessionConfig(false);
+            if (!SaveConfigToFile(tailConfig, filepath, false))
+                return;
 
             if (String.IsNullOrEmpty(_currenTailConfig))
                 _mruMenu.AddFile(filepath);
@@ -559,37 +574,34 @@ namespace SnakeTail
             UpdateTitle();
         }
 
-        public void SaveConfig(TailConfig tailConfig, string filepath)
+        private bool SaveConfigToFile(TailConfig tailConfig, string filepath, bool createDirectory)
         {
-            if (string.IsNullOrEmpty(filepath))
-            {
-                string defaultPath = GetDefaultConfigPath();
-                if (string.IsNullOrEmpty(defaultPath))
-                {
-                    defaultPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\SnakeTail\\";
-                    if (!Directory.Exists(defaultPath))
-                        Directory.CreateDirectory(defaultPath);
-
-                    defaultPath += "SnakeTail.xml";
-                }
-
-                filepath = defaultPath;
-            }
-
-            XmlSerializer serializer = new XmlSerializer(typeof(TailConfig));
+            string temporaryFilePath = null;
             try
             {
-                using (XmlTextWriter writer = new XmlTextWriter(filepath, Encoding.UTF8))
+                if (createDirectory && !Directory.Exists(Path.GetDirectoryName(filepath)))
+                    Directory.CreateDirectory(Path.GetDirectoryName(filepath));
+
+                temporaryFilePath = Path.Combine(Path.GetDirectoryName(filepath), Path.GetFileName(filepath) + "_" + Guid.NewGuid().ToString("N") + ".tmp");
+                XmlSerializer serializer = new XmlSerializer(typeof(TailConfig));
+                using (XmlTextWriter writer = new XmlTextWriter(temporaryFilePath, Encoding.UTF8))
                 {
                     writer.Formatting = Formatting.Indented;
                     XmlSerializerNamespaces xmlnsEmpty = new XmlSerializerNamespaces();
                     xmlnsEmpty.Add("", "");
                     serializer.Serialize(writer, tailConfig, xmlnsEmpty);
+                    writer.Flush();
                 }
 
-                _defaultTailConfig = null;  // Force reload incase we saved a new default config
+                if (File.Exists(filepath))
+                    File.Replace(temporaryFilePath, filepath, null);
+                else
+                    File.Move(temporaryFilePath, filepath);
+
+                temporaryFilePath = null;
+                return true;
             }
-            catch(System.Exception ex)
+            catch (Exception ex)
             {
                 string errorMsg = ex.Message;
                 while (ex.InnerException != null)
@@ -598,19 +610,123 @@ namespace SnakeTail
                     errorMsg += "\n" + ex.Message;
                 }
                 MessageBox.Show(this, "Failed to save session xml file, please ensure it is valid location:\n\n   " + filepath + "\n\n" + errorMsg, "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
             }
+            finally
+            {
+                if (!string.IsNullOrEmpty(temporaryFilePath) && File.Exists(temporaryFilePath))
+                {
+                    try
+                    {
+                        File.Delete(temporaryFilePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine("Failed to remove temporary session file: " + ex.Message);
+                    }
+                }
+            }
+        }
+
+        public bool SaveDefaultSession()
+        {
+            if (!autoRestoreSessionToolStripMenuItem.Checked)
+                return true;
+
+            return SaveDefaultConfig(CreateDefaultSessionConfig(GetDefaultTemplate()));
+        }
+
+        // The default file is a session where the first entry is the template, identified by its blank file path
+        private bool SaveDefaultConfig(TailConfig tailConfig)
+        {
+            string filepath = GetDefaultConfigPath();
+            bool createDirectory = string.IsNullOrEmpty(filepath);
+            if (createDirectory)
+                filepath = Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SnakeTail"), "SnakeTail.xml");
+
+            // The template entry is saved with a blank file path, while the caller keeps its own
+            TailFileConfig template = tailConfig.TailFiles[0];
+            string originalFilePath = template.FilePath;
+            template.FilePath = string.Empty;
+            try
+            {
+                return SaveConfigToFile(tailConfig, filepath, createDirectory);
+            }
+            finally
+            {
+                template.FilePath = originalFilePath;
+            }
+        }
+
+        private TailConfig CreateDefaultSessionConfig(TailFileConfig template)
+        {
+            TailConfig tailConfig = CreateSessionConfig(true);
+            tailConfig.TailFiles.Insert(0, template);
+            return tailConfig;
+        }
+
+        public bool SaveDefaultTemplate(TailFileConfig template)
+        {
+            TailForm.ApplySharedConfigToTailForms(null, template, true, true, true, true);
+
+            TailConfig tailConfig;
+            if (autoRestoreSessionToolStripMenuItem.Checked)
+            {
+                tailConfig = CreateDefaultSessionConfig(template);
+            }
+            else
+            {
+                tailConfig = new TailConfig();
+                tailConfig.TailFiles.Add(template);
+            }
+
+            bool saved = SaveDefaultConfig(tailConfig);
+            _defaultTailConfig = null;  // Force reload, so the cache always reflects the saved file
+            return saved;
+        }
+
+        // The template is loaded lazily from the default file, and cleared whenever the template is saved
+        private TailFileConfig GetDefaultTemplate()
+        {
+            if (_defaultTailConfig == null)
+                _defaultTailConfig = ExtractDefaultTailConfig(LoadDefaultConfig());
+            return _defaultTailConfig;
+        }
+
+        private TailConfig LoadDefaultConfig()
+        {
+            string defaultPath = GetDefaultConfigPath();
+            if (string.IsNullOrEmpty(defaultPath))
+                return null;
+
+            string currentSessionPath = _currenTailConfig;
+            TailConfig defaultConfig = LoadSessionFile(defaultPath);
+            _currenTailConfig = currentSessionPath;
+            return defaultConfig;
+        }
+
+        // The template for new files is the first entry in the default file, or an empty config when there is none
+        private static TailFileConfig ExtractDefaultTailConfig(TailConfig defaultConfig)
+        {
+            if (defaultConfig == null || defaultConfig.TailFiles.Count == 0)
+                return new TailFileConfig();
+
+            TailFileConfig template = defaultConfig.TailFiles[0];
+            template.Title = null;
+            return template;
         }
 
         private TailConfig LoadSessionFile(string filepath)
         {
             TailConfig tailConfig = null;
+            _currenTailConfig = null;
             try
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(TailConfig));
                 using (XmlTextReader reader = new XmlTextReader(filepath))
                 {
-                    _currenTailConfig = new Uri(reader.BaseURI).LocalPath;
                     tailConfig = serializer.Deserialize(reader) as TailConfig;
+                    _currenTailConfig = new Uri(reader.BaseURI).LocalPath;
                 }
                 return tailConfig;
             }
@@ -633,8 +749,41 @@ namespace SnakeTail
             if (tailConfig == null)
                 return false;
 
+            // Opening a custom session must not overwrite the auto-restored session
+            autoRestoreSessionToolStripMenuItem.Checked = false;
+
             _mruMenu.AddFile(filepath);
 
+            ApplySession(tailConfig, Path.GetDirectoryName(filepath));
+            return true;
+        }
+
+        private bool RestoreAutoSession()
+        {
+            string sessionPath = GetDefaultConfigPath();
+            if (string.IsNullOrEmpty(sessionPath))
+                return false;
+
+            TailConfig defaultConfig = LoadSessionFile(sessionPath);
+            // The default session is not a user-named session file, so it must not become the current session
+            _currenTailConfig = null;
+            if (defaultConfig == null)
+                return false;
+
+            // Keep the template from this load ready for new files, instead of reading the file again
+            if (_defaultTailConfig == null)
+                _defaultTailConfig = ExtractDefaultTailConfig(defaultConfig);
+
+            if (!defaultConfig.AutoRestoreSession)
+                return false;
+
+            ApplySession(defaultConfig, Path.GetDirectoryName(sessionPath));
+            autoRestoreSessionToolStripMenuItem.Checked = true;
+            return true;
+        }
+
+        private void ApplySession(TailConfig tailConfig, string tailConfigPath)
+        {
             if (!tailConfig.MinimizedToTray)
             {
                 Size = tailConfig.WindowSize;
@@ -653,6 +802,10 @@ namespace SnakeTail
 
             foreach (TailFileConfig tailFile in tailConfig.TailFiles)
             {
+                // The default session starts with a blank-path template entry
+                if (string.IsNullOrEmpty(tailFile.FilePath))
+                    continue;
+
                 Form mdiForm = null;
 
                 int index = eventLogFiles.FindIndex(delegate(string arrItem) { return arrItem.Equals(tailFile.FilePath); });
@@ -664,7 +817,6 @@ namespace SnakeTail
                 if (mdiForm != null)
                 {
                     ITailForm tailForm = mdiForm as ITailForm;
-                    string tailConfigPath = Path.GetDirectoryName(filepath);
 
                     mdiForm.Text = tailFile.Title;
                     if (!tailFile.Modeless)
@@ -707,7 +859,8 @@ namespace SnakeTail
                 foreach (Form childForm in MdiChildren)
                     childForm.WindowState = FormWindowState.Minimized;
 
-                _MDITabControl.SelectedIndex = tailConfig.SelectedTab;
+                // Tabs that failed to load are gone, so the saved index can be out of range
+                _MDITabControl.SelectedIndex = Math.Min(tailConfig.SelectedTab, _MDITabControl.TabPages.Count - 1);
                 _MDITabControl.Visible = true;
                 (_MDITabControl.SelectedTab.Tag as Form).WindowState = FormWindowState.Maximized;
             }
@@ -732,8 +885,6 @@ namespace SnakeTail
                 alwaysOnTopToolStripMenuItem.Checked = true;
                 TopMost = true;
             }
-
-            return true;
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -942,6 +1093,12 @@ namespace SnakeTail
             _mruMenu.RemoveAll();
         }
 
+        private void autoRestoreSessionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!SaveDefaultConfig(CreateDefaultSessionConfig(GetDefaultTemplate())))
+                autoRestoreSessionToolStripMenuItem.Checked = !autoRestoreSessionToolStripMenuItem.Checked;
+        }
+
         private void saveRecentFilesToRegistryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (saveRecentFilesToRegistryToolStripMenuItem.Checked)
@@ -965,6 +1122,9 @@ namespace SnakeTail
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (!e.Cancel)
+                SaveDefaultSession();
+
             try
             {
                 _instance = null;

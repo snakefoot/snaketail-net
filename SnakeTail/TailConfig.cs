@@ -40,6 +40,7 @@ namespace SnakeTail
         public System.Drawing.Point WindowPosition { get; set; }
         public bool MinimizedToTray { get; set; }
         public bool AlwaysOnTop { get; set; }
+        public bool AutoRestoreSession { get; set; }
         public System.Windows.Forms.FormWindowState MainWindowState { get; set; }
         public MdiLayoutMode MdiLayout { get; set; }
     }
@@ -246,7 +247,7 @@ namespace SnakeTail
             get
             {
                 if (string.IsNullOrEmpty(FileEncoding))
-                    return null;    // Probe the file encoding
+                    return null;    // Detect by BOM, else the default encoding
                 else
                 if (FileEncoding == Encoding.UTF8.ToString())
                     return Encoding.UTF8;
