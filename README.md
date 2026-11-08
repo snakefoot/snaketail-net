@@ -84,7 +84,7 @@ Use-case Examples:
 
 - **Play a sound on keyword match:** Configure an external media player to play a WAV file when a keyword such as `ERROR` is detected.
 - **Open the log in another application:** Bind a shortcut key to launch a text editor or diff tool on the current file.
-- **Truncate or delete the active log file:** Bind a shortcut key to a tool that clears the file currently being tailed.
+- **Truncate or delete the active log file:** Bind a shortcut key to a tool that truncates or deletes the currently tailed file.
 - **Run diagnostics on demand:** Bind a shortcut key to a script that collects information from the system being monitored.
 - **React to log events:** Launch a script that restarts a service or sends a notification when a specific keyword is detected.
 
