@@ -33,25 +33,22 @@ Tail utility for monitoring text log files and Windows EventLog
 
 ## Default Session Configuration
 
-It is possible to setup a default configuration for new files, so that every time a new file is opened, it will use the same colors, highlight rules, window icon, etc.
+SnakeTail allows you to define default settings for newly opened files, including colors, highlight rules, window icons, and other session settings.
 
-SnakeTail resolves default session config by scanning for `SnakeTail.xml` file at the following locations:
+Creating a Default Configuration:
+- Open SnakeTail and configure a tail window as desired.
+- Save the session with one configured window as SnakeTail.xml.
+- Place the file in one of the following locations:
+  - Application Path/SnakeTail.xml (same folder as SnakeTail.exe).
+  - %APPDATA%\SnakeTail\SnakeTail.xml (Roaming).
+  - %LOCALAPPDATA%\SnakeTail\SnakeTail.xml (Local).
+  - %ProgramData%\SnakeTail\SnakeTail.xml (Common AppData).
 
-1. Application Path/SnakeTail.xml (Same folder as `SnakeTail.exe`)
-2. Current User AppData/Roaming/SnakeTail/SnakeTail.xml (Windows Folder: `%APPDATA%\SnakeTail`)
-3. Current User AppData/Local/SnakeTail/SnakeTail.xml (Windows Folder: `%LOCALAPPDATA%\SnakeTail`)
-4. Common AppData/SnakeTail/SnakeTail.xml (Windows Folder: `%ProgramData%\SnakeTail`)
+The SnakeTail folder might not exist and must then be created manually.
 
-The `SnakeTail` folder might not exist, and must then be created manually.
+SnakeTail uses this configuration as a template for new tail windows. This is useful for personal defaults, shared configurations across users, portable setups, or standard log highlighting (e.g. ERROR and WARN).
 
-Use-case Examples:
-
-- **Personal defaults:** Save the file in the user profile (Roaming or Local), so all new tail windows get your preferred colors and highlight rules.
-- **Shared defaults:** Save the file in Common AppData, so all users on the machine get the same defaults.
-- **Portable setup:** Save the file next to the application, so the defaults follow the application when copied to another machine or USB drive.
-- **Standard log highlighting:** Add highlight rules for keywords like `ERROR` and `WARN`, so every new log file is instantly colored without further setup.
-
-The option **File > Restore Session on Startup** will re-open files from previous session, by automatically saving session to default `SnakeTail.xml` (resolved from the locations above, or created in `%APPDATA%\SnakeTail` when none exists). Custom sessions `.xml` files are opened separately, but normal log files will be opened on top of the auto restored session.
+The option **File > Restore Session on Startup** automatically saves and restores the previous session using the default `SnakeTail.xml` file-location. If no configuration file exists, it is created under `%APPDATA%\SnakeTail`. If launching SnakeTail with a new log-file, then it will be opened on top of the restored session, but custom session `.xml` files can also be opened separately.
 
 ## Keyword highlight
 
