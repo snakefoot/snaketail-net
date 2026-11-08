@@ -31,7 +31,7 @@ Tail utility for monitoring text log files and Windows EventLog
 - Requires .NET 3.5 or later
 - GNU GPL License v3
 
-## Default configuration for new files
+## Default Session Configuration
 
 It is possible to setup a default configuration for new files, so that every time a new file is opened, it will use the same colors, highlight rules, window icon, etc.
 
