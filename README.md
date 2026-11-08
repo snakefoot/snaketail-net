@@ -46,7 +46,7 @@ Creating a Default Configuration:
 
 The SnakeTail folder might not exist and must then be created manually.
 
-The option **File > Restore Session on Startup** automatically saves and restores the previous session using the default `SnakeTail.xml` file-location (see above). If no configuration file exists, it is created under `%APPDATA%\SnakeTail`. If launching SnakeTail with a new log-file, then it will be opened on top of the restored session, but custom session `.xml` files can also be opened separately.
+The option **File > Restore Session on Startup** automatically saves and restores the previous session using the default `SnakeTail.xml` file-location (see above). If no configuration file exists, it is created under `%APPDATA%\SnakeTail`. If launching SnakeTail with a new log-file, then it will be opened on top of the restored session, but custom session `.xml` files will be opened separately.
 
 ## Keyword highlight
 
