@@ -51,7 +51,7 @@ Use-case Examples:
 - **Portable setup:** Save the file next to the application, so the defaults follow the application when copied to another machine or USB drive.
 - **Standard log highlighting:** Add highlight rules for keywords like `ERROR` and `WARN`, so every new log file is instantly colored without further setup.
 
-The option **File > Restore Session on Startup** automatically saves the open files to the default `SnakeTail.xml` (resolved from the locations above, or created in `%APPDATA%\SnakeTail` when none exists), and restores the session at the next startup. Files given on the command line (or "Open with") are opened on top of the restored session, while a custom session `.xml` opens separately.
+The option **File > Restore Session on Startup** will re-open files from previous session, by automatically saving session to default `SnakeTail.xml` (resolved from the locations above, or created in `%APPDATA%\SnakeTail` when none exists). Custom sessions `.xml` files are opened separately, but normal log files will be opened on top of the auto restored session.
 
 ## Keyword highlight
 

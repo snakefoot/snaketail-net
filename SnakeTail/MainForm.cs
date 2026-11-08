@@ -831,6 +831,11 @@ namespace SnakeTail
                             _MDITabControl.TabPages.Remove(mdiForm.Tag as TabPage);
                             continue;
                         }
+                        if (tailConfig.SelectedTab != -1)
+                        {
+                            _MDITabControl.Visible = true;
+                            mdiForm.WindowState = FormWindowState.Maximized;
+                        }
                     }
                     mdiForm.Show();
 
