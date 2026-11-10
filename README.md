@@ -2,6 +2,7 @@
 Tail utility for monitoring text log files and Windows EventLog
 
 - Monitor "large" text log files
+- Monitor GZip/Gz log files
 - Monitor Windows Event Logs (Without needing administrator rights)
 - Multiple Window Modes supported (MDI, Tabbed, Floating)
 - Save and load entire window session. Can load session file at startup when given as command line parameter.
